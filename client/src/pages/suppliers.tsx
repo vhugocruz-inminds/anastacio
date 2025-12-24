@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,16 +52,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Progress } from "@/components/ui/progress";
-import type { Supplier } from "@shared/schema";
+import { useLocalized } from "@/hooks/use-localized";
+import type { LocalizedSupplier } from "@shared/schema";
 
-const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ElementType }> = {
-  APPROVED: { label: "Aprovado", variant: "default", icon: CheckCircle2 },
-  PENDING_APPROVAL: { label: "Pendente", variant: "secondary", icon: Clock },
-  REJECTED: { label: "Rejeitado", variant: "destructive", icon: XCircle },
-  SUSPENDED: { label: "Suspenso", variant: "outline", icon: AlertCircle },
-};
-
-function SupplierDetails({ supplier, onClose }: { supplier: Supplier; onClose: () => void }) {
+function SupplierDetails({ supplier, onClose }: { supplier: LocalizedSupplier; onClose: () => void }) {
+  const { t } = useTranslation();
+  const { getLocalizedText } = useLocalized();
+  
+  const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ElementType }> = {
+    APPROVED: { label: t("suppliers.status.approved"), variant: "default", icon: CheckCircle2 },
+    PENDING_APPROVAL: { label: t("suppliers.status.pending"), variant: "secondary", icon: Clock },
+    REJECTED: { label: t("suppliers.status.rejected"), variant: "destructive", icon: XCircle },
+    SUSPENDED: { label: t("suppliers.status.suspended"), variant: "outline", icon: AlertCircle },
+  };
   const performanceScore = supplier.performanceScore ? Number(supplier.performanceScore) : 0;
   const qualityScore = supplier.qualityScore ? Number(supplier.qualityScore) : 0;
   const deliveryScore = supplier.deliveryScore ? Number(supplier.deliveryScore) : 0;
@@ -76,41 +80,41 @@ function SupplierDetails({ supplier, onClose }: { supplier: Supplier; onClose: (
 
         <Tabs defaultValue="info" className="mt-6">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="info">Informações</TabsTrigger>
-            <TabsTrigger value="performance">Performance</TabsTrigger>
+            <TabsTrigger value="info">{t("suppliers.tabs.info")}</TabsTrigger>
+            <TabsTrigger value="performance">{t("suppliers.tabs.performance")}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="info" className="mt-4 space-y-6">
             <div className="space-y-4">
               <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                Dados Gerais
+                {t("suppliers.generalData")}
               </h4>
               <div className="grid gap-4">
                 <div className="flex items-start gap-3">
                   <Building2 className="h-5 w-5 text-muted-foreground mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium">CNPJ</p>
+                    <p className="text-sm font-medium">{t("suppliers.cnpj")}</p>
                     <p className="text-sm text-muted-foreground">{supplier.cnpj}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <Mail className="h-5 w-5 text-muted-foreground mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium">Email</p>
+                    <p className="text-sm font-medium">{t("suppliers.email")}</p>
                     <p className="text-sm text-muted-foreground">{supplier.email}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <Phone className="h-5 w-5 text-muted-foreground mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium">Telefone</p>
+                    <p className="text-sm font-medium">{t("suppliers.phone")}</p>
                     <p className="text-sm text-muted-foreground">{supplier.phone}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium">Localização</p>
+                    <p className="text-sm font-medium">{t("suppliers.location")}</p>
                     <p className="text-sm text-muted-foreground">
                       {supplier.addressCity}, {supplier.addressState}
                     </p>
@@ -121,14 +125,14 @@ function SupplierDetails({ supplier, onClose }: { supplier: Supplier; onClose: (
 
             <div className="space-y-4">
               <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                Atividade Principal
+                {t("suppliers.mainActivity")}
               </h4>
-              <p className="text-sm">{supplier.mainActivity || "Não informado"}</p>
+              <p className="text-sm">{getLocalizedText(supplier.mainActivityLocalized, supplier.mainActivity) || t("suppliers.notProvided")}</p>
             </div>
 
             <div className="space-y-4">
               <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                Status
+                {t("suppliers.status.title")}
               </h4>
               <Badge variant={statusConfig[supplier.status]?.variant || "outline"}>
                 {statusConfig[supplier.status]?.label || supplier.status}
@@ -140,7 +144,7 @@ function SupplierDetails({ supplier, onClose }: { supplier: Supplier; onClose: (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                  Score Geral
+                  {t("suppliers.overallScore")}
                 </h4>
                 <div className="flex items-center gap-2">
                   <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
@@ -152,26 +156,26 @@ function SupplierDetails({ supplier, onClose }: { supplier: Supplier; onClose: (
 
             <div className="space-y-4">
               <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                Métricas Detalhadas
+                {t("suppliers.detailedMetrics")}
               </h4>
               <div className="space-y-4">
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
-                    <span>Qualidade</span>
+                    <span>{t("suppliers.metrics.quality")}</span>
                     <span className="font-medium">{qualityScore.toFixed(1)}</span>
                   </div>
                   <Progress value={qualityScore * 20} className="h-2" />
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
-                    <span>Entrega</span>
+                    <span>{t("suppliers.metrics.delivery")}</span>
                     <span className="font-medium">{deliveryScore.toFixed(1)}</span>
                   </div>
                   <Progress value={deliveryScore * 20} className="h-2" />
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
-                    <span>Preço</span>
+                    <span>{t("suppliers.metrics.price")}</span>
                     <span className="font-medium">{priceScore.toFixed(1)}</span>
                   </div>
                   <Progress value={priceScore * 20} className="h-2" />
@@ -184,7 +188,7 @@ function SupplierDetails({ supplier, onClose }: { supplier: Supplier; onClose: (
                 <CardContent className="p-4">
                   <div className="flex items-center gap-2 text-muted-foreground mb-1">
                     <TrendingUp className="h-4 w-4" />
-                    <span className="text-xs">Cotações Ganhas</span>
+                    <span className="text-xs">{t("suppliers.wonQuotations")}</span>
                   </div>
                   <p className="text-2xl font-semibold">12</p>
                 </CardContent>
@@ -193,9 +197,9 @@ function SupplierDetails({ supplier, onClose }: { supplier: Supplier; onClose: (
                 <CardContent className="p-4">
                   <div className="flex items-center gap-2 text-muted-foreground mb-1">
                     <Clock className="h-4 w-4" />
-                    <span className="text-xs">Tempo Resposta</span>
+                    <span className="text-xs">{t("suppliers.responseTime")}</span>
                   </div>
-                  <p className="text-2xl font-semibold">2.3 dias</p>
+                  <p className="text-2xl font-semibold">{t("suppliers.days", { count: 2.3 })}</p>
                 </CardContent>
               </Card>
             </div>
@@ -207,11 +211,20 @@ function SupplierDetails({ supplier, onClose }: { supplier: Supplier; onClose: (
 }
 
 export default function SuppliersPage() {
+  const { t } = useTranslation();
+  const { getLocalizedText } = useLocalized();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
+  const [selectedSupplier, setSelectedSupplier] = useState<LocalizedSupplier | null>(null);
+  
+  const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ElementType }> = {
+    APPROVED: { label: t("suppliers.status.approved"), variant: "default", icon: CheckCircle2 },
+    PENDING_APPROVAL: { label: t("suppliers.status.pending"), variant: "secondary", icon: Clock },
+    REJECTED: { label: t("suppliers.status.rejected"), variant: "destructive", icon: XCircle },
+    SUSPENDED: { label: t("suppliers.status.suspended"), variant: "outline", icon: AlertCircle },
+  };
 
-  const { data: suppliers, isLoading } = useQuery<Supplier[]>({
+  const { data: suppliers, isLoading } = useQuery<LocalizedSupplier[]>({
     queryKey: ["/api/suppliers"],
   });
 
@@ -230,15 +243,15 @@ export default function SuppliersPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-semibold">Fornecedores</h1>
+          <h1 className="text-2xl font-semibold">{t("sidebar.suppliers")}</h1>
           <p className="text-muted-foreground">
-            Gerencie sua base de fornecedores homologados
+            {t("suppliers.subtitle")}
           </p>
         </div>
         <Button className="gap-2" disabled data-testid="button-new-supplier">
           <Users className="h-4 w-4" />
-          Novo Fornecedor
-          <Badge variant="outline" className="ml-1">Em breve</Badge>
+          {t("suppliers.newSupplier")}
+          <Badge variant="outline" className="ml-1">{t("common.comingSoon")}</Badge>
         </Button>
       </div>
 
@@ -248,7 +261,7 @@ export default function SuppliersPage() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Buscar por nome, razão social ou CNPJ..."
+                placeholder={t("suppliers.searchPlaceholder")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-9"
@@ -259,14 +272,14 @@ export default function SuppliersPage() {
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-[180px]" data-testid="select-status-filter">
                   <Filter className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Status" />
+                  <SelectValue placeholder={t("suppliers.status.title")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Todos os status</SelectItem>
-                  <SelectItem value="APPROVED">Aprovados</SelectItem>
-                  <SelectItem value="PENDING_APPROVAL">Pendentes</SelectItem>
-                  <SelectItem value="REJECTED">Rejeitados</SelectItem>
-                  <SelectItem value="SUSPENDED">Suspensos</SelectItem>
+                  <SelectItem value="all">{t("suppliers.status.all")}</SelectItem>
+                  <SelectItem value="APPROVED">{t("suppliers.status.approved")}</SelectItem>
+                  <SelectItem value="PENDING_APPROVAL">{t("suppliers.status.pending")}</SelectItem>
+                  <SelectItem value="REJECTED">{t("suppliers.status.rejected")}</SelectItem>
+                  <SelectItem value="SUSPENDED">{t("suppliers.status.suspended")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -276,11 +289,11 @@ export default function SuppliersPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Fornecedor</TableHead>
-                <TableHead>CNPJ</TableHead>
-                <TableHead>Localização</TableHead>
-                <TableHead>Score</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>{t("suppliers.table.supplier")}</TableHead>
+                <TableHead>{t("suppliers.cnpj")}</TableHead>
+                <TableHead>{t("suppliers.location")}</TableHead>
+                <TableHead>{t("suppliers.table.score")}</TableHead>
+                <TableHead>{t("suppliers.status.title")}</TableHead>
                 <TableHead className="w-12"></TableHead>
               </TableRow>
             </TableHeader>
@@ -317,7 +330,7 @@ export default function SuppliersPage() {
                       <TableCell>
                         <div>
                           <p className="font-medium">{supplier.tradeName}</p>
-                          <p className="text-sm text-muted-foreground">{supplier.mainActivity}</p>
+                          <p className="text-sm text-muted-foreground">{getLocalizedText(supplier.mainActivityLocalized, supplier.mainActivity)}</p>
                         </div>
                       </TableCell>
                       <TableCell className="font-mono text-sm">{supplier.cnpj}</TableCell>
@@ -352,10 +365,10 @@ export default function SuppliersPage() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem onClick={() => setSelectedSupplier(supplier)}>
-                              Ver detalhes
+                              {t("suppliers.viewDetails")}
                             </DropdownMenuItem>
-                            <DropdownMenuItem disabled>Editar</DropdownMenuItem>
-                            <DropdownMenuItem disabled>Convidar para RFCI</DropdownMenuItem>
+                            <DropdownMenuItem disabled>{t("common.edit")}</DropdownMenuItem>
+                            <DropdownMenuItem disabled>{t("suppliers.inviteToRfci")}</DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
@@ -367,7 +380,7 @@ export default function SuppliersPage() {
                   <TableCell colSpan={6} className="h-32 text-center">
                     <div className="flex flex-col items-center justify-center">
                       <Users className="h-10 w-10 text-muted-foreground mb-2" />
-                      <p className="text-muted-foreground">Nenhum fornecedor encontrado</p>
+                      <p className="text-muted-foreground">{t("suppliers.noSuppliersFound")}</p>
                     </div>
                   </TableCell>
                 </TableRow>

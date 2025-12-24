@@ -22,7 +22,8 @@
     "none": "Nenhum",
     "items": "itens",
     "days": "dias",
-    "today": "Hoje"
+    "today": "Hoje",
+    "comingSoon": "Em breve"
   },
   "auth": {
     "login": "Entrar",
@@ -54,7 +55,8 @@
   "sidebar": {
     "procurement": "Compras",
     "supplierPortal": "Portal do Fornecedor",
-    "myPortal": "Meu Portal"
+    "myPortal": "Meu Portal",
+    "suppliers": "Fornecedores"
   },
   "header": {
     "buyerPortal": "e-Proc",
@@ -95,20 +97,45 @@
   },
   "suppliers": {
     "title": "Fornecedores",
-    "subtitle": "Gerencie sua base de fornecedores",
-    "searchPlaceholder": "Buscar fornecedor...",
-    "filterByStatus": "Filtrar por status",
-    "allStatus": "Todos os status",
-    "approved": "Aprovado",
-    "pending": "Pendente",
-    "blocked": "Bloqueado",
-    "performance": "Desempenho",
-    "quality": "Qualidade",
-    "delivery": "Entrega",
-    "price": "Preço",
+    "subtitle": "Gerencie sua base de fornecedores homologados",
+    "searchPlaceholder": "Buscar por nome, razão social ou CNPJ...",
+    "newSupplier": "Novo Fornecedor",
+    "noSuppliersFound": "Nenhum fornecedor encontrado",
     "viewDetails": "Ver Detalhes",
-    "noSuppliers": "Nenhum fornecedor encontrado",
-    "tryDifferentFilters": "Tente usar filtros diferentes"
+    "inviteToRfci": "Convidar para RFCI",
+    "notProvided": "Não informado",
+    "cnpj": "CNPJ",
+    "email": "Email",
+    "phone": "Telefone",
+    "location": "Localização",
+    "mainActivity": "Atividade Principal",
+    "generalData": "Dados Gerais",
+    "overallScore": "Score Geral",
+    "detailedMetrics": "Métricas Detalhadas",
+    "wonQuotations": "Cotações Ganhas",
+    "responseTime": "Tempo Resposta",
+    "days": "{{count}} dias",
+    "tabs": {
+      "info": "Informações",
+      "performance": "Performance"
+    },
+    "table": {
+      "supplier": "Fornecedor",
+      "score": "Score"
+    },
+    "metrics": {
+      "quality": "Qualidade",
+      "delivery": "Entrega",
+      "price": "Preço"
+    },
+    "status": {
+      "title": "Status",
+      "all": "Todos os status",
+      "approved": "Aprovado",
+      "pending": "Pendente",
+      "rejected": "Rejeitado",
+      "suspended": "Suspenso"
+    }
   },
   "rfci": {
     "title": "RFCIs",
