@@ -175,13 +175,15 @@ export default function DashboardPage() {
     queryKey: ["/api/dashboard/stats"],
   });
 
-  const { data: recentRfcis, isLoading: rfcisLoading } = useQuery<Rfci[]>({
-    queryKey: ["/api/rfcis", { limit: 5 }],
+  const { data: allRfcis, isLoading: rfcisLoading } = useQuery<Rfci[]>({
+    queryKey: ["/api/rfcis"],
   });
+  const recentRfcis = allRfcis?.slice(0, 5);
 
-  const { data: topSuppliers, isLoading: suppliersLoading } = useQuery<Supplier[]>({
-    queryKey: ["/api/suppliers", { limit: 5, orderBy: "performanceScore" }],
+  const { data: allSuppliers, isLoading: suppliersLoading } = useQuery<Supplier[]>({
+    queryKey: ["/api/suppliers"],
   });
+  const topSuppliers = allSuppliers?.filter(s => s.status === "APPROVED").slice(0, 5);
 
   return (
     <div className="space-y-6">
