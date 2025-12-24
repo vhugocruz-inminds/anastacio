@@ -199,20 +199,55 @@ export type InsertQuotationItem = z.infer<typeof insertQuotationItemSchema>;
 export type QuotationItem = typeof quotationItems.$inferSelect;
 
 // ============================================
+// LOCALIZATION TYPES
+// ============================================
+
+export interface LocalizedText {
+  ptBR: string;
+  enUS: string;
+}
+
+// Extended types with optional localization fields
+export interface LocalizedSupplier extends Supplier {
+  mainActivityLocalized?: LocalizedText;
+}
+
+export interface LocalizedProduct extends Product {
+  nameLocalized?: LocalizedText;
+  descriptionLocalized?: LocalizedText;
+  categoryLocalized?: LocalizedText;
+}
+
+export interface LocalizedRfci extends Rfci {
+  titleLocalized?: LocalizedText;
+  descriptionLocalized?: LocalizedText;
+}
+
+export interface LocalizedRfciItem extends RfciItem {
+  productNameLocalized?: LocalizedText;
+  specificationsLocalized?: LocalizedText;
+}
+
+export interface LocalizedQuotation extends Quotation {
+  paymentTermsLocalized?: LocalizedText;
+  notesLocalized?: LocalizedText;
+}
+
+// ============================================
 // EXTENDED TYPES FOR FRONTEND
 // ============================================
 
-export interface RfciWithDetails extends Rfci {
-  items: RfciItem[];
-  suppliers: (RfciSupplier & { supplier?: Supplier })[];
-  quotations: Quotation[];
+export interface RfciWithDetails extends LocalizedRfci {
+  items: LocalizedRfciItem[];
+  suppliers: (RfciSupplier & { supplier?: LocalizedSupplier })[];
+  quotations: LocalizedQuotation[];
   createdBy?: User;
 }
 
-export interface QuotationWithItems extends Quotation {
+export interface QuotationWithItems extends LocalizedQuotation {
   items: QuotationItem[];
-  supplier?: Supplier;
-  rfci?: Rfci;
+  supplier?: LocalizedSupplier;
+  rfci?: LocalizedRfci;
 }
 
 export interface DashboardStats {
