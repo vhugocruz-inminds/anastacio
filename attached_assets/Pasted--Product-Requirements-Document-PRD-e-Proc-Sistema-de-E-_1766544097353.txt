@@ -1,0 +1,823 @@
+# Product Requirements Document (PRD)
+## e-Proc - Sistema de E-Procurement B2B
+
+**Cliente:** Química Anastácio  
+**Produto:** e-Proc (e-Procurement)  
+**Versão:** 1.0  
+**Data:** Dezembro 2025  
+**Responsável:** SyncMinds  
+
+---
+
+## 1. VISÃO GERAL DO PRODUTO
+
+### 1.1 Resumo Executivo
+
+O **e-Proc** é uma plataforma completa de procurement B2B desenvolvida para automatizar e otimizar todo o ciclo de compras da Química Anastácio, desde a homologação de fornecedores até o pagamento (Procure-to-Pay). A solução visa eliminar processos manuais, aumentar a transparência, reduzir custos operacionais e garantir compliance em todas as etapas de aquisição.
+
+### 1.2 Problema a Resolver
+
+**Desafios atuais:**
+- Processos de compras manuais e descentralizados
+- Dificuldade na gestão e rastreabilidade de cotações
+- Falta de visibilidade sobre o desempenho de fornecedores
+- Tempo elevado para negociações e aprovações
+- Dificuldade na integração entre sistemas (Protheus, Fluig)
+- Baixa auditabilidade e controle sobre o ciclo de compras
+- Gestão complexa de importações e logística internacional
+
+### 1.3 Proposta de Valor
+
+- **Automação end-to-end:** Do cadastro de fornecedor ao pagamento
+- **Marketplace integrado:** Acesso a base ampliada de fornecedores homologados
+- **Inteligência de negociação:** Mapas comparativos automáticos e analytics avançados
+- **Compliance e auditabilidade:** 100% rastreável e auditável
+- **Integração nativa:** Protheus (ERP) e Fluig (BPM)
+- **Economia comprovada:** Redução de lead time e savings mensuráveis
+
+---
+
+## 2. OBJETIVOS E METAS
+
+### 2.1 Objetivos de Negócio
+
+| Objetivo | Meta | Prazo |
+|----------|------|-------|
+| Redução de lead time de compras | 40% | 6 meses |
+| Redução de custos operacionais | 25% | 12 meses |
+| Aumento de fornecedores homologados | +50% | 9 meses |
+| Savings em negociações | 15% | 12 meses |
+| Digitalização de processos | 100% | 3 meses |
+| Taxa de adoption da plataforma | 95% | 6 meses |
+
+### 2.2 KPIs Principais
+
+**Operacionais:**
+- Lead time médio de cotações
+- Tempo médio de aprovação
+- Taxa de conversão de RFCIs
+- Número de cotações por requisição
+- Taxa de rejeição de fornecedores
+
+**Financeiros:**
+- Savings total (R$)
+- Custo médio por transação
+- ROI da plataforma
+- Redução de maverick spend
+
+**Qualidade:**
+- NPS de compradores e fornecedores
+- Taxa de erro em POs
+- Conformidade regulatória (%)
+- Performance de fornecedores (score médio)
+
+---
+
+## 3. PERSONAS
+
+### 3.1 Persona 1: Comprador Estratégico (Primary)
+
+**Nome:** Maria Silva  
+**Cargo:** Analista de Compras Sênior  
+**Objetivos:**
+- Negociar os melhores preços
+- Gerenciar múltiplas cotações simultaneamente
+- Ter visibilidade completa do pipeline de compras
+- Gerar relatórios gerenciais de savings
+
+**Dores:**
+- Perda de tempo com processos manuais
+- Dificuldade em comparar propostas
+- Falta de histórico de negociações
+
+**Comportamento:**
+- Faz 15-20 cotações/mês
+- Precisa de respostas rápidas
+- Valoriza dados para tomada de decisão
+
+### 3.2 Persona 2: Gestor de Cadastro (GPC)
+
+**Nome:** João Santos  
+**Cargo:** Coordenador de Cadastro  
+**Objetivos:**
+- Garantir qualidade dos dados de fornecedores
+- Validar documentações regulatórias
+- Homologar produtos com agilidade
+- Manter base atualizada e íntegra
+
+**Dores:**
+- Volume alto de solicitações de cadastro
+- Validação manual de documentos
+- Retrabalho por dados inconsistentes
+
+**Comportamento:**
+- Valida 30-50 cadastros/mês
+- Necessita integrações com órgãos públicos
+- Precisa de workflows automáticos
+
+### 3.3 Persona 3: Fornecedor
+
+**Nome:** Roberto Costa  
+**Cargo:** Gerente Comercial  
+**Objetivos:**
+- Cadastrar-se facilmente
+- Receber e responder RFCIs rapidamente
+- Acompanhar status de propostas
+- Manter catálogo atualizado
+
+**Dores:**
+- Processo de cadastro complexo
+- Falta de visibilidade sobre cotações
+- Comunicação fragmentada
+
+**Comportamento:**
+- Participa de 5-10 cotações/mês
+- Acessa via mobile
+- Necessita notificações em tempo real
+
+### 3.4 Persona 4: Gestor de Logística Internacional
+
+**Nome:** Ana Rodrigues  
+**Cargo:** Coordenadora de Importação  
+**Objetivos:**
+- Acompanhar status de POs internacionais
+- Gerenciar processos de importação
+- Ter visibilidade de prazos e custos
+
+**Dores:**
+- Falta de integração com sistemas de importação
+- Dificuldade em rastrear pedidos
+- Comunicação manual com fornecedores
+
+---
+
+## 4. ESCOPO E FUNCIONALIDADES
+
+### 4.1 Módulo 1: GESTÃO DE FORNECEDORES
+
+#### 4.1.1 Cadastro e Onboarding
+
+**Funcionalidades:**
+- Portal de autocadastro de fornecedores
+- Upload de documentos (CNPJ, Certidões, Licenças)
+- Validação automática com órgãos públicos (Receita Federal, FGTS, INSS)
+- Workflow de aprovação (Fluig)
+- Cadastro de múltiplos produtos e serviços
+- Gestão de catálogo de produtos
+
+**Regras de Negócio:**
+- Fornecedor já cadastrado não pode criar novo cadastro (validação por CNPJ)
+- Documentos obrigatórios: CNPJ, Certidão Negativa, Inscrição Estadual
+- Prazo de validade automático para certidões
+- Notificação automática 30 dias antes do vencimento
+
+**Integrações:**
+- Receita Federal (validação CNPJ)
+- FGTS/INSS (certidões)
+- Fluig (workflow de aprovação)
+- Protheus (cadastro mestre)
+
+#### 4.1.2 Homologação de Produtos
+
+**Funcionalidades:**
+- Avaliação técnica de produtos
+- Matriz de homologação (qualidade, preço, prazo, compliance)
+- Aprovação multinível
+- Catálogo homologado
+- Gestão de SKUs
+
+**Critérios de Homologação:**
+- Conformidade regulatória (Anvisa, IBAMA quando aplicável)
+- Qualidade técnica
+- Capacidade de fornecimento
+- Histórico de performance
+- Certificações necessárias
+
+#### 4.1.3 Avaliação e Performance
+
+**Funcionalidades:**
+- Scorecards de fornecedores
+- Indicadores: qualidade, prazo, preço, atendimento
+- Histórico de transações
+- Avaliações qualitativas
+- Ranking de fornecedores
+- Blacklist e watchlist
+
+**Métricas Avaliadas:**
+- On-time delivery (%)
+- Taxa de conformidade de produtos
+- Tempo de resposta a RFCIs
+- Histórico de savings
+- Qualidade de atendimento
+
+---
+
+### 4.2 Módulo 2: REQUISIÇÕES E COTAÇÕES (Core)
+
+#### 4.2.1 Gestão de Requisições (Request)
+
+**Funcionalidades:**
+- Portal centralizado de requisições
+- Integração com Protheus (geração automática de SC)
+- Catálogo de produtos pré-aprovados
+- Requisição de itens não catalogados
+- Workflow de aprovação por alçada
+- Tracking em tempo real
+- Dashboard de requisições pendentes
+
+**Fluxo:**
+1. Requisitante cria solicitação
+2. Sistema valida disponibilidade em catálogo
+3. Workflow de aprovação (automático por alçada)
+4. Aprovado → vai para Compras
+5. Protheus gera SC automaticamente
+
+**Regras:**
+- Aprovação automática até R$ 5.000
+- Aprovação gerencial: R$ 5.001 a R$ 50.000
+- Aprovação diretoria: acima R$ 50.000
+- Requisições urgentes (flag especial)
+
+#### 4.2.2 RFCI (Request for Commercial Information)
+
+**Funcionalidades:**
+- Criação de RFCI manual ou automática (via SC/SI)
+- Seleção de fornecedores homologados
+- Envio em lote ou segmentado
+- Templates customizáveis
+- Anexos técnicos (especificações, desenhos)
+- Prazo de resposta configurável
+- Notificações automáticas
+
+**Tipos de RFCI:**
+- Cotação simples (melhor preço)
+- Cotação técnica (especificações complexas)
+- Cotação de serviços
+- Importação (com Incoterms)
+
+#### 4.2.3 Cotação e Comparação
+
+**Funcionalidades:**
+- Portal de cotação para fornecedores
+- Upload de propostas comerciais
+- Mapa comparativo automático
+- Análise multidimensional (preço, prazo, condições)
+- Normalização de propostas
+- Histórico de cotações anteriores
+- Chat integrado comprador-fornecedor
+
+**Mapa Comparativo:**
+- Preço unitário e total
+- Prazo de entrega
+- Condições de pagamento
+- Impostos e frete
+- Score do fornecedor
+- Recomendação automática (melhor oferta)
+
+#### 4.2.4 Negociação
+
+**Funcionalidades:**
+- Rodadas de negociação online
+- Leilão reverso (opcional)
+- Contraproposta estruturada
+- Histórico de negociações
+- Chat/mensagens rastreáveis
+- Aceite eletrônico
+
+**Fluxo de Negociação:**
+1. Comprador envia contraproposta
+2. Fornecedor aceita/recusa/negocia
+3. Múltiplas rodadas até acordo
+4. Registro de todas as interações
+5. Aceite final gera Award
+
+#### 4.2.5 Award e Geração de PO
+
+**Funcionalidades:**
+- Award da cotação vencedora
+- Seleção de SKU (produto já catalogado)
+- Cadastro expresso de produto (novo)
+- Envio automático para Protheus
+- Geração de PO (Purchase Order)
+- Para importações: integração com Protheus-EIC (SI)
+- Notificação ao fornecedor
+
+**Workflow:**
+```
+Award → Seleciona SKU (Sim/Não) → Cadastra produto (se necessário) 
+→ Envia para sistema → Protheus gera PO → Fornecedor recebe
+```
+
+---
+
+### 4.3 Módulo 3: GESTÃO DE PEDIDOS (Order Management)
+
+#### 4.3.1 Acompanhamento de Pedidos
+
+**Funcionalidades:**
+- Dashboard de POs ativas
+- Tracking em tempo real
+- Timeline visual do pedido
+- Alertas de atraso
+- Comunicação com fornecedor
+- Confirmação de recebimento parcial/total
+- Integração com logística
+
+**Status de Pedido:**
+- Enviado ao fornecedor
+- Confirmado
+- Em produção
+- Despachado
+- Em trânsito
+- Recebido (parcial/total)
+- Encerrado
+
+#### 4.3.2 Logística Internacional
+
+**Funcionalidades:**
+- Integração Protheus-EIC (Siscomex)
+- Geração de SI (Solicitação de Importação)
+- Acompanhamento de processos de importação
+- Gestão de documentos (Invoice, BL, Packing List)
+- Tracking internacional
+- Cálculo de impostos e taxas
+- Gestão de Incoterms
+
+**Documentos Gerenciados:**
+- Commercial Invoice
+- Packing List
+- Bill of Lading (BL)
+- Certificados de origem
+- Licenças de importação
+
+#### 4.3.3 Recebimento e Conferência
+
+**Funcionalidades:**
+- Conferência de materiais
+- Registro de não-conformidades
+- Aceite/recusa de produtos
+- Integração com estoque (Protheus)
+- Documentação fotográfica
+
+---
+
+### 4.4 Módulo 4: GESTÃO FISCAL E PAGAMENTOS
+
+#### 4.4.1 Notas Fiscais (Invoice)
+
+**Funcionalidades:**
+- Entrada automática de NF-e (via XML)
+- Conferência automática NF vs PO
+- Validação de impostos
+- Divergências (three-way match)
+- Workflow de aprovação de divergências
+- Integração contábil (Protheus)
+
+**Three-Way Match:**
+- PO (Purchase Order)
+- RN (Receipt Note)
+- NF (Nota Fiscal)
+
+#### 4.4.2 Pagamentos (Pay)
+
+**Funcionalidades:**
+- Centralização de pagamentos
+- Gestão de vencimentos
+- Priorização de pagamentos
+- Integração bancária
+- Portal de fornecedores (consulta de status)
+- Notificações de pagamento
+- Relatórios financeiros
+
+**Status de Pagamento:**
+- Aguardando aprovação
+- Aprovado
+- Agendado
+- Pago
+- Comprovante disponível
+
+---
+
+### 4.5 Módulo 5: ANALYTICS E INTELIGÊNCIA
+
+#### 4.5.1 Dashboards Gerenciais
+
+**Funcionalidades:**
+- Dashboard executivo
+- Dashboard de compras
+- Dashboard de fornecedores
+- Dashboard financeiro
+- Filtros customizáveis
+- Exportação de relatórios
+
+**Indicadores Principais:**
+- Savings acumulado (R$ e %)
+- Lead time médio por categoria
+- Performance de fornecedores
+- Spend por categoria/centro de custo
+- Pipeline de cotações
+- Taxa de conversão
+
+#### 4.5.2 Relatórios e BI
+
+**Relatórios Principais:**
+- Relatório de savings
+- Análise de spend (Pareto)
+- Performance de compradores
+- Performance de fornecedores
+- Lead time por categoria
+- Maverick spend
+- Histórico de cotações
+- Análise de mercado
+
+#### 4.5.3 Inteligência Artificial
+
+**Funcionalidades (Roadmap):**
+- Sugestão automática de fornecedores por categoria
+- Previsão de preços
+- Detecção de anomalias em cotações
+- Otimização de mix de fornecedores
+- Alertas preditivos de atrasos
+
+---
+
+### 4.6 Módulo 6: MARKETPLACE B2B
+
+#### 4.6.1 Marketplace Público
+
+**Funcionalidades:**
+- Base de fornecedores pré-validados
+- Catálogos públicos
+- Busca avançada de produtos/serviços
+- Solicitação de cotação via marketplace
+- Validação automática (CNPJ, certidões)
+- Onboarding rápido
+
+**Categorias Principais:**
+- Químicos e insumos
+- Embalagens
+- Equipamentos
+- Serviços especializados
+- Logística e transporte
+
+#### 4.6.2 Marketplace Privado
+
+**Funcionalidades:**
+- Catálogo exclusivo Anastácio
+- Produtos pré-negociados
+- Preços contratuais
+- Compra rápida (punch-out)
+- Contratos vigentes
+
+---
+
+## 5. REQUISITOS TÉCNICOS
+
+### 5.1 Arquitetura
+
+**Modelo:** Cloud-native (SaaS)  
+**Infraestrutura:** AWS ou Azure  
+**Escalabilidade:** Horizontal e vertical  
+**Disponibilidade:** 99.9% SLA  
+
+**Stack Tecnológico Sugerido:**
+- **Backend:** Node.js (NestJS) ou Java (Spring Boot)
+- **Frontend:** React.js + TypeScript
+- **Mobile:** React Native ou Flutter
+- **Banco de Dados:** PostgreSQL (transacional) + MongoDB (catálogos)
+- **Cache:** Redis
+- **Mensageria:** RabbitMQ ou Kafka
+- **Storage:** S3 (AWS) ou Blob Storage (Azure)
+
+### 5.2 Integrações Obrigatórias
+
+#### 5.2.1 Protheus (TOTVS)
+
+**Endpoints:**
+- Cadastro de fornecedores
+- Geração de SC (Solicitação de Compra)
+- Geração de PO (Purchase Order)
+- Atualização de status de pedidos
+- Integração de produtos/SKUs
+- Integração financeira
+
+**Protocolo:** REST API ou Web Services (SOAP)  
+**Frequência:** Real-time e batch (configurável)  
+
+#### 5.2.2 Protheus-EIC (Importação)
+
+**Endpoints:**
+- Geração de SI (Solicitação de Importação)
+- Recebimento de PO de importação
+- Tracking de processos de importação
+- Documentos de comércio exterior
+
+#### 5.2.3 Fluig (BPM)
+
+**Integrações:**
+- Workflow de aprovação de fornecedores
+- Validação de documentos
+- Aprovação de requisições
+- Aprovação de cotações acima de alçada
+- Notificações
+
+#### 5.2.4 Órgãos Públicos
+
+**APIs Externas:**
+- Receita Federal (validação CNPJ)
+- Sintegra (validação inscrição estadual)
+- Consulta de certidões (FGTS, INSS, Trabalhista)
+- NF-e (Sefaz) via Web Service
+
+### 5.3 Requisitos Não-Funcionais
+
+**Performance:**
+- Tempo de resposta < 2s (90% das requisições)
+- Suporte a 500 usuários concorrentes
+- Upload de arquivos até 50MB
+
+**Segurança:**
+- Autenticação SSO (SAML 2.0)
+- MFA (autenticação dois fatores)
+- Criptografia end-to-end (TLS 1.3)
+- LGPD compliant
+- Logs de auditoria (imutáveis)
+- Controle de acesso baseado em roles (RBAC)
+
+**Usabilidade:**
+- Interface responsiva (mobile-first)
+- Acessibilidade (WCAG 2.1 AA)
+- Suporte PWA (Progressive Web App)
+- Tempo de onboarding < 2h
+
+**Disponibilidade:**
+- SLA 99.9%
+- Backup diário automático
+- Disaster recovery (RPO < 1h, RTO < 4h)
+
+---
+
+## 6. JORNADAS DO USUÁRIO
+
+### 6.1 Jornada: Cadastro de Novo Fornecedor
+
+**Ator:** Fornecedor + GPC  
+
+**Fluxo:**
+1. Fornecedor acessa portal e inicia cadastro
+2. Preenche dados cadastrais (CNPJ, razão social, contatos)
+3. Upload de documentos obrigatórios
+4. Sistema valida CNPJ automaticamente (Receita Federal)
+5. Disponibiliza catálogo de produtos/serviços
+6. Submete para aprovação
+7. GPC recebe notificação no Fluig
+8. GPC valida dados e documentos
+9. Sistema consulta certidões em órgãos públicos
+10. GPC aprova ou recusa com justificativa
+11. Se aprovado: fornecedor é notificado e habilitado
+12. Dados sincronizados com Protheus
+
+**Tempo estimado:** 24-48h
+
+### 6.2 Jornada: Processo de Cotação Completo
+
+**Ator:** Requisitante → Comprador → Fornecedores  
+
+**Fluxo:**
+1. **Requisição:** Requisitante cria solicitação de compra
+2. Sistema verifica catálogo (produto existe?)
+3. Workflow de aprovação (se necessário)
+4. **Geração SC:** Protheus gera SC automaticamente
+5. **RFCI:** Comprador cria RFCI baseado na SC
+6. Seleciona fornecedores homologados (3-5)
+7. Sistema envia RFCI automaticamente
+8. **Cotação:** Fornecedores recebem notificação
+9. Fornecedores preenchem cotação no portal
+10. Submetem propostas
+11. **Análise:** Sistema gera mapa comparativo automático
+12. Comprador analisa propostas
+13. **Negociação (opcional):** Comprador negocia com fornecedores
+14. Rodadas de contraproposta
+15. **Award:** Comprador seleciona fornecedor vencedor
+16. Verifica se produto tem SKU
+17. Cadastra produto (se necessário)
+18. **PO:** Sistema envia para Protheus
+19. Protheus gera PO
+20. Fornecedor recebe PO e confirma
+
+**Tempo estimado:** 5-10 dias úteis
+
+### 6.3 Jornada: Importação
+
+**Ator:** Comprador → Fornecedor → Logística  
+
+**Fluxo:**
+1. Processo de cotação internacional
+2. Award para fornecedor internacional
+3. Sistema gera SI no Protheus-EIC
+4. Comprador acompanha produção
+5. Fornecedor despacha mercadoria
+6. Upload de documentos (Invoice, BL, Packing)
+7. Logística Internacional recebe notificação
+8. Acompanha processo de importação
+9. Tracking internacional
+10. Desembaraço aduaneiro
+11. Recebimento no Brasil
+12. Conferência física
+13. Encerramento do pedido
+
+**Tempo estimado:** 60-90 dias
+
+---
+
+## 7. ROADMAP E FASES
+
+### Fase 1: MVP (Semanas 1-8)
+
+**Escopo:**
+- Módulo de Cadastro de Fornecedores
+- Módulo de Requisições básico
+- RFCI e Cotação simples
+- Mapa comparativo
+- Integração Protheus (básica)
+- Integração Fluig (workflow)
+
+**Entregáveis:**
+- Portal web responsivo
+- Portal fornecedor
+- Dashboards básicos
+- Integrações essenciais
+
+### Fase 2: Expansão (Semanas 9-12)
+
+**Escopo:**
+- Negociação estruturada
+- Gestão de Pedidos
+- Notas Fiscais (entrada)
+- Analytics avançado
+- Homologação de produtos
+- Marketplace privado
+
+### Fase 3: Logística e Inteligência (Semanas 13-16)
+
+**Escopo:**
+- Módulo de Logística Internacional
+- Protheus-EIC integrado
+- Pagamentos
+- BI completo
+- Avaliação de fornecedores
+- Mobile app (React Native)
+
+### Fase 4: Inovação (Pós Go-live)
+
+**Escopo:**
+- Marketplace público
+- IA para sugestões
+- Leilão reverso
+- Previsão de preços
+- OCR para documentos
+- Chatbot de suporte
+
+---
+
+## 8. CRITÉRIOS DE SUCESSO
+
+### 8.1 Critérios de Aceitação
+
+**MVP:**
+- [ ] 100% dos fornecedores cadastrados migrados
+- [ ] 50 cotações realizadas com sucesso
+- [ ] Integração Protheus funcionando (SC e PO)
+- [ ] Workflow Fluig operacional
+- [ ] 90% de aprovação em testes de usuário
+
+**Go-Live:**
+- [ ] 100% das requisições digitalizadas
+- [ ] 80% de adoption pelos compradores
+- [ ] Tempo de cotação < 5 dias
+- [ ] Zero erros críticos
+- [ ] SLA de 99.5% alcançado
+
+### 8.2 Métricas de Sucesso (1 ano)
+
+| Métrica | Baseline | Meta |
+|---------|----------|------|
+| Lead time de cotações | 15 dias | 6 dias |
+| Savings médio por cotação | 5% | 15% |
+| Custo por transação | R$ 150 | R$ 50 |
+| NPS compradores | - | > 70 |
+| NPS fornecedores | - | > 65 |
+| Adoption rate | 0% | 95% |
+
+---
+
+## 9. PREMISSAS E RESTRIÇÕES
+
+### 9.1 Premissas
+
+- Protheus e Fluig já estão implementados
+- APIs do Protheus documentadas e disponíveis
+- Fornecedores têm acesso à internet
+- Equipe de compras será treinada
+- Haverá um período de convivência (paralelo)
+
+### 9.2 Restrições
+
+- Budget aprovado: conforme proposta comercial
+- Timeline: 16 semanas (4 meses)
+- Equipe: alocação conforme metodologia Scrum
+- Dependências: APIs Protheus e Fluig
+- Compliance: LGPD e normas do setor químico
+
+### 9.3 Riscos
+
+| Risco | Probabilidade | Impacto | Mitigação |
+|-------|---------------|---------|-----------|
+| Atraso nas integrações Protheus | Média | Alto | POC prévia, documentação detalhada |
+| Resistência dos usuários | Alta | Médio | Change management, treinamentos |
+| Qualidade dos dados legados | Alta | Alto | Saneamento prévio, validações |
+| Baixa adesão de fornecedores | Média | Alto | Onboarding assistido, suporte dedicado |
+| Mudanças regulatórias | Baixa | Médio | Monitoramento contínuo |
+
+---
+
+## 10. STAKEHOLDERS
+
+| Stakeholder | Papel | Responsabilidade |
+|-------------|-------|------------------|
+| Diretor de Suprimentos | Sponsor | Aprovação final, budget |
+| Gerente de Compras | Product Owner | Priorização, validação |
+| Coord. TI | Tech Lead | Integrações, infraestrutura |
+| Coord. Cadastro | Especialista | Regras de homologação |
+| Coord. Logística | Especialista | Processos de importação |
+| Fornecedores | Usuário externo | Feedback, adoption |
+| Equipe SyncMinds | Desenvolvimento | Entrega do produto |
+
+---
+
+## 11. GLOSSÁRIO
+
+- **RFCI:** Request for Commercial Information (Solicitação de Cotação)
+- **SC:** Solicitação de Compra
+- **SI:** Solicitação de Importação
+- **PO:** Purchase Order (Pedido de Compra)
+- **SKU:** Stock Keeping Unit (Código de produto)
+- **Award:** Aprovação/aceitação de uma cotação
+- **Three-Way Match:** Conferência entre PO, Recebimento e NF
+- **Savings:** Economia obtida em negociações
+- **Lead Time:** Tempo entre requisição e entrega
+- **Maverick Spend:** Gastos fora do processo controlado
+- **GPC:** Gestão de Processos de Cadastro
+- **EIC:** Easy Import Control (módulo Protheus)
+- **Incoterms:** Termos de comércio internacional
+
+---
+
+## 12. ANEXOS
+
+### 12.1 Wireframes (a desenvolver)
+- Tela de dashboard principal
+- Fluxo de RFCI
+- Mapa comparativo
+- Portal fornecedor
+
+### 12.2 Matriz de Integrações
+| Sistema | Protocolo | Frequência | Dados |
+|---------|-----------|------------|-------|
+| Protheus | REST API | Real-time | SC, PO, Produtos, Fornecedores |
+| Protheus-EIC | Web Service | Real-time | SI, Importações |
+| Fluig | REST API | Real-time | Workflows, Aprovações |
+| Receita Federal | API Gov | On-demand | Validação CNPJ |
+| Sefaz | Web Service | On-demand | NF-e |
+
+### 12.3 Modelo de Dados (principais entidades)
+- Fornecedores
+- Produtos/Catálogo
+- Usuários
+- Requisições
+- RFCIs
+- Cotações
+- Pedidos (POs)
+- Notas Fiscais
+- Pagamentos
+
+---
+
+## 13. PRÓXIMOS PASSOS
+
+1. **Reunião de kick-off:** Alinhamento com stakeholders
+2. **Discovery detalhado:** Workshop de requisitos (2 semanas)
+3. **Prototipagem:** Validação de UX/UI (1 semana)
+4. **Sprint 0:** Setup de infraestrutura e ambientes
+5. **Desenvolvimento:** Sprints de 2 semanas (metodologia Scrum)
+6. **Homologação:** Testes com usuários reais
+7. **Go-live:** Lançamento em produção
+8. **Hiper-care:** Suporte intensivo pós-lançamento (30 dias)
+
+---
+
+**Documento preparado por:** SyncMinds  
+**Data:** Dezembro 2025  
+**Versão:** 1.0 - Draft para aprovação  
+
+*Este PRD é um documento vivo e será atualizado conforme evoluções do projeto e feedback dos stakeholders.*

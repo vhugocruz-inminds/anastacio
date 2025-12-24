@@ -1,0 +1,1078 @@
+# 🚀 EXPERT DEVELOPMENT PROMPT: e-Proc (e-Procurement System)
+
+**Project:** e-Proc - Sistema de E-Procurement B2B para Química Anastácio  
+**Target Platform:** Replit.com  
+**Development Mode:** Full-Stack TypeScript/Node.js  
+**Client:** Química Anastácio (https://anastacio.com/)  
+**Deadline:** 16 semanas (4 meses)  
+
+---
+
+## 🎯 PROJECT OVERVIEW
+
+You are tasked with building **e-Proc**, a comprehensive B2B e-procurement platform that automates the complete procurement cycle from supplier registration to payment (Procure-to-Pay). This system will replace manual processes and integrate with existing ERP systems (TOTVS Protheus, Protheus-EIC) and BPM platform (Fluig).
+
+**Key Business Goals:**
+- Reduce procurement lead time by 40%
+- Reduce operational costs by 25%
+- Achieve 15% savings through better negotiations
+- 100% digitalization of processes
+- Full auditability and compliance
+
+---
+
+## 🏗️ TECHNICAL ARCHITECTURE
+
+### **Stack Specification**
+
+**Backend:**
+- **Runtime:** Node.js 20+ LTS
+- **Framework:** NestJS (TypeScript)
+- **ORM:** Prisma (PostgreSQL + MongoDB)
+- **API:** REST + GraphQL (optional for complex queries)
+- **Authentication:** JWT + OAuth 2.0 + MFA
+- **Message Queue:** RabbitMQ or Kafka
+- **Cache:** Redis
+- **Search:** ElasticSearch (product catalog)
+
+**Frontend:**
+- **Framework:** React 18+ with TypeScript
+- **State Management:** Zustand or Redux Toolkit
+- **Styling:** Tailwind CSS
+- **UI Components:** shadcn/ui
+- **Forms:** React Hook Form + Zod validation
+- **Data Fetching:** TanStack Query (React Query)
+- **Charts:** Recharts
+- **Tables:** TanStack Table
+
+**Mobile (Future Phase):**
+- React Native or Flutter
+
+**Database:**
+- **Primary:** PostgreSQL 15+ (transactional data)
+- **Secondary:** MongoDB (product catalogs, flexible schemas)
+- **Cache:** Redis (sessions, frequently accessed data)
+- **Search:** ElasticSearch (full-text search)
+
+**Infrastructure (Replit):**
+- Start with Replit's Node.js template
+- Use Replit Database for development
+- Plan for future migration to AWS/Azure
+
+---
+
+## 📋 CORE MODULES TO IMPLEMENT
+
+### **Phase 1: MVP (Weeks 1-8)**
+
+#### **Module 1: User Management & Authentication**
+```typescript
+// Priority: CRITICAL
+// Complexity: Medium
+
+Features:
+- User registration and login (JWT)
+- Multi-factor authentication (TOTP)
+- Role-based access control (RBAC)
+  * Roles: ADMIN, BUYER, BUYER_MANAGER, GPC_ANALYST, GPC_MANAGER, 
+           LOGISTICS, FINANCIAL, REQUESTER, SUPPLIER
+- Password reset flow
+- Session management
+- SSO integration (SAML 2.0) - prepare structure
+
+Endpoints:
+POST   /api/auth/register
+POST   /api/auth/login
+POST   /api/auth/logout
+POST   /api/auth/refresh
+POST   /api/auth/forgot-password
+POST   /api/auth/reset-password
+POST   /api/auth/verify-mfa
+GET    /api/users/me
+PUT    /api/users/me
+```
+
+#### **Module 2: Supplier Management**
+```typescript
+// Priority: CRITICAL
+// Complexity: High
+
+Features:
+- Supplier self-registration portal
+- Document upload and management (CNPJ, certifications, etc.)
+- CNPJ validation (Receita Federal API)
+- Automatic validation of tax certificates (FGTS, INSS)
+- Fluig workflow integration for approval
+- Supplier performance scoring
+- Contact management
+- Category assignment
+
+Key Endpoints:
+POST   /api/suppliers/register
+GET    /api/suppliers
+GET    /api/suppliers/:id
+PUT    /api/suppliers/:id
+POST   /api/suppliers/:id/documents
+GET    /api/suppliers/:id/documents
+POST   /api/suppliers/:id/approve
+POST   /api/suppliers/:id/reject
+GET    /api/suppliers/:id/performance
+POST   /api/suppliers/:id/contacts
+
+External Integrations:
+- Receita Federal API (CNPJ validation)
+- Sintegra (state registration)
+- FGTS/INSS APIs (certificates)
+- Fluig REST API (workflow)
+```
+
+#### **Module 3: Product Catalog**
+```typescript
+// Priority: CRITICAL
+// Complexity: Medium
+
+Features:
+- Product categorization (hierarchical)
+- SKU management
+- Product homologation workflow
+- Supplier product linking
+- Technical specifications
+- NCM code validation
+- Regulatory compliance flags (Anvisa, Ibama)
+- ElasticSearch integration for search
+
+Endpoints:
+POST   /api/products
+GET    /api/products
+GET    /api/products/:id
+PUT    /api/products/:id
+DELETE /api/products/:id
+POST   /api/products/:id/homologate
+GET    /api/products/search?q=:query
+GET    /api/categories
+POST   /api/categories
+```
+
+#### **Module 4: Requisitions**
+```typescript
+// Priority: CRITICAL
+// Complexity: Medium
+
+Features:
+- Create purchase requisitions
+- Multi-item support
+- Approval workflow (by value threshold)
+- Integration with Protheus (SC generation)
+- Priority levels (LOW, NORMAL, HIGH, URGENT)
+- Cost center tracking
+- Status tracking
+
+Endpoints:
+POST   /api/requisitions
+GET    /api/requisitions
+GET    /api/requisitions/:id
+PUT    /api/requisitions/:id
+DELETE /api/requisitions/:id
+POST   /api/requisitions/:id/submit
+POST   /api/requisitions/:id/approve
+POST   /api/requisitions/:id/reject
+GET    /api/requisitions/:id/approvals
+```
+
+#### **Module 5: RFCI & Quotations (CORE)**
+```typescript
+// Priority: CRITICAL
+// Complexity: Very High
+
+Features:
+- RFCI creation from requisitions
+- Multi-supplier selection
+- Automatic notification to suppliers
+- Quotation submission portal (supplier view)
+- Comparative map generation
+- Pricing analysis
+- Deadline management
+- Document attachments
+
+Endpoints:
+POST   /api/rfcis
+GET    /api/rfcis
+GET    /api/rfcis/:id
+PUT    /api/rfcis/:id
+POST   /api/rfcis/:id/send
+POST   /api/rfcis/:id/close
+GET    /api/rfcis/:id/quotations
+POST   /api/quotations
+GET    /api/quotations/:id
+PUT    /api/quotations/:id
+POST   /api/quotations/:id/submit
+GET    /api/rfcis/:id/comparative-map
+POST   /api/rfcis/:id/award
+```
+
+#### **Module 6: Basic Integrations**
+```typescript
+// Priority: CRITICAL
+// Complexity: High
+
+Integrations to implement:
+1. Protheus REST API
+   - Supplier sync
+   - SC (Purchase Request) creation
+   - Product sync
+
+2. Fluig REST API
+   - Workflow triggers
+   - Approval process
+   - Document management
+
+3. Receita Federal API
+   - CNPJ validation
+   - Company data auto-fill
+
+Create abstraction layers:
+- /src/integrations/protheus/
+- /src/integrations/fluig/
+- /src/integrations/receita-federal/
+```
+
+---
+
+### **Phase 2: Expansion (Weeks 9-12)**
+
+#### **Module 7: Negotiation**
+```typescript
+// Priority: High
+// Complexity: Medium
+
+Features:
+- Structured negotiation rounds
+- Counter-proposals
+- Chat/messaging system
+- Negotiation history
+- Agreement registration
+
+Endpoints:
+POST   /api/negotiations
+GET    /api/negotiations/:id
+POST   /api/negotiations/:id/messages
+POST   /api/negotiations/:id/counter-offer
+POST   /api/negotiations/:id/accept
+POST   /api/negotiations/:id/reject
+```
+
+#### **Module 8: Purchase Orders (PO)**
+```typescript
+// Priority: High
+// Complexity: High
+
+Features:
+- PO generation from awarded quotations
+- National vs Import PO types
+- Protheus integration (PO creation)
+- Supplier confirmation workflow
+- Tracking and status updates
+- Receipt management
+- Quality inspection flow
+
+Endpoints:
+POST   /api/purchase-orders
+GET    /api/purchase-orders
+GET    /api/purchase-orders/:id
+PUT    /api/purchase-orders/:id/status
+POST   /api/purchase-orders/:id/confirm (supplier)
+POST   /api/purchase-orders/:id/receipts
+GET    /api/purchase-orders/:id/tracking
+```
+
+#### **Module 9: Invoice Management**
+```typescript
+// Priority: High
+// Complexity: High
+
+Features:
+- NF-e XML import
+- SEFAZ validation
+- Three-way match (PO x Receipt x Invoice)
+- Divergence handling
+- Approval workflow
+- Integration with Protheus (financial module)
+
+Endpoints:
+POST   /api/invoices
+POST   /api/invoices/import-xml
+GET    /api/invoices/:id
+POST   /api/invoices/:id/validate
+POST   /api/invoices/:id/approve
+POST   /api/invoices/:id/reject
+GET    /api/invoices/:id/three-way-match
+```
+
+#### **Module 10: Analytics & Reports**
+```typescript
+// Priority: Medium
+// Complexity: Medium
+
+Features:
+- Dashboard for buyers
+- Dashboard for suppliers
+- Savings reports
+- Performance metrics
+- Lead time analysis
+- Spend analysis (Pareto)
+- Export to PDF/Excel
+
+Endpoints:
+GET    /api/analytics/dashboard
+GET    /api/analytics/savings
+GET    /api/analytics/performance
+GET    /api/analytics/lead-time
+GET    /api/analytics/spend-analysis
+POST   /api/reports/generate
+GET    /api/reports/:id/download
+```
+
+---
+
+### **Phase 3: Logistics & Intelligence (Weeks 13-16)**
+
+#### **Module 11: Import Process**
+```typescript
+// Priority: Medium
+// Complexity: Very High
+
+Features:
+- Protheus-EIC integration
+- SI (Import Request) generation
+- Customs clearance tracking
+- DI (Import Declaration) management
+- Document management (Invoice, BL, Packing List)
+- Cost calculation (landed cost)
+- International tracking
+
+Endpoints:
+POST   /api/import-processes
+GET    /api/import-processes/:id
+PUT    /api/import-processes/:id
+POST   /api/import-processes/:id/documents
+POST   /api/import-processes/:id/customs-clearance
+GET    /api/import-processes/:id/tracking
+POST   /api/import-processes/:id/calculate-costs
+```
+
+#### **Module 12: Payment Management**
+```typescript
+// Priority: Medium
+// Complexity: High
+
+Features:
+- Payment scheduling
+- Multi-approval workflow
+- Banking API integration
+- Payment methods (TED, PIX, DOC, Wire Transfer)
+- Payment confirmation
+- Receipt management
+- Protheus financial sync
+
+Endpoints:
+POST   /api/payments
+GET    /api/payments
+GET    /api/payments/:id
+POST   /api/payments/:id/approve
+POST   /api/payments/:id/execute
+POST   /api/payments/:id/confirm
+GET    /api/payments/:id/receipt
+```
+
+#### **Module 13: Supplier Evaluation**
+```typescript
+// Priority: Medium
+// Complexity: Medium
+
+Features:
+- Post-PO evaluation forms
+- Multi-criteria scoring (quality, delivery, price, service)
+- Automatic score calculation
+- Supplier ranking
+- Action plans for low performers
+- Badge system (premium suppliers)
+
+Endpoints:
+POST   /api/evaluations
+GET    /api/evaluations/supplier/:supplierId
+PUT    /api/suppliers/:id/score
+GET    /api/suppliers/ranking
+```
+
+---
+
+## 🗄️ DATABASE SCHEMA
+
+**Use the provided Prisma Schema** (already created in previous artifact).
+
+Key models:
+- User (authentication & authorization)
+- Supplier (complete supplier data)
+- SupplierDocument (document management)
+- SupplierEvaluation (performance tracking)
+- Product (catalog)
+- ProductCategory (hierarchical)
+- Requisition (purchase requests)
+- RequisitionItem
+- RFCI (Request for Commercial Information)
+- RFCIItem
+- Quotation (supplier quotes)
+- QuotationItem
+- Negotiation
+- NegotiationMessage
+- PurchaseOrder
+- PurchaseOrderItem
+- Receipt
+- Invoice
+- Payment
+- ImportProcess
+- Approval (generic workflow)
+- AuditLog (compliance)
+
+**Migration Strategy:**
+```bash
+npx prisma migrate dev --name init
+npx prisma generate
+npx prisma db seed (create seed data)
+```
+
+---
+
+## 🔐 SECURITY REQUIREMENTS
+
+### **Authentication & Authorization**
+```typescript
+// Implement JWT with refresh tokens
+// Token expiry: 15 minutes (access), 7 days (refresh)
+// Password policy: min 8 chars, uppercase, lowercase, number, special char
+// MFA: TOTP (Google Authenticator compatible)
+
+// Example middleware
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles('BUYER', 'BUYER_MANAGER')
+async createRFCI(@Request() req, @Body() dto: CreateRFCIDto) {
+  // Implementation
+}
+```
+
+### **Data Protection**
+- Encrypt sensitive data at rest (bank account, PIX keys)
+- HTTPS only (TLS 1.3)
+- CORS configuration (whitelist only)
+- Rate limiting (100 requests/minute per IP)
+- SQL injection prevention (Prisma ORM)
+- XSS prevention (sanitize inputs)
+- CSRF protection
+
+### **Audit Trail**
+```typescript
+// Log all critical operations
+interface AuditLog {
+  entityType: string;
+  entityId: string;
+  action: string; // CREATE, UPDATE, DELETE, APPROVE, etc.
+  userId: string;
+  userEmail: string;
+  oldValue?: any;
+  newValue?: any;
+  ipAddress: string;
+  userAgent: string;
+  timestamp: Date;
+}
+
+// Middleware to auto-log
+@UseInterceptors(AuditInterceptor)
+```
+
+### **LGPD Compliance**
+- User consent management
+- Data export functionality
+- Right to be forgotten (anonymization)
+- Data retention policies
+- Privacy policy acceptance
+
+---
+
+## 🔗 EXTERNAL INTEGRATIONS
+
+### **1. TOTVS Protheus (ERP)**
+```typescript
+// Base configuration
+const proteusConfig = {
+  baseURL: process.env.PROTHEUS_API_URL,
+  auth: {
+    type: 'oauth2',
+    clientId: process.env.PROTHEUS_CLIENT_ID,
+    clientSecret: process.env.PROTHEUS_CLIENT_SECRET,
+  },
+  timeout: 30000,
+};
+
+// Key endpoints to integrate:
+// - POST /api/suppliers (create supplier)
+// - POST /api/purchase-requests (create SC)
+// - POST /api/purchase-orders (create PO)
+// - POST /api/products (sync products)
+// - GET /api/suppliers/:code (get supplier)
+
+// Implement retry logic and circuit breaker
+```
+
+### **2. Protheus-EIC (Import Module)**
+```typescript
+// SOAP Web Service
+// Endpoints:
+// - createSI (Solicitação de Importação)
+// - updateDI (Declaração de Importação)
+// - getTrackingStatus
+// - uploadDocuments
+
+// Use soap npm package or axios for SOAP
+```
+
+### **3. Fluig (BPM)**
+```typescript
+// REST API
+const fluigConfig = {
+  baseURL: process.env.FLUIG_API_URL,
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+};
+
+// Key integrations:
+// - POST /api/workflow/start (initiate approval)
+// - GET /api/workflow/:processId/status
+// - POST /api/ecm/document (upload document)
+// - GET /api/ecm/document/:id
+```
+
+### **4. Receita Federal (CNPJ Validation)**
+```typescript
+// Public API
+// Endpoint: https://www.receitaws.com.br/v1/cnpj/:cnpj
+// No auth required
+// Rate limit: 3 requests/minute
+
+async function validateCNPJ(cnpj: string) {
+  const response = await axios.get(
+    `https://www.receitaws.com.br/v1/cnpj/${cnpj}`
+  );
+  
+  return {
+    valid: response.data.status === 'OK',
+    companyName: response.data.nome,
+    address: response.data.logradouro,
+    // ... map all fields
+  };
+}
+```
+
+### **5. SEFAZ (NF-e Validation)**
+```typescript
+// SOAP Web Service (varies by state)
+// Example for SP:
+// https://nfe.fazenda.sp.gov.br/ws/nfestatusservico4.asmx
+
+// Use xml2js for parsing XML
+// Implement certificate-based authentication
+```
+
+---
+
+## 📁 PROJECT STRUCTURE
+
+```
+e-proc/
+├── prisma/
+│   ├── schema.prisma
+│   ├── migrations/
+│   └── seed.ts
+├── src/
+│   ├── main.ts
+│   ├── app.module.ts
+│   ├── auth/
+│   │   ├── auth.module.ts
+│   │   ├── auth.service.ts
+│   │   ├── auth.controller.ts
+│   │   ├── strategies/
+│   │   │   ├── jwt.strategy.ts
+│   │   │   └── local.strategy.ts
+│   │   ├── guards/
+│   │   │   ├── jwt-auth.guard.ts
+│   │   │   └── roles.guard.ts
+│   │   └── decorators/
+│   │       └── roles.decorator.ts
+│   ├── users/
+│   │   ├── users.module.ts
+│   │   ├── users.service.ts
+│   │   ├── users.controller.ts
+│   │   └── dto/
+│   ├── suppliers/
+│   │   ├── suppliers.module.ts
+│   │   ├── suppliers.service.ts
+│   │   ├── suppliers.controller.ts
+│   │   └── dto/
+│   ├── products/
+│   ├── requisitions/
+│   ├── rfcis/
+│   ├── quotations/
+│   ├── negotiations/
+│   ├── purchase-orders/
+│   ├── invoices/
+│   ├── payments/
+│   ├── import-processes/
+│   ├── integrations/
+│   │   ├── protheus/
+│   │   │   ├── protheus.service.ts
+│   │   │   └── protheus.module.ts
+│   │   ├── fluig/
+│   │   ├── receita-federal/
+│   │   └── sefaz/
+│   ├── common/
+│   │   ├── decorators/
+│   │   ├── filters/
+│   │   ├── guards/
+│   │   ├── interceptors/
+│   │   │   └── audit.interceptor.ts
+│   │   ├── pipes/
+│   │   └── utils/
+│   ├── config/
+│   │   ├── database.config.ts
+│   │   ├── redis.config.ts
+│   │   └── rabbitmq.config.ts
+│   └── notifications/
+│       ├── email/
+│       ├── sms/
+│       └── push/
+├── client/ (React frontend)
+│   ├── src/
+│   │   ├── App.tsx
+│   │   ├── main.tsx
+│   │   ├── components/
+│   │   │   ├── ui/ (shadcn)
+│   │   │   ├── layouts/
+│   │   │   └── features/
+│   │   ├── pages/
+│   │   │   ├── dashboard/
+│   │   │   ├── suppliers/
+│   │   │   ├── rfcis/
+│   │   │   ├── quotations/
+│   │   │   └── purchase-orders/
+│   │   ├── hooks/
+│   │   ├── services/
+│   │   │   └── api.ts
+│   │   ├── stores/
+│   │   ├── utils/
+│   │   └── types/
+│   ├── package.json
+│   └── vite.config.ts
+├── .env
+├── .env.example
+├── package.json
+├── tsconfig.json
+├── nest-cli.json
+└── README.md
+```
+
+---
+
+## 🚀 GETTING STARTED ON REPLIT
+
+### **Step 1: Initial Setup**
+```bash
+# Create new Replit Node.js project
+# Install dependencies
+
+npm install -g pnpm
+pnpm init
+
+# Backend
+pnpm add @nestjs/common @nestjs/core @nestjs/platform-express
+pnpm add @nestjs/config @nestjs/jwt @nestjs/passport
+pnpm add @prisma/client prisma
+pnpm add passport passport-jwt passport-local
+pnpm add bcrypt class-validator class-transformer
+pnpm add redis ioredis
+pnpm add axios
+
+# Dev dependencies
+pnpm add -D @nestjs/cli typescript @types/node
+pnpm add -D @types/passport-jwt @types/bcrypt
+
+# Frontend (in /client)
+cd client
+pnpm create vite@latest . --template react-ts
+pnpm add @tanstack/react-query axios
+pnpm add react-router-dom
+pnpm add zustand
+pnpm add react-hook-form zod @hookform/resolvers
+pnpm add tailwindcss postcss autoprefixer
+pnpm add shadcn-ui
+```
+
+### **Step 2: Environment Variables**
+```env
+# .env
+NODE_ENV=development
+PORT=3000
+
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/eproc"
+MONGODB_URL="mongodb://localhost:27017/eproc"
+
+# Redis
+REDIS_HOST=localhost
+REDIS_PORT=6379
+
+# JWT
+JWT_SECRET=your-super-secret-key-change-in-production
+JWT_EXPIRES_IN=15m
+JWT_REFRESH_SECRET=your-refresh-secret
+JWT_REFRESH_EXPIRES_IN=7d
+
+# Protheus
+PROTHEUS_API_URL=https://protheus-api.anastacio.com
+PROTHEUS_CLIENT_ID=your-client-id
+PROTHEUS_CLIENT_SECRET=your-client-secret
+
+# Fluig
+FLUIG_API_URL=https://fluig.anastacio.com/api
+FLUIG_TOKEN=your-fluig-token
+
+# Email
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=notifications@anastacio.com
+SMTP_PASS=your-password
+
+# AWS S3 (for file storage)
+AWS_REGION=us-east-1
+AWS_ACCESS_KEY_ID=your-access-key
+AWS_SECRET_ACCESS_KEY=your-secret-key
+AWS_S3_BUCKET=eproc-documents
+```
+
+### **Step 3: Database Setup**
+```bash
+# Initialize Prisma
+npx prisma init
+
+# Copy the Prisma schema (provided in artifacts)
+# Run migrations
+npx prisma migrate dev --name init
+
+# Generate Prisma Client
+npx prisma generate
+
+# Seed database
+npx prisma db seed
+```
+
+### **Step 4: Run Development**
+```bash
+# Backend
+pnpm run start:dev
+
+# Frontend (separate terminal)
+cd client
+pnpm run dev
+```
+
+---
+
+## 📋 DEVELOPMENT CHECKLIST
+
+### **Week 1-2: Foundation**
+- [ ] Setup Replit project
+- [ ] Initialize NestJS backend
+- [ ] Initialize React frontend
+- [ ] Setup Prisma with PostgreSQL
+- [ ] Implement authentication (JWT)
+- [ ] Create user management module
+- [ ] Setup RBAC (role-based access control)
+- [ ] Create basic UI shell (dashboard layout)
+
+### **Week 3-4: Supplier Management**
+- [ ] Supplier registration portal
+- [ ] Document upload (S3 integration)
+- [ ] CNPJ validation (Receita Federal API)
+- [ ] Fluig workflow integration
+- [ ] GPC approval interface
+- [ ] Supplier profile page
+
+### **Week 5-6: Product Catalog & Requisitions**
+- [ ] Product CRUD
+- [ ] Category management (hierarchical)
+- [ ] Product homologation flow
+- [ ] Requisition creation
+- [ ] Approval workflow
+- [ ] Protheus SC integration
+
+### **Week 7-8: RFCI & Quotations (CORE)**
+- [ ] RFCI creation interface
+- [ ] Supplier selection
+- [ ] Email notifications
+- [ ] Supplier quotation portal
+- [ ] Comparative map generation
+- [ ] Award functionality
+
+### **Week 9-10: Negotiation & PO**
+- [ ] Negotiation module
+- [ ] Counter-proposal flow
+- [ ] PO generation
+- [ ] Protheus PO integration
+- [ ] Supplier confirmation
+
+### **Week 11-12: Invoice & Analytics**
+- [ ] NF-e XML import
+- [ ] SEFAZ validation
+- [ ] Three-way match
+- [ ] Basic analytics dashboard
+- [ ] Reports generation
+
+### **Week 13-14: Import Process**
+- [ ] Protheus-EIC integration
+- [ ] SI generation
+- [ ] Document management
+- [ ] Customs tracking
+
+### **Week 15-16: Payments & Final Polish**
+- [ ] Payment module
+- [ ] Banking API integration
+- [ ] Supplier evaluation
+- [ ] Performance optimization
+- [ ] Bug fixes
+- [ ] Documentation
+- [ ] User training materials
+
+---
+
+## 🧪 TESTING STRATEGY
+
+### **Unit Tests**
+```typescript
+// Use Jest
+// Target: 80% code coverage
+
+describe('SupplierService', () => {
+  it('should validate CNPJ correctly', async () => {
+    const result = await service.validateCNPJ('12.345.678/0001-90');
+    expect(result.valid).toBe(true);
+  });
+});
+```
+
+### **Integration Tests**
+```typescript
+// Test API endpoints
+// Test database operations
+// Test external integrations (mocked)
+
+describe('RFCI E2E', () => {
+  it('should create RFCI and send to suppliers', async () => {
+    const rfci = await request(app.getHttpServer())
+      .post('/api/rfcis')
+      .send(createRFCIDto)
+      .expect(201);
+    
+    // Assert notifications sent
+    // Assert suppliers notified
+  });
+});
+```
+
+### **E2E Tests**
+```typescript
+// Use Playwright or Cypress
+// Test complete user flows
+// Test buyer journey
+// Test supplier journey
+```
+
+---
+
+## 📊 PERFORMANCE TARGETS
+
+- API response time: < 200ms (p95)
+- Page load time: < 2s
+- Database queries: < 50ms (p95)
+- Concurrent users: 500+
+- File uploads: up to 50MB
+- Search results: < 500ms
+
+**Optimization techniques:**
+- Database indexing (see Prisma schema)
+- Redis caching (sessions, frequent queries)
+- Query optimization (Prisma select, include)
+- Pagination (limit, offset)
+- Lazy loading (frontend)
+- Image optimization (WebP, compression)
+- CDN for static assets
+
+---
+
+## 🔍 MONITORING & OBSERVABILITY
+
+### **Logging**
+```typescript
+// Use Winston or Pino
+import { Logger } from '@nestjs/common';
+
+private readonly logger = new Logger(SupplierService.name);
+
+this.logger.log('Supplier created', { supplierId: supplier.id });
+this.logger.error('Failed to validate CNPJ', { cnpj, error });
+```
+
+### **Metrics**
+- Request count by endpoint
+- Response time distribution
+- Error rate
+- Active users
+- Database connection pool
+- Cache hit rate
+
+### **Health Checks**
+```typescript
+@Get('/health')
+healthCheck() {
+  return {
+    status: 'ok',
+    database: await this.checkDatabase(),
+    redis: await this.checkRedis(),
+    protheus: await this.checkProtheus(),
+  };
+}
+```
+
+---
+
+## 📚 ESSENTIAL DOCUMENTATION TO INCLUDE
+
+### **1. Technical Documentation**
+- ✅ PRD (Product Requirements Document) - Already created
+- ✅ Prisma Schema - Already created
+- ✅ Flowcharts (Mermaid) - Already created
+- ✅ Architecture Diagram - Already created
+- ✅ Integration Diagram - Already created
+- ✅ User Flows - Already created
+
+### **2. API Documentation**
+- Generate with Swagger/OpenAPI
+- Include request/response examples
+- Authentication flows
+- Error codes
+
+### **3. Developer Guide**
+- Setup instructions
+- Environment variables
+- Database schema
+- Code style guide
+- Git workflow
+
+### **4. User Documentation**
+- User manuals (buyer, supplier, GPC)
+- Video tutorials
+- FAQ
+- Troubleshooting guide
+
+---
+
+## 🎯 SUCCESS CRITERIA
+
+### **MVP (Week 8)**
+- [ ] User can register and login
+- [ ] Supplier can register and be approved
+- [ ] Products can be cataloged and homologated
+- [ ] Requisitions can be created and approved
+- [ ] RFCIs can be sent to suppliers
+- [ ] Suppliers can submit quotations
+- [ ] Comparative maps are generated
+- [ ] POs are created in Protheus
+
+### **Final Delivery (Week 16)**
+- [ ] All modules functional
+- [ ] All integrations working
+- [ ] 90% test coverage
+- [ ] Performance targets met
+- [ ] Documentation complete
+- [ ] 10 users trained
+- [ ] Production deployment ready
+
+---
+
+## ⚠️ CRITICAL NOTES
+
+1. **Never store sensitive data unencrypted** (passwords, API keys, bank info)
+2. **Always validate input** (DTOs, Zod schemas)
+3. **Always log audit trail** for compliance
+4. **Never expose internal errors** to users
+5. **Always use transactions** for multi-step operations
+6. **Test integrations thoroughly** before production
+7. **Implement rate limiting** to prevent abuse
+8. **Use environment variables** for all config
+9. **Never commit .env** to git
+10. **Keep dependencies updated** (security patches)
+
+---
+
+## 🤝 COMMUNICATION PROTOCOL
+
+### **Daily Updates**
+- Progress report (what was done)
+- Blockers (what's blocking)
+- Next steps (what's next)
+
+### **Weekly Demo**
+- Showcase working features
+- Get feedback
+- Adjust priorities
+
+### **Questions?**
+- Create detailed issue
+- Provide context
+- Include error messages/screenshots
+- Suggest possible solutions
+
+---
+
+## 🚦 GO-LIVE CHECKLIST
+
+- [ ] All critical bugs fixed
+- [ ] Performance tested (load testing)
+- [ ] Security audit passed
+- [ ] Backups configured
+- [ ] Monitoring enabled
+- [ ] Documentation complete
+- [ ] Users trained
+- [ ] Rollback plan ready
+- [ ] Support team briefed
+- [ ] Go/No-go decision made
+
+---
+
+## 📞 SUPPORT & RESOURCES
+
+- **Prisma Docs:** https://www.prisma.io/docs
+- **NestJS Docs:** https://docs.nestjs.com
+- **React Docs:** https://react.dev
+- **Tailwind CSS:** https://tailwindcss.com
+- **shadcn/ui:** https://ui.shadcn.com
+
+---
+
+**Start Date:** [To be defined]  
+**Expected Completion:** 16 weeks from start  
+**Budget:** As per proposal  
+
+**Let's build something amazing! 🚀**
+
+---
+
+_This prompt is comprehensive but flexible. Adapt priorities based on client feedback and technical discoveries during development. Focus on delivering value incrementally and maintaining high code quality throughout._

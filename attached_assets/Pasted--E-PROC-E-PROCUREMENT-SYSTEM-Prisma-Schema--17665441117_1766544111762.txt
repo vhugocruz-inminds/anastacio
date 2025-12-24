@@ -1,0 +1,1378 @@
+// ============================================
+// E-PROC - E-PROCUREMENT SYSTEM
+// Prisma Schema v1.0
+// Database: PostgreSQL
+// ============================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum UserRole {
+  ADMIN
+  BUYER
+  BUYER_MANAGER
+  GPC_ANALYST
+  GPC_MANAGER
+  LOGISTICS
+  FINANCIAL
+  REQUESTER
+  SUPPLIER
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+  BLOCKED
+}
+
+enum SupplierStatus {
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+  SUSPENDED
+  BLOCKED
+  INACTIVE
+}
+
+enum SupplierType {
+  NATIONAL
+  INTERNATIONAL
+}
+
+enum DocumentType {
+  CNPJ
+  CERTIDAO_NEGATIVA_FEDERAL
+  CERTIDAO_NEGATIVA_ESTADUAL
+  CERTIDAO_NEGATIVA_MUNICIPAL
+  CERTIDAO_FGTS
+  CERTIDAO_INSS
+  CERTIDAO_TRABALHISTA
+  INSCRICAO_ESTADUAL
+  CONTRATO_SOCIAL
+  BALANCO_PATRIMONIAL
+  LICENCA_AMBIENTAL
+  CERTIFICADO_QUALIDADE
+  INVOICE
+  PACKING_LIST
+  BILL_OF_LADING
+  CERTIFICADO_ORIGEM
+  OUTROS
+}
+
+enum DocumentStatus {
+  PENDING_VALIDATION
+  VALID
+  EXPIRED
+  REJECTED
+}
+
+enum ProductStatus {
+  PENDING_HOMOLOGATION
+  HOMOLOGATED
+  REJECTED
+  INACTIVE
+}
+
+enum RequisitionStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+  CANCELLED
+  CONVERTED_TO_RFCI
+}
+
+enum RequisitionPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum RFCIStatus {
+  DRAFT
+  SENT
+  IN_QUOTATION
+  QUOTATION_CLOSED
+  IN_NEGOTIATION
+  AWARDED
+  CANCELLED
+}
+
+enum RFCIType {
+  SIMPLE_QUOTATION
+  TECHNICAL_QUOTATION
+  SERVICE_QUOTATION
+  IMPORT_QUOTATION
+}
+
+enum QuotationStatus {
+  PENDING
+  SUBMITTED
+  IN_NEGOTIATION
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
+
+enum NegotiationStatus {
+  OPEN
+  WAITING_SUPPLIER
+  WAITING_BUYER
+  ACCEPTED
+  REJECTED
+  CLOSED
+}
+
+enum PurchaseOrderStatus {
+  DRAFT
+  SENT_TO_SUPPLIER
+  CONFIRMED
+  IN_PRODUCTION
+  DISPATCHED
+  IN_TRANSIT
+  PARTIALLY_RECEIVED
+  RECEIVED
+  CANCELLED
+  CLOSED
+}
+
+enum PurchaseOrderType {
+  NATIONAL
+  IMPORT
+}
+
+enum InvoiceStatus {
+  PENDING
+  VALIDATED
+  DIVERGENCE
+  APPROVED
+  REJECTED
+  PAID
+}
+
+enum PaymentStatus {
+  PENDING_APPROVAL
+  APPROVED
+  SCHEDULED
+  PAID
+  CANCELLED
+}
+
+enum PaymentMethod {
+  BANK_TRANSFER
+  BOLETO
+  CHECK
+  CREDIT_CARD
+  WIRE_TRANSFER
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ImportProcessStatus {
+  PENDING
+  IN_PROGRESS
+  CUSTOMS_CLEARANCE
+  COMPLETED
+  CANCELLED
+}
+
+enum Incoterm {
+  EXW
+  FCA
+  CPT
+  CIP
+  DAP
+  DPU
+  DDP
+  FAS
+  FOB
+  CFR
+  CIF
+}
+
+// ============================================
+// CORE ENTITIES - USER MANAGEMENT
+// ============================================
+
+model User {
+  id                String         @id @default(uuid())
+  email             String         @unique
+  password          String
+  name              String
+  role              UserRole
+  status            UserStatus     @default(PENDING)
+  phone             String?
+  department        String?
+  costCenter        String?
+  approvalLimit     Decimal?       @db.Decimal(15, 2)
+  supplierId        String?        @unique
+  
+  // MFA
+  mfaEnabled        Boolean        @default(false)
+  mfaSecret         String?
+  
+  // Preferences
+  preferences       Json?
+  
+  // Timestamps
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  lastLoginAt       DateTime?
+  
+  // Relations
+  supplier          Supplier?      @relation(fields: [supplierId], references: [id])
+  requisitions      Requisition[]
+  rfcisCreated      RFCI[]         @relation("RFCICreatedBy")
+  quotations        Quotation[]
+  negotiations      Negotiation[]  @relation("NegotiationBuyer")
+  purchaseOrders    PurchaseOrder[] @relation("POCreatedBy")
+  approvals         Approval[]
+  auditLogs         AuditLog[]
+  
+  @@index([email])
+  @@index([role])
+  @@index([status])
+  @@map("users")
+}
+
+// ============================================
+// SUPPLIER MANAGEMENT
+// ============================================
+
+model Supplier {
+  id                    String              @id @default(uuid())
+  
+  // Basic Info
+  legalName             String
+  tradeName             String
+  cnpj                  String              @unique
+  stateRegistration     String?
+  municipalRegistration String?
+  type                  SupplierType
+  status                SupplierStatus      @default(PENDING_APPROVAL)
+  
+  // Contact
+  email                 String
+  phone                 String
+  website               String?
+  
+  // Address
+  addressStreet         String
+  addressNumber         String
+  addressComplement     String?
+  addressNeighborhood   String
+  addressCity           String
+  addressState          String
+  addressZipCode        String
+  addressCountry        String              @default("BR")
+  
+  // Financial
+  bankName              String?
+  bankBranch            String?
+  bankAccount           String?
+  bankAccountType       String?
+  pixKey                String?
+  
+  // Business
+  mainActivity          String?
+  annualRevenue         Decimal?            @db.Decimal(15, 2)
+  employeeCount         Int?
+  foundedYear           Int?
+  
+  // Homologation
+  homologatedAt         DateTime?
+  homologatedBy         String?
+  rejectedAt            DateTime?
+  rejectedBy            String?
+  rejectionReason       String?
+  
+  // Performance Score
+  performanceScore      Decimal?            @db.Decimal(5, 2)
+  qualityScore          Decimal?            @db.Decimal(5, 2)
+  deliveryScore         Decimal?            @db.Decimal(5, 2)
+  priceScore            Decimal?            @db.Decimal(5, 2)
+  serviceScore          Decimal?            @db.Decimal(5, 2)
+  
+  // Metadata
+  notes                 String?
+  tags                  String[]
+  
+  // Integration
+  proteusCode           String?             @unique
+  
+  // Timestamps
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+  
+  // Relations
+  user                  User?
+  contacts              SupplierContact[]
+  documents             SupplierDocument[]
+  products              Product[]
+  certifications        SupplierCertification[]
+  evaluations           SupplierEvaluation[]
+  quotations            Quotation[]
+  purchaseOrders        PurchaseOrder[]
+  invoices              Invoice[]
+  
+  @@index([cnpj])
+  @@index([status])
+  @@index([type])
+  @@map("suppliers")
+}
+
+model SupplierContact {
+  id          String    @id @default(uuid())
+  supplierId  String
+  name        String
+  position    String?
+  email       String
+  phone       String
+  mobile      String?
+  isPrimary   Boolean   @default(false)
+  isActive    Boolean   @default(true)
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  supplier    Supplier  @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  
+  @@index([supplierId])
+  @@map("supplier_contacts")
+}
+
+model SupplierDocument {
+  id              String          @id @default(uuid())
+  supplierId      String
+  type            DocumentType
+  documentNumber  String?
+  fileName        String
+  fileUrl         String
+  fileSize        Int
+  mimeType        String
+  status          DocumentStatus  @default(PENDING_VALIDATION)
+  
+  // Validation
+  validatedAt     DateTime?
+  validatedBy     String?
+  expiresAt       DateTime?
+  
+  // Metadata
+  notes           String?
+  
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  supplier        Supplier        @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  
+  @@index([supplierId])
+  @@index([type])
+  @@index([status])
+  @@map("supplier_documents")
+}
+
+model SupplierCertification {
+  id              String    @id @default(uuid())
+  supplierId      String
+  name            String
+  certifyingBody  String
+  certificateNumber String?
+  issuedAt        DateTime
+  expiresAt       DateTime?
+  fileUrl         String?
+  isActive        Boolean   @default(true)
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  supplier        Supplier  @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  
+  @@index([supplierId])
+  @@map("supplier_certifications")
+}
+
+model SupplierEvaluation {
+  id              String    @id @default(uuid())
+  supplierId      String
+  purchaseOrderId String?
+  
+  // Scores (0-5)
+  qualityScore    Decimal   @db.Decimal(3, 2)
+  deliveryScore   Decimal   @db.Decimal(3, 2)
+  priceScore      Decimal   @db.Decimal(3, 2)
+  serviceScore    Decimal   @db.Decimal(3, 2)
+  overallScore    Decimal   @db.Decimal(3, 2)
+  
+  // Comments
+  strengths       String?
+  weaknesses      String?
+  comments        String?
+  
+  // Evaluator
+  evaluatedBy     String
+  evaluatedAt     DateTime  @default(now())
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  supplier        Supplier        @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  purchaseOrder   PurchaseOrder?  @relation(fields: [purchaseOrderId], references: [id])
+  
+  @@index([supplierId])
+  @@index([purchaseOrderId])
+  @@map("supplier_evaluations")
+}
+
+// ============================================
+// PRODUCT CATALOG
+// ============================================
+
+model ProductCategory {
+  id            String    @id @default(uuid())
+  name          String
+  code          String    @unique
+  description   String?
+  parentId      String?
+  
+  // Hierarchy
+  level         Int       @default(1)
+  path          String?
+  
+  isActive      Boolean   @default(true)
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  parent        ProductCategory?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children      ProductCategory[] @relation("CategoryHierarchy")
+  products      Product[]
+  
+  @@index([code])
+  @@index([parentId])
+  @@map("product_categories")
+}
+
+model Product {
+  id                  String          @id @default(uuid())
+  
+  // Basic Info
+  sku                 String?         @unique
+  name                String
+  description         String?
+  categoryId          String
+  
+  // Supplier
+  supplierId          String
+  manufacturerCode    String?
+  manufacturerName    String?
+  
+  // Technical
+  specification       String?
+  technicalSheet      String?
+  unitOfMeasure       String
+  conversionFactor    Decimal?        @db.Decimal(10, 4)
+  
+  // Homologation
+  status              ProductStatus   @default(PENDING_HOMOLOGATION)
+  homologatedAt       DateTime?
+  homologatedBy       String?
+  
+  // Compliance
+  requiresAnvisa      Boolean         @default(false)
+  requiresIbama       Boolean         @default(false)
+  isHazardous         Boolean         @default(false)
+  ncmCode             String?
+  
+  // Pricing
+  lastPrice           Decimal?        @db.Decimal(15, 4)
+  averagePrice        Decimal?        @db.Decimal(15, 4)
+  
+  // Metadata
+  tags                String[]
+  
+  // Integration
+  proteusCode         String?
+  
+  isActive            Boolean         @default(true)
+  
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  
+  category            ProductCategory @relation(fields: [categoryId], references: [id])
+  supplier            Supplier        @relation(fields: [supplierId], references: [id])
+  requisitionItems    RequisitionItem[]
+  rfciItems           RFCIItem[]
+  quotationItems      QuotationItem[]
+  purchaseOrderItems  PurchaseOrderItem[]
+  
+  @@index([sku])
+  @@index([categoryId])
+  @@index([supplierId])
+  @@index([status])
+  @@map("products")
+}
+
+// ============================================
+// REQUISITION MODULE
+// ============================================
+
+model Requisition {
+  id                String              @id @default(uuid())
+  requestNumber     String              @unique
+  
+  // Requester Info
+  requesterId       String
+  department        String
+  costCenter        String
+  
+  // Details
+  title             String
+  description       String?
+  justification     String?
+  priority          RequisitionPriority @default(NORMAL)
+  status            RequisitionStatus   @default(DRAFT)
+  
+  // Dates
+  requiredDate      DateTime?
+  
+  // Approval
+  approvalRequired  Boolean             @default(true)
+  approvedAt        DateTime?
+  approvedBy        String?
+  rejectedAt        DateTime?
+  rejectedBy        String?
+  rejectionReason   String?
+  
+  // Integration
+  proteusSCCode     String?
+  
+  // Metadata
+  totalEstimated    Decimal?            @db.Decimal(15, 2)
+  
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  
+  requester         User                @relation(fields: [requesterId], references: [id])
+  items             RequisitionItem[]
+  rfcis             RFCI[]
+  approvals         Approval[]          @relation("RequisitionApproval")
+  
+  @@index([requestNumber])
+  @@index([requesterId])
+  @@index([status])
+  @@index([priority])
+  @@map("requisitions")
+}
+
+model RequisitionItem {
+  id              String        @id @default(uuid())
+  requisitionId   String
+  productId       String?
+  
+  // Item Details
+  description     String
+  specification   String?
+  quantity        Decimal       @db.Decimal(15, 4)
+  unitOfMeasure   String
+  estimatedPrice  Decimal?      @db.Decimal(15, 4)
+  totalEstimated  Decimal?      @db.Decimal(15, 2)
+  
+  // Metadata
+  notes           String?
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  requisition     Requisition   @relation(fields: [requisitionId], references: [id], onDelete: Cascade)
+  product         Product?      @relation(fields: [productId], references: [id])
+  
+  @@index([requisitionId])
+  @@index([productId])
+  @@map("requisition_items")
+}
+
+// ============================================
+// RFCI (REQUEST FOR COMMERCIAL INFO) MODULE
+// ============================================
+
+model RFCI {
+  id                String        @id @default(uuid())
+  rfciNumber        String        @unique
+  
+  // Basic Info
+  title             String
+  description       String?
+  type              RFCIType      @default(SIMPLE_QUOTATION)
+  status            RFCIStatus    @default(DRAFT)
+  
+  // Source
+  requisitionId     String?
+  proteusSCCode     String?
+  proteusSICode     String?
+  
+  // Requester
+  createdBy         String
+  department        String?
+  costCenter        String?
+  
+  // Dates
+  responseDeadline  DateTime
+  deliveryDate      DateTime?
+  
+  // Suppliers
+  supplierIds       String[]
+  
+  // Terms
+  paymentTerms      String?
+  deliveryTerms     String?
+  incoterm          Incoterm?
+  shippingAddress   String?
+  
+  // Attachments
+  attachments       String[]
+  
+  // Award
+  awardedAt         DateTime?
+  awardedTo         String?
+  awardedBy         String?
+  
+  // Metadata
+  totalEstimated    Decimal?      @db.Decimal(15, 2)
+  notes             String?
+  
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  
+  requisition       Requisition?  @relation(fields: [requisitionId], references: [id])
+  creator           User          @relation("RFCICreatedBy", fields: [createdBy], references: [id])
+  items             RFCIItem[]
+  quotations        Quotation[]
+  negotiations      Negotiation[]
+  purchaseOrders    PurchaseOrder[]
+  
+  @@index([rfciNumber])
+  @@index([status])
+  @@index([createdBy])
+  @@index([requisitionId])
+  @@map("rfcis")
+}
+
+model RFCIItem {
+  id                String      @id @default(uuid())
+  rfciId            String
+  productId         String?
+  
+  // Item Details
+  itemNumber        Int
+  description       String
+  specification     String?
+  quantity          Decimal     @db.Decimal(15, 4)
+  unitOfMeasure     String
+  
+  // Technical Requirements
+  technicalSpec     String?
+  qualitySpec       String?
+  
+  // Reference Price
+  referencePrice    Decimal?    @db.Decimal(15, 4)
+  
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  rfci              RFCI        @relation(fields: [rfciId], references: [id], onDelete: Cascade)
+  product           Product?    @relation(fields: [productId], references: [id])
+  quotationItems    QuotationItem[]
+  
+  @@index([rfciId])
+  @@index([productId])
+  @@map("rfci_items")
+}
+
+// ============================================
+// QUOTATION MODULE
+// ============================================
+
+model Quotation {
+  id                  String            @id @default(uuid())
+  quotationNumber     String            @unique
+  
+  // RFCI Reference
+  rfciId              String
+  supplierId          String
+  
+  // Status
+  status              QuotationStatus   @default(PENDING)
+  
+  // Submission
+  submittedAt         DateTime?
+  submittedBy         String?
+  
+  // Commercial Terms
+  paymentTerms        String?
+  deliveryTime        Int?              // days
+  deliveryTerms       String?
+  incoterm            Incoterm?
+  
+  // Pricing
+  subtotal            Decimal           @db.Decimal(15, 2)
+  discountPercent     Decimal?          @db.Decimal(5, 2)
+  discountAmount      Decimal?          @db.Decimal(15, 2)
+  shippingCost        Decimal?          @db.Decimal(15, 2)
+  taxAmount           Decimal?          @db.Decimal(15, 2)
+  totalAmount         Decimal           @db.Decimal(15, 2)
+  currency            String            @default("BRL")
+  
+  // Validity
+  validUntil          DateTime
+  
+  // Documents
+  attachments         String[]
+  
+  // Notes
+  observations        String?
+  internalNotes       String?
+  
+  // Award
+  isAwarded           Boolean           @default(false)
+  awardedAt           DateTime?
+  
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  
+  rfci                RFCI              @relation(fields: [rfciId], references: [id])
+  supplier            Supplier          @relation(fields: [supplierId], references: [id])
+  submitter           User?             @relation(fields: [submittedBy], references: [id])
+  items               QuotationItem[]
+  negotiations        Negotiation[]
+  purchaseOrders      PurchaseOrder[]
+  
+  @@index([rfciId])
+  @@index([supplierId])
+  @@index([status])
+  @@map("quotations")
+}
+
+model QuotationItem {
+  id                String      @id @default(uuid())
+  quotationId       String
+  rfciItemId        String
+  productId         String?
+  
+  // Item Details
+  itemNumber        Int
+  description       String
+  quantity          Decimal     @db.Decimal(15, 4)
+  unitOfMeasure     String
+  
+  // Pricing
+  unitPrice         Decimal     @db.Decimal(15, 4)
+  discountPercent   Decimal?    @db.Decimal(5, 2)
+  discountAmount    Decimal?    @db.Decimal(15, 4)
+  netUnitPrice      Decimal     @db.Decimal(15, 4)
+  totalPrice        Decimal     @db.Decimal(15, 2)
+  
+  // Technical
+  manufacturerCode  String?
+  manufacturerName  String?
+  leadTime          Int?        // days
+  
+  // Compliance
+  hasDatasheet      Boolean     @default(false)
+  hasCertificate    Boolean     @default(false)
+  
+  // Notes
+  notes             String?
+  
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  quotation         Quotation   @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  rfciItem          RFCIItem    @relation(fields: [rfciItemId], references: [id])
+  product           Product?    @relation(fields: [productId], references: [id])
+  
+  @@index([quotationId])
+  @@index([rfciItemId])
+  @@map("quotation_items")
+}
+
+// ============================================
+// NEGOTIATION MODULE
+// ============================================
+
+model Negotiation {
+  id              String              @id @default(uuid())
+  rfciId          String
+  quotationId     String
+  
+  // Parties
+  buyerId         String
+  supplierId      String
+  
+  // Status
+  status          NegotiationStatus   @default(OPEN)
+  round           Int                 @default(1)
+  
+  // Current Proposal
+  currentPrice    Decimal             @db.Decimal(15, 2)
+  proposedPrice   Decimal?            @db.Decimal(15, 2)
+  
+  // Terms
+  proposedTerms   Json?
+  
+  // Resolution
+  acceptedAt      DateTime?
+  rejectedAt      DateTime?
+  closedAt        DateTime?
+  
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  
+  rfci            RFCI                @relation(fields: [rfciId], references: [id])
+  quotation       Quotation           @relation(fields: [quotationId], references: [id])
+  buyer           User                @relation("NegotiationBuyer", fields: [buyerId], references: [id])
+  messages        NegotiationMessage[]
+  
+  @@index([rfciId])
+  @@index([quotationId])
+  @@index([status])
+  @@map("negotiations")
+}
+
+model NegotiationMessage {
+  id              String        @id @default(uuid())
+  negotiationId   String
+  
+  // Message
+  message         String
+  isCounterOffer  Boolean       @default(false)
+  proposedPrice   Decimal?      @db.Decimal(15, 2)
+  proposedTerms   Json?
+  
+  // Sender
+  sentBy          String
+  senderType      String        // BUYER or SUPPLIER
+  
+  // Attachments
+  attachments     String[]
+  
+  createdAt       DateTime      @default(now())
+  
+  negotiation     Negotiation   @relation(fields: [negotiationId], references: [id], onDelete: Cascade)
+  
+  @@index([negotiationId])
+  @@map("negotiation_messages")
+}
+
+// ============================================
+// PURCHASE ORDER MODULE
+// ============================================
+
+model PurchaseOrder {
+  id                  String                @id @default(uuid())
+  poNumber            String                @unique
+  
+  // Source
+  rfciId              String?
+  quotationId         String?
+  
+  // Type
+  type                PurchaseOrderType     @default(NATIONAL)
+  status              PurchaseOrderStatus   @default(DRAFT)
+  
+  // Supplier
+  supplierId          String
+  
+  // Buyer
+  createdBy           String
+  approvedBy          String?
+  
+  // Delivery
+  deliveryAddress     String
+  requestedDelivery   DateTime
+  confirmedDelivery   DateTime?
+  
+  // Commercial Terms
+  paymentTerms        String
+  deliveryTerms       String
+  incoterm            Incoterm?
+  
+  // Pricing
+  subtotal            Decimal               @db.Decimal(15, 2)
+  discountAmount      Decimal?              @db.Decimal(15, 2)
+  shippingCost        Decimal?              @db.Decimal(15, 2)
+  insuranceCost       Decimal?              @db.Decimal(15, 2)
+  taxAmount           Decimal?              @db.Decimal(15, 2)
+  totalAmount         Decimal               @db.Decimal(15, 2)
+  currency            String                @default("BRL")
+  exchangeRate        Decimal?              @db.Decimal(10, 4)
+  
+  // Dates
+  issuedAt            DateTime?
+  confirmedAt         DateTime?
+  cancelledAt         DateTime?
+  closedAt            DateTime?
+  
+  // Integration
+  proteusCode         String?
+  proteusSICode       String?              // For imports
+  
+  // Notes
+  notes               String?
+  internalNotes       String?
+  
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  
+  rfci                RFCI?                 @relation(fields: [rfciId], references: [id])
+  quotation           Quotation?            @relation(fields: [quotationId], references: [id])
+  supplier            Supplier              @relation(fields: [supplierId], references: [id])
+  creator             User                  @relation("POCreatedBy", fields: [createdBy], references: [id])
+  items               PurchaseOrderItem[]
+  receipts            Receipt[]
+  invoices            Invoice[]
+  importProcess       ImportProcess?
+  evaluations         SupplierEvaluation[]
+  
+  @@index([poNumber])
+  @@index([rfciId])
+  @@index([supplierId])
+  @@index([status])
+  @@index([type])
+  @@map("purchase_orders")
+}
+
+model PurchaseOrderItem {
+  id                String          @id @default(uuid())
+  purchaseOrderId   String
+  productId         String?
+  
+  // Item Details
+  itemNumber        Int
+  description       String
+  specification     String?
+  quantity          Decimal         @db.Decimal(15, 4)
+  unitOfMeasure     String
+  
+  // Pricing
+  unitPrice         Decimal         @db.Decimal(15, 4)
+  discountPercent   Decimal?        @db.Decimal(5, 2)
+  netUnitPrice      Decimal         @db.Decimal(15, 4)
+  totalPrice        Decimal         @db.Decimal(15, 2)
+  
+  // Delivery
+  requestedDate     DateTime?
+  
+  // Receipt
+  receivedQuantity  Decimal         @default(0) @db.Decimal(15, 4)
+  
+  // Integration
+  proteusItemCode   String?
+  
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  purchaseOrder     PurchaseOrder   @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  product           Product?        @relation(fields: [productId], references: [id])
+  receiptItems      ReceiptItem[]
+  
+  @@index([purchaseOrderId])
+  @@index([productId])
+  @@map("purchase_order_items")
+}
+
+// ============================================
+// RECEIPT MODULE
+// ============================================
+
+model Receipt {
+  id                String        @id @default(uuid())
+  receiptNumber     String        @unique
+  purchaseOrderId   String
+  
+  // Receipt Info
+  receivedAt        DateTime
+  receivedBy        String
+  
+  // Location
+  warehouseCode     String?
+  location          String?
+  
+  // Status
+  isComplete        Boolean       @default(false)
+  hasNonConformity  Boolean       @default(false)
+  
+  // Notes
+  notes             String?
+  photos            String[]
+  
+  // Integration
+  proteusCode       String?
+  
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  
+  purchaseOrder     PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
+  items             ReceiptItem[]
+  nonConformities   NonConformity[]
+  
+  @@index([receiptNumber])
+  @@index([purchaseOrderId])
+  @@map("receipts")
+}
+
+model ReceiptItem {
+  id                  String              @id @default(uuid())
+  receiptId           String
+  purchaseOrderItemId String
+  
+  // Quantities
+  orderedQuantity     Decimal             @db.Decimal(15, 4)
+  receivedQuantity    Decimal             @db.Decimal(15, 4)
+  acceptedQuantity    Decimal             @db.Decimal(15, 4)
+  rejectedQuantity    Decimal             @db.Decimal(15, 4)
+  
+  // Quality
+  hasQualityIssue     Boolean             @default(false)
+  
+  // Notes
+  notes               String?
+  
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  
+  receipt             Receipt             @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+  purchaseOrderItem   PurchaseOrderItem   @relation(fields: [purchaseOrderItemId], references: [id])
+  
+  @@index([receiptId])
+  @@index([purchaseOrderItemId])
+  @@map("receipt_items")
+}
+
+model NonConformity {
+  id              String    @id @default(uuid())
+  receiptId       String
+  
+  // Issue
+  type            String
+  description     String
+  severity        String    // LOW, MEDIUM, HIGH, CRITICAL
+  
+  // Evidence
+  photos          String[]
+  documents       String[]
+  
+  // Resolution
+  action          String?
+  resolvedAt      DateTime?
+  resolvedBy      String?
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  receipt         Receipt   @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+  
+  @@index([receiptId])
+  @@map("non_conformities")
+}
+
+// ============================================
+// IMPORT PROCESS MODULE
+// ============================================
+
+model ImportProcess {
+  id                  String                @id @default(uuid())
+  processNumber       String                @unique
+  purchaseOrderId     String                @unique
+  
+  // Status
+  status              ImportProcessStatus   @default(PENDING)
+  
+  // Commercial Invoice
+  invoiceNumber       String?
+  invoiceDate         DateTime?
+  invoiceAmount       Decimal?              @db.Decimal(15, 2)
+  invoiceCurrency     String?
+  
+  // Shipping
+  blNumber            String?               // Bill of Lading
+  blDate              DateTime?
+  containerNumber     String?
+  vessel              String?
+  portOfLoading       String?
+  portOfDischarge     String?
+  estimatedArrival    DateTime?
+  actualArrival       DateTime?
+  
+  // Customs
+  diNumber            String?               // Declaração de Importação
+  diDate              DateTime?
+  customsClearanceAt  DateTime?
+  
+  // Costs
+  freightCost         Decimal?              @db.Decimal(15, 2)
+  insuranceCost       Decimal?              @db.Decimal(15, 2)
+  customsDuty         Decimal?              @db.Decimal(15, 2)
+  ipiTax              Decimal?              @db.Decimal(15, 2)
+  piscofins           Decimal?              @db.Decimal(15, 2)
+  otherCosts          Decimal?              @db.Decimal(15, 2)
+  totalCost           Decimal?              @db.Decimal(15, 2)
+  
+  // Documents
+  documents           Json?
+  
+  // Notes
+  notes               String?
+  
+  // Integration
+  proteusSICode       String?
+  
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  
+  purchaseOrder       PurchaseOrder         @relation(fields: [purchaseOrderId], references: [id])
+  
+  @@index([processNumber])
+  @@index([purchaseOrderId])
+  @@map("import_processes")
+}
+
+// ============================================
+// INVOICE & PAYMENT MODULE
+// ============================================
+
+model Invoice {
+  id                String          @id @default(uuid())
+  invoiceNumber     String          @unique
+  
+  // References
+  purchaseOrderId   String
+  supplierId        String
+  
+  // Type
+  invoiceType       String          // NFE, NFSE, INVOICE
+  status            InvoiceStatus   @default(PENDING)
+  
+  // Dates
+  issueDate         DateTime
+  dueDate           DateTime?
+  
+  // XML Data (NFe)
+  nfeKey            String?         @unique
+  nfeXml            String?
+  
+  // Amounts
+  grossAmount       Decimal         @db.Decimal(15, 2)
+  discountAmount    Decimal?        @db.Decimal(15, 2)
+  taxAmount         Decimal         @db.Decimal(15, 2)
+  netAmount         Decimal         @db.Decimal(15, 2)
+  
+  // Three-Way Match
+  poAmount          Decimal         @db.Decimal(15, 2)
+  receiptAmount     Decimal         @db.Decimal(15, 2)
+  hasDivergence     Boolean         @default(false)
+  divergenceNotes   String?
+  
+  // Validation
+  validatedAt       DateTime?
+  validatedBy       String?
+  approvedAt        DateTime?
+  approvedBy        String?
+  
+  // Documents
+  attachments       String[]
+  
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  purchaseOrder     PurchaseOrder   @relation(fields: [purchaseOrderId], references: [id])
+  supplier          Supplier        @relation(fields: [supplierId], references: [id])
+  payment           Payment?
+  
+  @@index([invoiceNumber])
+  @@index([nfeKey])
+  @@index([purchaseOrderId])
+  @@index([status])
+  @@map("invoices")
+}
+
+model Payment {
+  id                String          @id @default(uuid())
+  paymentNumber     String          @unique
+  invoiceId         String          @unique
+  
+  // Status
+  status            PaymentStatus   @default(PENDING_APPROVAL)
+  method            PaymentMethod
+  
+  // Amount
+  amount            Decimal         @db.Decimal(15, 2)
+  currency          String          @default("BRL")
+  
+  // Dates
+  dueDate           DateTime
+  scheduledDate     DateTime?
+  paidAt            DateTime?
+  
+  // Banking
+  bankName          String?
+  bankBranch        String?
+  bankAccount       String?
+  
+  // Reference
+  transactionId     String?
+  boletoNumber      String?
+  
+  // Approval
+  approvedAt        DateTime?
+  approvedBy        String?
+  
+  // Confirmation
+  receiptUrl        String?
+  
+  // Integration
+  proteusCode       String?
+  
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  invoice           Invoice         @relation(fields: [invoiceId], references: [id])
+  
+  @@index([paymentNumber])
+  @@index([invoiceId])
+  @@index([status])
+  @@map("payments")
+}
+
+// ============================================
+// APPROVAL WORKFLOW
+// ============================================
+
+model Approval {
+  id              String          @id @default(uuid())
+  
+  // Entity
+  entityType      String          // REQUISITION, RFCI, PO, INVOICE, PAYMENT
+  entityId        String
+  
+  // Approver
+  approverId      String
+  level           Int             @default(1)
+  status          ApprovalStatus  @default(PENDING)
+  
+  // Decision
+  decidedAt       DateTime?
+  comments        String?
+  
+  // Metadata
+  approvalLimit   Decimal?        @db.Decimal(15, 2)
+  
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  approver        User            @relation(fields: [approverId], references: [id])
+  requisition     Requisition?    @relation("RequisitionApproval", fields: [entityId], references: [id])
+  
+  @@index([entityType, entityId])
+  @@index([approverId])
+  @@index([status])
+  @@map("approvals")
+}
+
+// ============================================
+// NOTIFICATIONS
+// ============================================
+
+model Notification {
+  id          String    @id @default(uuid())
+  userId      String
+  
+  // Content
+  type        String
+  title       String
+  message     String
+  
+  // Action
+  actionUrl   String?
+  entityType  String?
+  entityId    String?
+  
+  // Status
+  isRead      Boolean   @default(false)
+  readAt      DateTime?
+  
+  createdAt   DateTime  @default(now())
+  
+  @@index([userId])
+  @@index([isRead])
+  @@map("notifications")
+}
+
+// ============================================
+// AUDIT LOG
+// ============================================
+
+model AuditLog {
+  id          String    @id @default(uuid())
+  
+  // Entity
+  entityType  String
+  entityId    String
+  
+  // Action
+  action      String    // CREATE, UPDATE, DELETE, APPROVE, REJECT, etc.
+  
+  // User
+  userId      String
+  userEmail   String
+  
+  // Changes
+  oldValue    Json?
+  newValue    Json?
+  
+  // Metadata
+  ipAddress   String?
+  userAgent   String?
+  
+  createdAt   DateTime  @default(now())
+  
+  user        User      @relation(fields: [userId], references: [id])
+  
+  @@index([entityType, entityId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// ============================================
+// SYSTEM CONFIGURATION
+// ============================================
+
+model SystemConfig {
+  id          String    @id @default(uuid())
+  key         String    @unique
+  value       Json
+  description String?
+  isActive    Boolean   @default(true)
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@index([key])
+  @@map("system_configs")
+}
