@@ -655,18 +655,21 @@ export class MemStorage implements IStorage {
 
   // Supplier Portal
   async getPendingRfcisForSupplier(supplierId: string): Promise<Rfci[]> {
+    // Get all RFCI IDs where this supplier was invited
     const supplierRfciIds = Array.from(this.rfciSuppliers.values())
       .filter(rs => rs.supplierId === supplierId)
       .map(rs => rs.rfciId);
 
-    const pendingQuotations = Array.from(this.quotations.values())
-      .filter(q => q.supplierId === supplierId && q.status === "PENDING")
+    // Get RFCI IDs where this supplier already submitted a quotation
+    const submittedQuotationRfciIds = Array.from(this.quotations.values())
+      .filter(q => q.supplierId === supplierId && q.status !== "PENDING")
       .map(q => q.rfciId);
 
+    // Return RFCIs where supplier was invited but hasn't submitted yet
     return Array.from(this.rfcis.values())
       .filter(r => 
         supplierRfciIds.includes(r.id) && 
-        pendingQuotations.includes(r.id) &&
+        !submittedQuotationRfciIds.includes(r.id) &&
         (r.status === "SENT" || r.status === "IN_QUOTATION")
       )
       .sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime());
