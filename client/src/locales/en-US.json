@@ -22,7 +22,8 @@
     "none": "None",
     "items": "items",
     "days": "days",
-    "today": "Today"
+    "today": "Today",
+    "comingSoon": "Coming soon"
   },
   "auth": {
     "login": "Login",
@@ -54,7 +55,8 @@
   "sidebar": {
     "procurement": "Procurement",
     "supplierPortal": "Supplier Portal",
-    "myPortal": "My Portal"
+    "myPortal": "My Portal",
+    "suppliers": "Suppliers"
   },
   "header": {
     "buyerPortal": "e-Proc",
@@ -95,20 +97,45 @@
   },
   "suppliers": {
     "title": "Suppliers",
-    "subtitle": "Manage your supplier base",
-    "searchPlaceholder": "Search supplier...",
-    "filterByStatus": "Filter by status",
-    "allStatus": "All status",
-    "approved": "Approved",
-    "pending": "Pending",
-    "blocked": "Blocked",
-    "performance": "Performance",
-    "quality": "Quality",
-    "delivery": "Delivery",
-    "price": "Price",
+    "subtitle": "Manage your approved supplier base",
+    "searchPlaceholder": "Search by name, legal name or CNPJ...",
+    "newSupplier": "New Supplier",
+    "noSuppliersFound": "No suppliers found",
     "viewDetails": "View Details",
-    "noSuppliers": "No suppliers found",
-    "tryDifferentFilters": "Try using different filters"
+    "inviteToRfci": "Invite to RFCI",
+    "notProvided": "Not provided",
+    "cnpj": "CNPJ",
+    "email": "Email",
+    "phone": "Phone",
+    "location": "Location",
+    "mainActivity": "Main Activity",
+    "generalData": "General Data",
+    "overallScore": "Overall Score",
+    "detailedMetrics": "Detailed Metrics",
+    "wonQuotations": "Won Quotations",
+    "responseTime": "Response Time",
+    "days": "{{count}} days",
+    "tabs": {
+      "info": "Information",
+      "performance": "Performance"
+    },
+    "table": {
+      "supplier": "Supplier",
+      "score": "Score"
+    },
+    "metrics": {
+      "quality": "Quality",
+      "delivery": "Delivery",
+      "price": "Price"
+    },
+    "status": {
+      "title": "Status",
+      "all": "All status",
+      "approved": "Approved",
+      "pending": "Pending",
+      "rejected": "Rejected",
+      "suspended": "Suspended"
+    }
   },
   "rfci": {
     "title": "RFCIs",
