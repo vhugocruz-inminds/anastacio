@@ -11,7 +11,12 @@ import type {
   RfciWithDetails,
   QuotationWithItems,
   DashboardStats,
-  SupplierDashboardStats
+  SupplierDashboardStats,
+  LocalizedSupplier,
+  LocalizedProduct,
+  LocalizedRfci,
+  LocalizedRfciItem,
+  LocalizedQuotation
 } from "@shared/schema";
 
 export interface IStorage {
@@ -52,12 +57,12 @@ export interface IStorage {
 
 export class MemStorage implements IStorage {
   private users: Map<string, User>;
-  private suppliers: Map<string, Supplier>;
-  private products: Map<string, Product>;
-  private rfcis: Map<string, Rfci>;
-  private rfciItems: Map<string, RfciItem>;
+  private suppliers: Map<string, LocalizedSupplier>;
+  private products: Map<string, LocalizedProduct>;
+  private rfcis: Map<string, LocalizedRfci>;
+  private rfciItems: Map<string, LocalizedRfciItem>;
   private rfciSuppliers: Map<string, RfciSupplier>;
-  private quotations: Map<string, Quotation>;
+  private quotations: Map<string, LocalizedQuotation>;
   private quotationItems: Map<string, QuotationItem>;
 
   constructor() {
@@ -101,8 +106,8 @@ export class MemStorage implements IStorage {
     };
     this.users.set(supplierUser.id, supplierUser);
 
-    // Seed Suppliers
-    const suppliers: Supplier[] = [
+    // Seed Suppliers (with localization)
+    const suppliers: LocalizedSupplier[] = [
       {
         id: "supplier-1",
         legalName: "Química Brasil Ltda",
@@ -114,6 +119,7 @@ export class MemStorage implements IStorage {
         addressCity: "São Paulo",
         addressState: "SP",
         mainActivity: "Solventes e Químicos Industriais",
+        mainActivityLocalized: { ptBR: "Solventes e Químicos Industriais", enUS: "Solvents and Industrial Chemicals" },
         performanceScore: "4.5",
         qualityScore: "4.6",
         deliveryScore: "4.4",
@@ -131,6 +137,7 @@ export class MemStorage implements IStorage {
         addressCity: "Rio de Janeiro",
         addressState: "RJ",
         mainActivity: "Resinas e Polímeros",
+        mainActivityLocalized: { ptBR: "Resinas e Polímeros", enUS: "Resins and Polymers" },
         performanceScore: "4.2",
         qualityScore: "4.3",
         deliveryScore: "4.0",
@@ -148,6 +155,7 @@ export class MemStorage implements IStorage {
         addressCity: "Campinas",
         addressState: "SP",
         mainActivity: "Solventes Especiais",
+        mainActivityLocalized: { ptBR: "Solventes Especiais", enUS: "Specialty Solvents" },
         performanceScore: "4.8",
         qualityScore: "4.9",
         deliveryScore: "4.7",
@@ -165,6 +173,7 @@ export class MemStorage implements IStorage {
         addressCity: "Porto Alegre",
         addressState: "RS",
         mainActivity: "Pigmentos e Corantes",
+        mainActivityLocalized: { ptBR: "Pigmentos e Corantes", enUS: "Pigments and Dyes" },
         performanceScore: "3.9",
         qualityScore: "4.1",
         deliveryScore: "3.7",
@@ -182,6 +191,7 @@ export class MemStorage implements IStorage {
         addressCity: "Belo Horizonte",
         addressState: "MG",
         mainActivity: "Aditivos e Catalisadores",
+        mainActivityLocalized: { ptBR: "Aditivos e Catalisadores", enUS: "Additives and Catalysts" },
         performanceScore: null,
         qualityScore: null,
         deliveryScore: null,
@@ -191,14 +201,17 @@ export class MemStorage implements IStorage {
     ];
     suppliers.forEach(s => this.suppliers.set(s.id, s));
 
-    // Seed Products
-    const products: Product[] = [
+    // Seed Products (with localization)
+    const products: LocalizedProduct[] = [
       {
         id: "prod-1",
         sku: "SOL-001",
         name: "Acetona Industrial",
+        nameLocalized: { ptBR: "Acetona Industrial", enUS: "Industrial Acetone" },
         description: "Acetona de alta pureza para uso industrial",
+        descriptionLocalized: { ptBR: "Acetona de alta pureza para uso industrial", enUS: "High purity acetone for industrial use" },
         category: "Solventes",
+        categoryLocalized: { ptBR: "Solventes", enUS: "Solvents" },
         unitOfMeasure: "KG",
         ncmCode: "2914.11.00",
         isActive: true,
@@ -208,8 +221,11 @@ export class MemStorage implements IStorage {
         id: "prod-2",
         sku: "SOL-002",
         name: "Tolueno P.A.",
+        nameLocalized: { ptBR: "Tolueno P.A.", enUS: "Analytical Grade Toluene" },
         description: "Tolueno grau analítico",
+        descriptionLocalized: { ptBR: "Tolueno grau analítico", enUS: "Analytical grade toluene" },
         category: "Solventes",
+        categoryLocalized: { ptBR: "Solventes", enUS: "Solvents" },
         unitOfMeasure: "L",
         ncmCode: "2902.30.00",
         isActive: true,
@@ -219,8 +235,11 @@ export class MemStorage implements IStorage {
         id: "prod-3",
         sku: "RES-001",
         name: "Resina Epóxi ER-100",
+        nameLocalized: { ptBR: "Resina Epóxi ER-100", enUS: "Epoxy Resin ER-100" },
         description: "Resina epóxi de alto desempenho",
+        descriptionLocalized: { ptBR: "Resina epóxi de alto desempenho", enUS: "High performance epoxy resin" },
         category: "Resinas",
+        categoryLocalized: { ptBR: "Resinas", enUS: "Resins" },
         unitOfMeasure: "KG",
         ncmCode: "3907.30.00",
         isActive: true,
@@ -230,8 +249,11 @@ export class MemStorage implements IStorage {
         id: "prod-4",
         sku: "ADT-001",
         name: "Agente Dispersante AD-50",
+        nameLocalized: { ptBR: "Agente Dispersante AD-50", enUS: "Dispersing Agent AD-50" },
         description: "Dispersante para tintas e revestimentos",
+        descriptionLocalized: { ptBR: "Dispersante para tintas e revestimentos", enUS: "Dispersant for paints and coatings" },
         category: "Aditivos",
+        categoryLocalized: { ptBR: "Aditivos", enUS: "Additives" },
         unitOfMeasure: "KG",
         ncmCode: "3402.90.00",
         isActive: true,
@@ -241,8 +263,11 @@ export class MemStorage implements IStorage {
         id: "prod-5",
         sku: "PIG-001",
         name: "Dióxido de Titânio TiO2",
+        nameLocalized: { ptBR: "Dióxido de Titânio TiO2", enUS: "Titanium Dioxide TiO2" },
         description: "Pigmento branco de alta cobertura",
+        descriptionLocalized: { ptBR: "Pigmento branco de alta cobertura", enUS: "High coverage white pigment" },
         category: "Pigmentos",
+        categoryLocalized: { ptBR: "Pigmentos", enUS: "Pigments" },
         unitOfMeasure: "KG",
         ncmCode: "2823.00.10",
         isActive: true,
@@ -252,8 +277,11 @@ export class MemStorage implements IStorage {
         id: "prod-6",
         sku: "SOL-003",
         name: "Xileno Misto",
+        nameLocalized: { ptBR: "Xileno Misto", enUS: "Mixed Xylene" },
         description: "Mistura de isômeros de xileno",
+        descriptionLocalized: { ptBR: "Mistura de isômeros de xileno", enUS: "Mixture of xylene isomers" },
         category: "Solventes",
+        categoryLocalized: { ptBR: "Solventes", enUS: "Solvents" },
         unitOfMeasure: "L",
         ncmCode: "2902.41.00",
         isActive: true,
@@ -262,13 +290,15 @@ export class MemStorage implements IStorage {
     ];
     products.forEach(p => this.products.set(p.id, p));
 
-    // Seed RFCIs
-    const rfcis: Rfci[] = [
+    // Seed RFCIs (with localization)
+    const rfcis: LocalizedRfci[] = [
       {
         id: "rfci-1",
         code: "RFCI-2024-001",
         title: "Cotação de Solventes Industriais",
+        titleLocalized: { ptBR: "Cotação de Solventes Industriais", enUS: "Industrial Solvents Quotation" },
         description: "Solicitação de cotação para solventes utilizados na linha de produção principal",
+        descriptionLocalized: { ptBR: "Solicitação de cotação para solventes utilizados na linha de produção principal", enUS: "Quotation request for solvents used in the main production line" },
         status: "IN_QUOTATION",
         priority: "HIGH",
         createdById: "user-1",
@@ -280,7 +310,9 @@ export class MemStorage implements IStorage {
         id: "rfci-2",
         code: "RFCI-2024-002",
         title: "Resinas para Revestimentos",
+        titleLocalized: { ptBR: "Resinas para Revestimentos", enUS: "Resins for Coatings" },
         description: "Cotação para resinas epóxi para nova linha de revestimentos industriais",
+        descriptionLocalized: { ptBR: "Cotação para resinas epóxi para nova linha de revestimentos industriais", enUS: "Quotation for epoxy resins for new industrial coatings line" },
         status: "IN_QUOTATION",
         priority: "NORMAL",
         createdById: "user-1",
@@ -292,7 +324,9 @@ export class MemStorage implements IStorage {
         id: "rfci-3",
         code: "RFCI-2024-003",
         title: "Pigmentos e Aditivos",
+        titleLocalized: { ptBR: "Pigmentos e Aditivos", enUS: "Pigments and Additives" },
         description: "Cotação urgente para pigmentos e aditivos dispersantes",
+        descriptionLocalized: { ptBR: "Cotação urgente para pigmentos e aditivos dispersantes", enUS: "Urgent quotation for pigments and dispersing additives" },
         status: "AWARDED",
         priority: "URGENT",
         createdById: "user-1",
@@ -303,14 +337,14 @@ export class MemStorage implements IStorage {
     ];
     rfcis.forEach(r => this.rfcis.set(r.id, r));
 
-    // Seed RFCI Items
-    const rfciItems: RfciItem[] = [
-      { id: "rfci-item-1", rfciId: "rfci-1", productId: "prod-1", productName: "Acetona Industrial", quantity: "5000", unitOfMeasure: "KG", specifications: "Pureza mínima 99.5%" },
-      { id: "rfci-item-2", rfciId: "rfci-1", productId: "prod-2", productName: "Tolueno P.A.", quantity: "2000", unitOfMeasure: "L", specifications: "Grau analítico" },
-      { id: "rfci-item-3", rfciId: "rfci-1", productId: "prod-6", productName: "Xileno Misto", quantity: "3000", unitOfMeasure: "L", specifications: null },
-      { id: "rfci-item-4", rfciId: "rfci-2", productId: "prod-3", productName: "Resina Epóxi ER-100", quantity: "1000", unitOfMeasure: "KG", specifications: "Viscosidade 500-700 cP" },
-      { id: "rfci-item-5", rfciId: "rfci-3", productId: "prod-5", productName: "Dióxido de Titânio TiO2", quantity: "2000", unitOfMeasure: "KG", specifications: "Rutilo, 93% min" },
-      { id: "rfci-item-6", rfciId: "rfci-3", productId: "prod-4", productName: "Agente Dispersante AD-50", quantity: "500", unitOfMeasure: "KG", specifications: null },
+    // Seed RFCI Items (with localization)
+    const rfciItems: LocalizedRfciItem[] = [
+      { id: "rfci-item-1", rfciId: "rfci-1", productId: "prod-1", productName: "Acetona Industrial", productNameLocalized: { ptBR: "Acetona Industrial", enUS: "Industrial Acetone" }, quantity: "5000", unitOfMeasure: "KG", specifications: "Pureza mínima 99.5%", specificationsLocalized: { ptBR: "Pureza mínima 99.5%", enUS: "Minimum purity 99.5%" } },
+      { id: "rfci-item-2", rfciId: "rfci-1", productId: "prod-2", productName: "Tolueno P.A.", productNameLocalized: { ptBR: "Tolueno P.A.", enUS: "Analytical Grade Toluene" }, quantity: "2000", unitOfMeasure: "L", specifications: "Grau analítico", specificationsLocalized: { ptBR: "Grau analítico", enUS: "Analytical grade" } },
+      { id: "rfci-item-3", rfciId: "rfci-1", productId: "prod-6", productName: "Xileno Misto", productNameLocalized: { ptBR: "Xileno Misto", enUS: "Mixed Xylene" }, quantity: "3000", unitOfMeasure: "L", specifications: null },
+      { id: "rfci-item-4", rfciId: "rfci-2", productId: "prod-3", productName: "Resina Epóxi ER-100", productNameLocalized: { ptBR: "Resina Epóxi ER-100", enUS: "Epoxy Resin ER-100" }, quantity: "1000", unitOfMeasure: "KG", specifications: "Viscosidade 500-700 cP", specificationsLocalized: { ptBR: "Viscosidade 500-700 cP", enUS: "Viscosity 500-700 cP" } },
+      { id: "rfci-item-5", rfciId: "rfci-3", productId: "prod-5", productName: "Dióxido de Titânio TiO2", productNameLocalized: { ptBR: "Dióxido de Titânio TiO2", enUS: "Titanium Dioxide TiO2" }, quantity: "2000", unitOfMeasure: "KG", specifications: "Rutilo, 93% min", specificationsLocalized: { ptBR: "Rutilo, 93% min", enUS: "Rutile, 93% min" } },
+      { id: "rfci-item-6", rfciId: "rfci-3", productId: "prod-4", productName: "Agente Dispersante AD-50", productNameLocalized: { ptBR: "Agente Dispersante AD-50", enUS: "Dispersing Agent AD-50" }, quantity: "500", unitOfMeasure: "KG", specifications: null },
     ];
     rfciItems.forEach(i => this.rfciItems.set(i.id, i));
 
@@ -326,8 +360,8 @@ export class MemStorage implements IStorage {
     ];
     rfciSuppliers.forEach(rs => this.rfciSuppliers.set(rs.id, rs));
 
-    // Seed Quotations
-    const quotations: Quotation[] = [
+    // Seed Quotations (with localization)
+    const quotations: LocalizedQuotation[] = [
       {
         id: "quot-1",
         rfciId: "rfci-1",
@@ -337,8 +371,10 @@ export class MemStorage implements IStorage {
         totalValue: "85000.00",
         deliveryDays: 15,
         paymentTerms: "30 DDL",
+        paymentTermsLocalized: { ptBR: "30 DDL", enUS: "Net 30 Days" },
         validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         notes: "Frete incluso para entregas acima de R$ 50.000",
+        notesLocalized: { ptBR: "Frete incluso para entregas acima de R$ 50.000", enUS: "Freight included for deliveries over R$ 50,000" },
         submittedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
         createdAt: new Date(),
       },
@@ -351,8 +387,10 @@ export class MemStorage implements IStorage {
         totalValue: "92000.00",
         deliveryDays: 12,
         paymentTerms: "30/60 DDL",
+        paymentTermsLocalized: { ptBR: "30/60 DDL", enUS: "Net 30/60 Days" },
         validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         notes: "Entrega parcelada disponível",
+        notesLocalized: { ptBR: "Entrega parcelada disponível", enUS: "Partial delivery available" },
         submittedAt: new Date(Date.now() - 0.5 * 24 * 60 * 60 * 1000),
         createdAt: new Date(),
       },
@@ -365,8 +403,10 @@ export class MemStorage implements IStorage {
         totalValue: "78500.00",
         deliveryDays: 18,
         paymentTerms: "30 DDL",
+        paymentTermsLocalized: { ptBR: "30 DDL", enUS: "Net 30 Days" },
         validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         notes: "Preço especial para pedido em grandes volumes",
+        notesLocalized: { ptBR: "Preço especial para pedido em grandes volumes", enUS: "Special price for large volume orders" },
         submittedAt: new Date(),
         createdAt: new Date(),
       },
@@ -379,6 +419,7 @@ export class MemStorage implements IStorage {
         totalValue: "125000.00",
         deliveryDays: 10,
         paymentTerms: "30 DDL",
+        paymentTermsLocalized: { ptBR: "30 DDL", enUS: "Net 30 Days" },
         validUntil: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
         notes: null,
         submittedAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000),
@@ -393,6 +434,7 @@ export class MemStorage implements IStorage {
         totalValue: "138000.00",
         deliveryDays: 14,
         paymentTerms: "30/60 DDL",
+        paymentTermsLocalized: { ptBR: "30/60 DDL", enUS: "Net 30/60 Days" },
         validUntil: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
         notes: null,
         submittedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
