@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,9 +8,11 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/lib/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Building2, User } from "lucide-react";
+import { LanguageSelector } from "@/components/language-selector";
 
 export default function LoginPage() {
   const [, setLocation] = useLocation();
+  const { t } = useTranslation();
   const { login, switchUser } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -50,6 +53,9 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <div className="absolute top-4 right-4">
+        <LanguageSelector />
+      </div>
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
           <div className="inline-flex h-16 w-16 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold text-2xl">
@@ -57,36 +63,36 @@ export default function LoginPage() {
           </div>
           <h1 className="text-3xl font-semibold">e-Proc</h1>
           <p className="text-muted-foreground">
-            Sistema de E-Procurement B2B
+            E-Procurement B2B Platform
           </p>
         </div>
 
         <Card>
           <CardHeader className="space-y-1">
-            <CardTitle className="text-xl">Entrar</CardTitle>
+            <CardTitle className="text-xl">{t('auth.login')}</CardTitle>
             <CardDescription>
-              Entre com suas credenciais para acessar o sistema
+              {t('auth.selectProfile')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t('auth.email')}</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="seu.email@empresa.com"
+                  placeholder="your.email@company.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   data-testid="input-email"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">Senha</Label>
+                <Label htmlFor="password">{t('auth.password')}</Label>
                 <Input
                   id="password"
                   type="password"
-                  placeholder="Sua senha"
+                  placeholder="********"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   data-testid="input-password"
@@ -94,7 +100,7 @@ export default function LoginPage() {
               </div>
               <Button type="submit" className="w-full" disabled={isLoading} data-testid="button-login">
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Entrar
+                {t('auth.login')}
               </Button>
             </form>
 
@@ -104,7 +110,7 @@ export default function LoginPage() {
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-card px-2 text-muted-foreground">
-                  Acesso Demonstração
+                  {t('auth.demoMode')}
                 </span>
               </div>
             </div>
@@ -117,7 +123,7 @@ export default function LoginPage() {
                 data-testid="button-demo-buyer"
               >
                 <User className="h-4 w-4" />
-                Comprador
+                {t('auth.enterAsBuyer')}
               </Button>
               <Button
                 variant="outline"
@@ -126,14 +132,14 @@ export default function LoginPage() {
                 data-testid="button-demo-supplier"
               >
                 <Building2 className="h-4 w-4" />
-                Fornecedor
+                {t('auth.enterAsSupplier')}
               </Button>
             </div>
           </CardContent>
         </Card>
 
         <p className="text-center text-sm text-muted-foreground">
-          Química Anastácio - e-Procurement Platform
+          Quimica Anastacio - e-Procurement Platform
         </p>
       </div>
     </div>
