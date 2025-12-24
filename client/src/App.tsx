@@ -8,7 +8,9 @@ import { AuthProvider, useAuth } from "@/lib/auth-context";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { LanguageSelector } from "@/components/language-selector";
 import { UserNav } from "@/components/user-nav";
+import { useTranslation } from "react-i18next";
 
 import LoginPage from "@/pages/login";
 import DashboardPage from "@/pages/dashboard";
@@ -24,6 +26,7 @@ import NotFound from "@/pages/not-found";
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const isSupplier = user?.role === "SUPPLIER";
   
   const style = {
@@ -41,11 +44,12 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               <SidebarTrigger data-testid="button-sidebar-toggle" />
               <div className="hidden sm:block">
                 <h2 className="text-sm font-medium">
-                  {isSupplier ? "Portal do Fornecedor" : "e-Proc"}
+                  {isSupplier ? t('header.supplierPortal') : t('header.buyerPortal')}
                 </h2>
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <LanguageSelector />
               <ThemeToggle />
               <UserNav />
             </div>

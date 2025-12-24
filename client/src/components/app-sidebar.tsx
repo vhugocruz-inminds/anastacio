@@ -1,4 +1,5 @@
 import { Link, useLocation } from "wouter";
+import { useTranslation } from "react-i18next";
 import {
   LayoutDashboard,
   Users,
@@ -108,6 +109,7 @@ const supplierMenuItems = [
 export function AppSidebar() {
   const [location] = useLocation();
   const { user } = useAuth();
+  const { t } = useTranslation();
   
   const isSupplier = user?.role === "SUPPLIER";
   const menuItems = isSupplier ? supplierMenuItems : buyerMenuItems;
@@ -123,7 +125,7 @@ export function AppSidebar() {
           <div>
             <h1 className="font-semibold text-lg leading-tight">e-Proc</h1>
             <p className="text-xs text-muted-foreground">
-              {isSupplier ? "Portal do Fornecedor" : "Procurement B2B"}
+              {isSupplier ? t('sidebar.supplierPortal') : "Procurement B2B"}
             </p>
           </div>
         </div>
@@ -132,7 +134,7 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>
-            {isSupplier ? "Meu Portal" : "Compras"}
+            {isSupplier ? t('sidebar.myPortal') : t('sidebar.procurement')}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -158,7 +160,7 @@ export function AppSidebar() {
                         )}
                         {item.comingSoon && (
                           <Badge variant="outline" className="text-xs">
-                            Em breve
+                            {t('nav.comingSoon')}
                           </Badge>
                         )}
                       </Link>
@@ -191,7 +193,7 @@ export function AppSidebar() {
                           <span className="flex-1">{item.title}</span>
                           {item.comingSoon && (
                             <Badge variant="outline" className="text-xs">
-                              Em breve
+                              {t('nav.comingSoon')}
                             </Badge>
                           )}
                         </Link>
@@ -211,8 +213,8 @@ export function AppSidebar() {
             <SidebarMenuButton asChild className="opacity-50 cursor-not-allowed">
               <span>
                 <Settings className="h-4 w-4" />
-                <span>Configurações</span>
-                <Badge variant="outline" className="text-xs">Em breve</Badge>
+                <span>{t('nav.settings')}</span>
+                <Badge variant="outline" className="text-xs">{t('nav.comingSoon')}</Badge>
               </span>
             </SidebarMenuButton>
           </SidebarMenuItem>
