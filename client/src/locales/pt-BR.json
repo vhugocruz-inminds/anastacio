@@ -229,6 +229,42 @@
       "REJECTED": "Rejeitada"
     }
   },
+  "documents": {
+    "title": "Gestão de Documentos",
+    "subtitle": "Controle de documentos e certidões dos fornecedores",
+    "uploadDocument": "Enviar Documento",
+    "allDocuments": "Todos os Documentos",
+    "search": "Buscar documentos...",
+    "noDocumentsFound": "Nenhum documento encontrado",
+    "attentionRequired": "Atenção Necessária",
+    "documentsExpired": "documentos vencidos",
+    "documentsExpiringSoon": "documentos próximos ao vencimento",
+    "more": "mais",
+    "noExpiry": "Sem vencimento",
+    "expiredDaysAgo": "Vencido há {days} dias",
+    "expiresInDays": "Vence em {days} dias",
+    "stats": {
+      "total": "Total de Documentos",
+      "valid": "Válidos",
+      "expiringSoon": "Próximos ao Vencimento",
+      "expired": "Vencidos",
+      "compliance": "Taxa de Conformidade",
+      "next30Days": "Próximos 30 dias"
+    },
+    "status": {
+      "valid": "Válido",
+      "expiringSoon": "Vencendo",
+      "expired": "Vencido",
+      "pendingReview": "Pendente"
+    },
+    "tabs": {
+      "all": "Todos",
+      "valid": "Válidos",
+      "expiring": "Vencendo",
+      "expired": "Vencidos",
+      "pending": "Pendentes"
+    }
+  },
   "theme": {
     "light": "Claro",
     "dark": "Escuro",

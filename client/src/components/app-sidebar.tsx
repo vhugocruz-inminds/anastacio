@@ -41,6 +41,12 @@ const buyerMenuItems = [
     icon: Users,
   },
   {
+    title: "Documentos",
+    url: "/documents",
+    icon: FileCheck,
+    badge: "2",
+  },
+  {
     title: "RFCIs",
     url: "/rfcis",
     icon: FileText,

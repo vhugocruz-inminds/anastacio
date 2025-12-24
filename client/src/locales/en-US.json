@@ -229,6 +229,42 @@
       "REJECTED": "Rejected"
     }
   },
+  "documents": {
+    "title": "Document Management",
+    "subtitle": "Supplier documents and certificates control",
+    "uploadDocument": "Upload Document",
+    "allDocuments": "All Documents",
+    "search": "Search documents...",
+    "noDocumentsFound": "No documents found",
+    "attentionRequired": "Attention Required",
+    "documentsExpired": "expired documents",
+    "documentsExpiringSoon": "documents expiring soon",
+    "more": "more",
+    "noExpiry": "No expiry",
+    "expiredDaysAgo": "Expired {days} days ago",
+    "expiresInDays": "Expires in {days} days",
+    "stats": {
+      "total": "Total Documents",
+      "valid": "Valid",
+      "expiringSoon": "Expiring Soon",
+      "expired": "Expired",
+      "compliance": "Compliance Rate",
+      "next30Days": "Next 30 days"
+    },
+    "status": {
+      "valid": "Valid",
+      "expiringSoon": "Expiring",
+      "expired": "Expired",
+      "pendingReview": "Pending"
+    },
+    "tabs": {
+      "all": "All",
+      "valid": "Valid",
+      "expiring": "Expiring",
+      "expired": "Expired",
+      "pending": "Pending"
+    }
+  },
   "theme": {
     "light": "Light",
     "dark": "Dark",

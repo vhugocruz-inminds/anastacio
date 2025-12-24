@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import LoginPage from "@/pages/login";
 import DashboardPage from "@/pages/dashboard";
 import SuppliersPage from "@/pages/suppliers";
+import SupplierDocumentsPage from "@/pages/supplier-documents";
 import RfcisPage from "@/pages/rfcis";
 import RfciDetailPage from "@/pages/rfci-detail";
 import RfciNewPage from "@/pages/rfci-new";
@@ -98,6 +99,12 @@ function Router() {
       <Route path="/suppliers">
         <ProtectedRoute>
           <SuppliersPage />
+        </ProtectedRoute>
+      </Route>
+      
+      <Route path="/documents">
+        <ProtectedRoute>
+          <SupplierDocumentsPage />
         </ProtectedRoute>
       </Route>
       

@@ -12,6 +12,8 @@ import type {
   QuotationWithItems,
   DashboardStats,
   SupplierDashboardStats,
+  SupplierDocument,
+  SupplierDocumentStats,
   LocalizedSupplier,
   LocalizedProduct,
   LocalizedRfci,
@@ -53,6 +55,12 @@ export interface IStorage {
   // Dashboard
   getDashboardStats(): Promise<DashboardStats>;
   getSupplierDashboardStats(supplierId: string): Promise<SupplierDashboardStats>;
+  
+  // Supplier Documents
+  getSupplierDocuments(supplierId: string): Promise<SupplierDocument[]>;
+  getAllSupplierDocuments(): Promise<SupplierDocument[]>;
+  getSupplierDocumentStats(supplierId?: string): Promise<SupplierDocumentStats>;
+  getExpiringDocuments(days: number): Promise<SupplierDocument[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -64,6 +72,7 @@ export class MemStorage implements IStorage {
   private rfciSuppliers: Map<string, RfciSupplier>;
   private quotations: Map<string, LocalizedQuotation>;
   private quotationItems: Map<string, QuotationItem>;
+  private supplierDocuments: Map<string, SupplierDocument>;
 
   constructor() {
     this.users = new Map();
@@ -74,6 +83,7 @@ export class MemStorage implements IStorage {
     this.rfciSuppliers = new Map();
     this.quotations = new Map();
     this.quotationItems = new Map();
+    this.supplierDocuments = new Map();
     
     this.seedData();
   }
@@ -484,6 +494,357 @@ export class MemStorage implements IStorage {
       { id: "qi-9", quotationId: "quot-3", rfciItemId: "rfci-item-3", productName: "Xileno Misto", quantity: "3000", unitPrice: "5.50", totalPrice: "16500.00", deliveryDays: 18 },
     ];
     quotationItems.forEach(qi => this.quotationItems.set(qi.id, qi));
+
+    // Seed Supplier Documents (impressive demo data with various statuses)
+    const now = new Date();
+    const supplierDocuments: SupplierDocument[] = [
+      // Química Brasil - mostly compliant
+      {
+        id: "doc-1",
+        supplierId: "supplier-1",
+        documentType: "CNPJ_CARD",
+        documentTypeName: "Cartão CNPJ",
+        documentTypeNameLocalized: { ptBR: "Cartão CNPJ", enUS: "CNPJ Card" },
+        fileName: "cartao_cnpj_quimica_brasil.pdf",
+        fileSize: 245000,
+        mimeType: "application/pdf",
+        uploadedAt: new Date(now.getTime() - 180 * 24 * 60 * 60 * 1000),
+        expiresAt: null,
+        status: "VALID",
+        notes: "Documento sem validade",
+        notesLocalized: { ptBR: "Documento sem validade", enUS: "Document does not expire" },
+        uploadedById: "user-2",
+        uploadedByName: "Roberto Costa",
+        isRequired: true,
+      },
+      {
+        id: "doc-2",
+        supplierId: "supplier-1",
+        documentType: "ISO_CERTIFICATE",
+        documentTypeName: "Certificado ISO 9001",
+        documentTypeNameLocalized: { ptBR: "Certificado ISO 9001", enUS: "ISO 9001 Certificate" },
+        fileName: "iso_9001_quimica_brasil.pdf",
+        fileSize: 1240000,
+        mimeType: "application/pdf",
+        uploadedAt: new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000),
+        expiresAt: new Date(now.getTime() + 275 * 24 * 60 * 60 * 1000),
+        status: "VALID",
+        notes: "Certificação válida até setembro/2025",
+        notesLocalized: { ptBR: "Certificação válida até setembro/2025", enUS: "Certification valid until September/2025" },
+        uploadedById: "user-2",
+        uploadedByName: "Roberto Costa",
+        isRequired: true,
+      },
+      {
+        id: "doc-3",
+        supplierId: "supplier-1",
+        documentType: "ENVIRONMENTAL_LICENSE",
+        documentTypeName: "Licença Ambiental",
+        documentTypeNameLocalized: { ptBR: "Licença Ambiental", enUS: "Environmental License" },
+        fileName: "licenca_ambiental_2024.pdf",
+        fileSize: 3450000,
+        mimeType: "application/pdf",
+        uploadedAt: new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000),
+        expiresAt: new Date(now.getTime() + 20 * 24 * 60 * 60 * 1000),
+        status: "EXPIRING_SOON",
+        notes: "Renovação em andamento junto à CETESB",
+        notesLocalized: { ptBR: "Renovação em andamento junto à CETESB", enUS: "Renewal in progress with CETESB" },
+        uploadedById: "user-2",
+        uploadedByName: "Roberto Costa",
+        isRequired: true,
+      },
+      {
+        id: "doc-4",
+        supplierId: "supplier-1",
+        documentType: "TAX_CLEARANCE_FEDERAL",
+        documentTypeName: "CND Federal",
+        documentTypeNameLocalized: { ptBR: "CND Federal", enUS: "Federal Tax Clearance" },
+        fileName: "cnd_federal_dez2024.pdf",
+        fileSize: 185000,
+        mimeType: "application/pdf",
+        uploadedAt: new Date(now.getTime() - 15 * 24 * 60 * 60 * 1000),
+        expiresAt: new Date(now.getTime() + 165 * 24 * 60 * 60 * 1000),
+        status: "VALID",
+        notes: null,
+        uploadedById: "user-2",
+        uploadedByName: "Roberto Costa",
+        isRequired: true,
+      },
+      {
+        id: "doc-5",
+        supplierId: "supplier-1",
+        documentType: "FGTS_CLEARANCE",
+        documentTypeName: "CRF - FGTS",
+        documentTypeNameLocalized: { ptBR: "CRF - FGTS", enUS: "FGTS Clearance Certificate" },
+        fileName: "crf_fgts_dez2024.pdf",
+        fileSize: 156000,
+        mimeType: "application/pdf",
+        uploadedAt: new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000),
+        expiresAt: new Date(now.getTime() + 20 * 24 * 60 * 60 * 1000),
+        status: "EXPIRING_SOON",
+        notes: "Renovar antes do vencimento",
+        notesLocalized: { ptBR: "Renovar antes do vencimento", enUS: "Renew before expiration" },
+        uploadedById: "user-2",
+        uploadedByName: "Roberto Costa",
+        isRequired: true,
+      },
+      {
+        id: "doc-6",
+        supplierId: "supplier-1",
+        documentType: "FIRE_BRIGADE_LICENSE",
+        documentTypeName: "AVCB",
+        documentTypeNameLocalized: { ptBR: "AVCB", enUS: "Fire Brigade Certificate" },
+        fileName: "avcb_2023.pdf",
+        fileSize: 2340000,
+        mimeType: "application/pdf",
+        uploadedAt: new Date(now.getTime() - 400 * 24 * 60 * 60 * 1000),
+        expiresAt: new Date(now.getTime() - 35 * 24 * 60 * 60 * 1000),
+        status: "EXPIRED",
+        notes: "URGENTE: Documento vencido, aguardando renovação",
+        notesLocalized: { ptBR: "URGENTE: Documento vencido, aguardando renovação", enUS: "URGENT: Expired document, awaiting renewal" },
+        uploadedById: "user-2",
+        uploadedByName: "Roberto Costa",
+        isRequired: true,
+      },
+      {
+        id: "doc-7",
+        supplierId: "supplier-1",
+        documentType: "INSURANCE_POLICY",
+        documentTypeName: "Apólice de Seguro RC",
+        documentTypeNameLocalized: { ptBR: "Apólice de Seguro RC", enUS: "Liability Insurance Policy" },
+        fileName: "apolice_rc_2025.pdf",
+        fileSize: 4500000,
+        mimeType: "application/pdf",
+        uploadedAt: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000),
+        expiresAt: new Date(now.getTime() + 335 * 24 * 60 * 60 * 1000),
+        status: "VALID",
+        notes: "Cobertura de R$ 5 milhões",
+        notesLocalized: { ptBR: "Cobertura de R$ 5 milhões", enUS: "Coverage of R$ 5 million" },
+        uploadedById: "user-2",
+        uploadedByName: "Roberto Costa",
+        isRequired: false,
+      },
+
+      // InsuQuim - good standing
+      {
+        id: "doc-8",
+        supplierId: "supplier-2",
+        documentType: "CNPJ_CARD",
+        documentTypeName: "Cartão CNPJ",
+        documentTypeNameLocalized: { ptBR: "Cartão CNPJ", enUS: "CNPJ Card" },
+        fileName: "cnpj_insuquim.pdf",
+        fileSize: 198000,
+        mimeType: "application/pdf",
+        uploadedAt: new Date(now.getTime() - 200 * 24 * 60 * 60 * 1000),
+        expiresAt: null,
+        status: "VALID",
+        notes: null,
+        uploadedById: "user-1",
+        uploadedByName: "Maria Silva",
+        isRequired: true,
+      },
+      {
+        id: "doc-9",
+        supplierId: "supplier-2",
+        documentType: "ISO_CERTIFICATE",
+        documentTypeName: "Certificado ISO 14001",
+        documentTypeNameLocalized: { ptBR: "Certificado ISO 14001", enUS: "ISO 14001 Certificate" },
+        fileName: "iso_14001_insuquim.pdf",
+        fileSize: 1890000,
+        mimeType: "application/pdf",
+        uploadedAt: new Date(now.getTime() - 45 * 24 * 60 * 60 * 1000),
+        expiresAt: new Date(now.getTime() + 320 * 24 * 60 * 60 * 1000),
+        status: "VALID",
+        notes: "Certificação ambiental ISO 14001:2015",
+        notesLocalized: { ptBR: "Certificação ambiental ISO 14001:2015", enUS: "Environmental certification ISO 14001:2015" },
+        uploadedById: "user-1",
+        uploadedByName: "Maria Silva",
+        isRequired: true,
+      },
+      {
+        id: "doc-10",
+        supplierId: "supplier-2",
+        documentType: "TAX_CLEARANCE_FEDERAL",
+        documentTypeName: "CND Federal",
+        documentTypeNameLocalized: { ptBR: "CND Federal", enUS: "Federal Tax Clearance" },
+        fileName: "cnd_federal_insuquim.pdf",
+        fileSize: 175000,
+        mimeType: "application/pdf",
+        uploadedAt: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000),
+        expiresAt: new Date(now.getTime() + 175 * 24 * 60 * 60 * 1000),
+        status: "VALID",
+        notes: null,
+        uploadedById: "user-1",
+        uploadedByName: "Maria Silva",
+        isRequired: true,
+      },
+      {
+        id: "doc-11",
+        supplierId: "supplier-2",
+        documentType: "SOCIAL_CONTRACT",
+        documentTypeName: "Contrato Social",
+        documentTypeNameLocalized: { ptBR: "Contrato Social", enUS: "Articles of Association" },
+        fileName: "contrato_social_insuquim_consolidado.pdf",
+        fileSize: 3200000,
+        mimeType: "application/pdf",
+        uploadedAt: new Date(now.getTime() - 120 * 24 * 60 * 60 * 1000),
+        expiresAt: null,
+        status: "VALID",
+        notes: "Última alteração: 15ª alteração contratual",
+        notesLocalized: { ptBR: "Última alteração: 15ª alteração contratual", enUS: "Last amendment: 15th contractual amendment" },
+        uploadedById: "user-1",
+        uploadedByName: "Maria Silva",
+        isRequired: true,
+      },
+
+      // SolventTech - pending review
+      {
+        id: "doc-12",
+        supplierId: "supplier-3",
+        documentType: "CNPJ_CARD",
+        documentTypeName: "Cartão CNPJ",
+        documentTypeNameLocalized: { ptBR: "Cartão CNPJ", enUS: "CNPJ Card" },
+        fileName: "cnpj_solventtech.pdf",
+        fileSize: 210000,
+        mimeType: "application/pdf",
+        uploadedAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000),
+        expiresAt: null,
+        status: "PENDING_REVIEW",
+        notes: "Aguardando validação pelo comprador",
+        notesLocalized: { ptBR: "Aguardando validação pelo comprador", enUS: "Awaiting validation by buyer" },
+        uploadedById: "user-1",
+        uploadedByName: "Maria Silva",
+        isRequired: true,
+      },
+      {
+        id: "doc-13",
+        supplierId: "supplier-3",
+        documentType: "OPERATING_LICENSE",
+        documentTypeName: "Alvará de Funcionamento",
+        documentTypeNameLocalized: { ptBR: "Alvará de Funcionamento", enUS: "Operating License" },
+        fileName: "alvara_solventtech_2024.pdf",
+        fileSize: 890000,
+        mimeType: "application/pdf",
+        uploadedAt: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000),
+        expiresAt: new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000),
+        status: "PENDING_REVIEW",
+        notes: "Documento recém enviado",
+        notesLocalized: { ptBR: "Documento recém enviado", enUS: "Recently submitted document" },
+        uploadedById: "user-1",
+        uploadedByName: "Maria Silva",
+        isRequired: true,
+      },
+
+      // PigSul - some issues
+      {
+        id: "doc-14",
+        supplierId: "supplier-4",
+        documentType: "CNPJ_CARD",
+        documentTypeName: "Cartão CNPJ",
+        documentTypeNameLocalized: { ptBR: "Cartão CNPJ", enUS: "CNPJ Card" },
+        fileName: "cnpj_pigsul.pdf",
+        fileSize: 195000,
+        mimeType: "application/pdf",
+        uploadedAt: new Date(now.getTime() - 300 * 24 * 60 * 60 * 1000),
+        expiresAt: null,
+        status: "VALID",
+        notes: null,
+        uploadedById: "user-1",
+        uploadedByName: "Maria Silva",
+        isRequired: true,
+      },
+      {
+        id: "doc-15",
+        supplierId: "supplier-4",
+        documentType: "TAX_CLEARANCE_STATE",
+        documentTypeName: "CND Estadual",
+        documentTypeNameLocalized: { ptBR: "CND Estadual", enUS: "State Tax Clearance" },
+        fileName: "cnd_estadual_pigsul.pdf",
+        fileSize: 167000,
+        mimeType: "application/pdf",
+        uploadedAt: new Date(now.getTime() - 200 * 24 * 60 * 60 * 1000),
+        expiresAt: new Date(now.getTime() - 20 * 24 * 60 * 60 * 1000),
+        status: "EXPIRED",
+        notes: "Documento vencido - solicitar atualização",
+        notesLocalized: { ptBR: "Documento vencido - solicitar atualização", enUS: "Expired document - request update" },
+        uploadedById: "user-1",
+        uploadedByName: "Maria Silva",
+        isRequired: true,
+      },
+      {
+        id: "doc-16",
+        supplierId: "supplier-4",
+        documentType: "LABOR_CLEARANCE",
+        documentTypeName: "CNDT - Trabalhista",
+        documentTypeNameLocalized: { ptBR: "CNDT - Trabalhista", enUS: "Labor Clearance Certificate" },
+        fileName: "cndt_pigsul.pdf",
+        fileSize: 145000,
+        mimeType: "application/pdf",
+        uploadedAt: new Date(now.getTime() - 8 * 24 * 60 * 60 * 1000),
+        expiresAt: new Date(now.getTime() + 172 * 24 * 60 * 60 * 1000),
+        status: "VALID",
+        notes: null,
+        uploadedById: "user-1",
+        uploadedByName: "Maria Silva",
+        isRequired: true,
+      },
+
+      // ResinCorp
+      {
+        id: "doc-17",
+        supplierId: "supplier-5",
+        documentType: "CNPJ_CARD",
+        documentTypeName: "Cartão CNPJ",
+        documentTypeNameLocalized: { ptBR: "Cartão CNPJ", enUS: "CNPJ Card" },
+        fileName: "cnpj_resincorp.pdf",
+        fileSize: 205000,
+        mimeType: "application/pdf",
+        uploadedAt: new Date(now.getTime() - 150 * 24 * 60 * 60 * 1000),
+        expiresAt: null,
+        status: "VALID",
+        notes: null,
+        uploadedById: "user-1",
+        uploadedByName: "Maria Silva",
+        isRequired: true,
+      },
+      {
+        id: "doc-18",
+        supplierId: "supplier-5",
+        documentType: "TECHNICAL_RESPONSIBILITY",
+        documentTypeName: "ART - Responsabilidade Técnica",
+        documentTypeNameLocalized: { ptBR: "ART - Responsabilidade Técnica", enUS: "Technical Responsibility Certificate" },
+        fileName: "art_resincorp_2024.pdf",
+        fileSize: 567000,
+        mimeType: "application/pdf",
+        uploadedAt: new Date(now.getTime() - 80 * 24 * 60 * 60 * 1000),
+        expiresAt: new Date(now.getTime() + 285 * 24 * 60 * 60 * 1000),
+        status: "VALID",
+        notes: "Eng. Químico Responsável: Dr. Carlos Mendes",
+        notesLocalized: { ptBR: "Eng. Químico Responsável: Dr. Carlos Mendes", enUS: "Responsible Chemical Eng.: Dr. Carlos Mendes" },
+        uploadedById: "user-1",
+        uploadedByName: "Maria Silva",
+        isRequired: true,
+      },
+      {
+        id: "doc-19",
+        supplierId: "supplier-5",
+        documentType: "FINANCIAL_STATEMENT",
+        documentTypeName: "Balanço Patrimonial",
+        documentTypeNameLocalized: { ptBR: "Balanço Patrimonial", enUS: "Financial Statement" },
+        fileName: "balanco_2023_resincorp.pdf",
+        fileSize: 4890000,
+        mimeType: "application/pdf",
+        uploadedAt: new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000),
+        expiresAt: new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000),
+        status: "VALID",
+        notes: "Exercício 2023 - Auditado por PwC",
+        notesLocalized: { ptBR: "Exercício 2023 - Auditado por PwC", enUS: "FY 2023 - Audited by PwC" },
+        uploadedById: "user-1",
+        uploadedByName: "Maria Silva",
+        isRequired: false,
+      },
+    ];
+    supplierDocuments.forEach(d => this.supplierDocuments.set(d.id, d));
   }
 
   // Users
@@ -777,6 +1138,49 @@ export class MemStorage implements IStorage {
       winRate: total > 0 ? (won / total) * 100 : 0,
       avgResponseTime: 2.3,
     };
+  }
+
+  // Supplier Documents
+  async getSupplierDocuments(supplierId: string): Promise<SupplierDocument[]> {
+    return Array.from(this.supplierDocuments.values())
+      .filter(d => d.supplierId === supplierId)
+      .sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
+  }
+
+  async getAllSupplierDocuments(): Promise<SupplierDocument[]> {
+    return Array.from(this.supplierDocuments.values())
+      .sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
+  }
+
+  async getSupplierDocumentStats(supplierId?: string): Promise<SupplierDocumentStats> {
+    let docs = Array.from(this.supplierDocuments.values());
+    if (supplierId) {
+      docs = docs.filter(d => d.supplierId === supplierId);
+    }
+
+    const total = docs.length;
+    const valid = docs.filter(d => d.status === "VALID").length;
+    const expiringSoon = docs.filter(d => d.status === "EXPIRING_SOON").length;
+    const expired = docs.filter(d => d.status === "EXPIRED").length;
+    const pendingReview = docs.filter(d => d.status === "PENDING_REVIEW").length;
+    const requiredDocs = docs.filter(d => d.isRequired);
+    const validRequired = requiredDocs.filter(d => d.status === "VALID" || d.status === "EXPIRING_SOON").length;
+    const complianceRate = requiredDocs.length > 0 ? (validRequired / requiredDocs.length) * 100 : 100;
+
+    return { total, valid, expiringSoon, expired, pendingReview, complianceRate };
+  }
+
+  async getExpiringDocuments(days: number): Promise<SupplierDocument[]> {
+    const now = new Date();
+    const futureDate = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
+    
+    return Array.from(this.supplierDocuments.values())
+      .filter(d => {
+        if (!d.expiresAt) return false;
+        const expDate = new Date(d.expiresAt);
+        return expDate > now && expDate <= futureDate;
+      })
+      .sort((a, b) => new Date(a.expiresAt!).getTime() - new Date(b.expiresAt!).getTime());
   }
 }
 
