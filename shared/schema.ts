@@ -267,3 +267,66 @@ export interface SupplierDashboardStats {
   winRate: number;
   avgResponseTime: number;
 }
+
+// ============================================
+// SUPPLIER DOCUMENTS
+// ============================================
+
+export const DocumentStatus = {
+  VALID: "VALID",
+  EXPIRING_SOON: "EXPIRING_SOON",
+  EXPIRED: "EXPIRED",
+  PENDING_REVIEW: "PENDING_REVIEW",
+} as const;
+
+export type DocumentStatusType = typeof DocumentStatus[keyof typeof DocumentStatus];
+
+export const DocumentType = {
+  CNPJ_CARD: "CNPJ_CARD",
+  STATE_REGISTRATION: "STATE_REGISTRATION",
+  OPERATING_LICENSE: "OPERATING_LICENSE",
+  ISO_CERTIFICATE: "ISO_CERTIFICATE",
+  ENVIRONMENTAL_LICENSE: "ENVIRONMENTAL_LICENSE",
+  FIRE_BRIGADE_LICENSE: "FIRE_BRIGADE_LICENSE",
+  TECHNICAL_RESPONSIBILITY: "TECHNICAL_RESPONSIBILITY",
+  FINANCIAL_STATEMENT: "FINANCIAL_STATEMENT",
+  TAX_CLEARANCE_FEDERAL: "TAX_CLEARANCE_FEDERAL",
+  TAX_CLEARANCE_STATE: "TAX_CLEARANCE_STATE",
+  TAX_CLEARANCE_MUNICIPAL: "TAX_CLEARANCE_MUNICIPAL",
+  FGTS_CLEARANCE: "FGTS_CLEARANCE",
+  LABOR_CLEARANCE: "LABOR_CLEARANCE",
+  SOCIAL_CONTRACT: "SOCIAL_CONTRACT",
+  POWER_OF_ATTORNEY: "POWER_OF_ATTORNEY",
+  INSURANCE_POLICY: "INSURANCE_POLICY",
+  OTHER: "OTHER",
+} as const;
+
+export type DocumentTypeType = typeof DocumentType[keyof typeof DocumentType];
+
+export interface SupplierDocument {
+  id: string;
+  supplierId: string;
+  documentType: DocumentTypeType;
+  documentTypeName: string;
+  documentTypeNameLocalized?: LocalizedText;
+  fileName: string;
+  fileSize: number;
+  mimeType: string;
+  uploadedAt: Date;
+  expiresAt: Date | null;
+  status: DocumentStatusType;
+  notes?: string | null;
+  notesLocalized?: LocalizedText;
+  uploadedById: string;
+  uploadedByName?: string;
+  isRequired: boolean;
+}
+
+export interface SupplierDocumentStats {
+  total: number;
+  valid: number;
+  expiringSoon: number;
+  expired: number;
+  pendingReview: number;
+  complianceRate: number;
+}

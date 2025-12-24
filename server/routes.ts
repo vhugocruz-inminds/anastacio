@@ -259,5 +259,52 @@ export async function registerRoutes(
     }
   });
 
+  // Supplier Documents routes
+  app.get("/api/documents", async (_req, res) => {
+    try {
+      const documents = await storage.getAllSupplierDocuments();
+      res.json(documents);
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.get("/api/documents/stats", async (_req, res) => {
+    try {
+      const stats = await storage.getSupplierDocumentStats();
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.get("/api/documents/expiring", async (req, res) => {
+    try {
+      const days = parseInt(req.query.days as string) || 30;
+      const documents = await storage.getExpiringDocuments(days);
+      res.json(documents);
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.get("/api/suppliers/:id/documents", async (req, res) => {
+    try {
+      const documents = await storage.getSupplierDocuments(req.params.id);
+      res.json(documents);
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.get("/api/suppliers/:id/documents/stats", async (req, res) => {
+    try {
+      const stats = await storage.getSupplierDocumentStats(req.params.id);
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   return httpServer;
 }
