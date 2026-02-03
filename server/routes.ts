@@ -103,7 +103,7 @@ export async function registerRoutes(
 
   app.post("/api/rfcis", async (req, res) => {
     try {
-      const { title, description, priority, deadline, requestDate, requestedBy, items, providerIds } = req.body;
+      const { title, description, priority, deadline, requestDate, requestedBy, items, selectedProviders } = req.body;
       
       // Validate required fields
       if (!title || typeof title !== "string" || title.trim().length === 0) {
@@ -121,7 +121,7 @@ export async function registerRoutes(
       if (!items || !Array.isArray(items) || items.length === 0) {
         return res.status(400).json({ error: "At least one item is required" });
       }
-      if (!providerIds || !Array.isArray(providerIds) || providerIds.length === 0) {
+      if (!selectedProviders || !Array.isArray(selectedProviders) || selectedProviders.length === 0) {
         return res.status(400).json({ error: "At least one provider must be selected" });
       }
 
@@ -137,7 +137,7 @@ export async function registerRoutes(
         createdById: "user-1",
       };
 
-      const rfci = await storage.createRfci(rfciData as any, items || [], providerIds || []);
+      const rfci = await storage.createRfci(rfciData as any, items || [], selectedProviders || []);
       res.status(201).json(rfci);
     } catch (error) {
       console.error("Error creating RFCI:", error);

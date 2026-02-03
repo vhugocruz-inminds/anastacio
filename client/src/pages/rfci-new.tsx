@@ -55,7 +55,7 @@ interface RfciFormData {
     preco: number; // preço unitário do produto
     proposta: string; // valor editável da proposta
   }[];
-  providerIds: string[];
+  selectedProviders: string[]; // formato: "supplier-id:provider-name"
 }
 
 // Mapeamento de Agrupadores e seus produtos
@@ -158,7 +158,7 @@ export default function RfciNewPage() {
     requestDate: getCurrentDate(),
     requestedBy: user?.name || "Maria Silva",
     items: [],
-    providerIds: [],
+    selectedProviders: [],
   });
 
   const { data: products } = useQuery<Product[]>({
@@ -279,11 +279,12 @@ export default function RfciNewPage() {
     return agrupadorData?.produtos || [];
   };
 
-  const toggleProvider = (provider: string) => {
-    const newIds = formData.providerIds.includes(provider)
-      ? formData.providerIds.filter(id => id !== provider)
-      : [...formData.providerIds, provider];
-    setFormData({ ...formData, providerIds: newIds });
+  const toggleProvider = (supplierId: string, provider: string) => {
+    const key = `${supplierId}:${provider}`;
+    const newIds = formData.selectedProviders.includes(key)
+      ? formData.selectedProviders.filter(id => id !== key)
+      : [...formData.selectedProviders, key];
+    setFormData({ ...formData, selectedProviders: newIds });
   };
 
   const canProceed = () => {
@@ -295,7 +296,7 @@ export default function RfciNewPage() {
           i.agrupador && i.productId && i.quantity
         );
       case 3:
-        return formData.providerIds.length > 0;
+        return formData.selectedProviders.length > 0;
       default:
         return true;
     }
@@ -673,17 +674,17 @@ export default function RfciNewPage() {
           <CardHeader>
             <CardTitle>Selecionar Fornecedores</CardTitle>
             <CardDescription>
-              Escolha os fornecedores que receberão esta RFCI ({formData.providerIds.length} selecionados)
+              Escolha os fornecedores que receberão esta RFCI ({formData.selectedProviders.length} selecionados)
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 sm:grid-cols-2">
               {approvedSuppliers.map((supplier) => {
-                const providers = typeof supplier.providers === 'string' 
+                const providersData = typeof supplier.providers === 'string' 
                   ? JSON.parse(supplier.providers) 
                   : supplier.providers || [];
                 
-                if (providers.length === 0) return null;
+                if (providersData.length === 0) return null;
 
                 return (
                   <div key={supplier.id} className="space-y-2 p-4 rounded-lg border-2 border-muted bg-muted/30">
@@ -705,22 +706,56 @@ export default function RfciNewPage() {
                     
                     <div className="space-y-2 pt-2 border-t">
                       <p className="text-xs font-semibold text-muted-foreground">Fornecedores:</p>
-                      {providers.map((provider: string) => {
-                        const isSelected = formData.providerIds.includes(provider);
+                      {providersData.map((providerObj: any) => {
+                        // Robusto parsing - trata tanto string quanto objeto
+                        let providerName = '';
+                        let providerStatus = 'Qualificado';
+                        
+                        if (typeof providerObj === 'string') {
+                          providerName = providerObj;
+                        } else if (providerObj && typeof providerObj === 'object') {
+                          providerName = providerObj.name || '';
+                          providerStatus = providerObj.status || 'Qualificado';
+                        }
+                        
+                        const key = `${supplier.id}:${providerName}`;
+                        const isSelected = formData.selectedProviders.includes(key);
+                        const isBlocked = providerStatus === 'Bloqueado';
                         
                         return (
                           <div
-                            key={provider}
+                            key={key}
                             className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
-                              isSelected ? "bg-primary/10 border border-primary" : "bg-white hover:bg-muted/50 border border-transparent"
+                              isBlocked 
+                                ? "bg-red-50 border border-red-200 cursor-not-allowed opacity-60" 
+                                : isSelected 
+                                  ? "bg-primary/10 border border-primary" 
+                                  : "bg-white hover:bg-muted/50 border border-transparent"
                             }`}
-                            onClick={() => toggleProvider(provider)}
+                            onClick={() => !isBlocked && toggleProvider(supplier.id, providerName)}
                           >
                             <Checkbox
                               checked={isSelected}
-                              onCheckedChange={() => toggleProvider(provider)}
+                              disabled={isBlocked}
+                              onCheckedChange={() => !isBlocked && toggleProvider(supplier.id, providerName)}
                             />
-                            <span className="text-sm font-medium">{provider}</span>
+                            <div className="flex-1">
+                              <span className="text-sm font-medium">{providerName}</span>
+                              <div className="text-xs mt-0.5">
+                                <Badge 
+                                  variant={
+                                    providerStatus === 'Bloqueado' 
+                                      ? 'destructive' 
+                                      : providerStatus === 'Restrito' 
+                                        ? 'secondary'
+                                        : 'outline'
+                                  }
+                                  className="text-xs"
+                                >
+                                  {providerStatus}
+                                </Badge>
+                              </div>
+                            </div>
                           </div>
                         );
                       })}
@@ -812,14 +847,18 @@ export default function RfciNewPage() {
 
             <div className="border-t pt-4">
               <p className="text-sm text-muted-foreground mb-2">
-                Fornecedores ({formData.providerIds.length})
+                Fornecedores ({formData.selectedProviders.length})
               </p>
               <div className="flex flex-wrap gap-2">
-                {formData.providerIds.map((provider) => (
-                  <Badge key={provider} variant="secondary">
-                    {provider}
-                  </Badge>
-                ))}
+                {formData.selectedProviders.map((key) => {
+                  const [supplierId, providerName] = key.split(':');
+                  const supplier = suppliers?.find(s => s.id === supplierId);
+                  return (
+                    <Badge key={key} variant="secondary">
+                      {providerName} ({supplier?.tradeName})
+                    </Badge>
+                  );
+                })}
               </div>
             </div>
           </CardContent>

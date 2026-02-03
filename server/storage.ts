@@ -135,7 +135,10 @@ export class MemStorage implements IStorage {
         deliveryScore: "4.4",
         priceScore: "4.3",
         createdAt: new Date(),
-        providers: JSON.stringify(["Fornecedor A", "Fornecedor B"]),
+        providers: JSON.stringify([
+          { name: "Fornecedor A", status: "Qualificado" },
+          { name: "Fornecedor B", status: "Bloqueado" }
+        ]),
       },
       {
         id: "supplier-2",
@@ -154,7 +157,10 @@ export class MemStorage implements IStorage {
         deliveryScore: "4.0",
         priceScore: "4.4",
         createdAt: new Date(),
-        providers: JSON.stringify(["Fornecedor B", "Fornecedor C"]),
+        providers: JSON.stringify([
+          { name: "Fornecedor B", status: "Qualificado" },
+          { name: "Fornecedor C", status: "Restrito" }
+        ]),
       },
       {
         id: "supplier-3",
@@ -173,7 +179,9 @@ export class MemStorage implements IStorage {
         deliveryScore: "4.7",
         priceScore: "4.6",
         createdAt: new Date(),
-        providers: JSON.stringify(["Fornecedor D"]),
+        providers: JSON.stringify([
+          { name: "Fornecedor D", status: "Qualificado" }
+        ]),
       },
       {
         id: "supplier-4",
@@ -192,7 +200,9 @@ export class MemStorage implements IStorage {
         deliveryScore: "3.7",
         priceScore: "4.0",
         createdAt: new Date(),
-        providers: JSON.stringify(["Fornecedor C"]),
+        providers: JSON.stringify([
+          { name: "Fornecedor C", status: "Qualificado" }
+        ]),
       },
       {
         id: "supplier-5",
@@ -211,7 +221,10 @@ export class MemStorage implements IStorage {
         deliveryScore: null,
         priceScore: null,
         createdAt: new Date(),
-        providers: JSON.stringify(["Fornecedor A", "Fornecedor D"]),
+        providers: JSON.stringify([
+          { name: "Fornecedor A", status: "Restrito" },
+          { name: "Fornecedor D", status: "Bloqueado" }
+        ]),
       },
     ];
     suppliers.forEach(s => {
