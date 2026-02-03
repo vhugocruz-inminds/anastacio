@@ -132,7 +132,7 @@ export function AppSidebar() {
           />
           <div>
             <h1 className="font-semibold text-lg leading-tight">e-Proc</h1>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-white">
               {isSupplier ? t("sidebar.supplierPortal") : "Procurement B2B"}
             </p>
           </div>

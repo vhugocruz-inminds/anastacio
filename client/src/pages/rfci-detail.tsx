@@ -33,7 +33,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import type { RfciWithDetails, Quotation } from "@shared/schema";
+import type { RfciWithDetails, QuotationWithItems } from "@shared/schema";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -54,7 +54,7 @@ const quotationStatusConfig: Record<string, { label: string; variant: "default" 
   EXPIRED: { label: "Expirada", variant: "outline" },
 };
 
-function ComparativeMap({ quotations, rfciId }: { quotations: Quotation[]; rfciId: string }) {
+function ComparativeMap({ quotations, rfciId }: { quotations: QuotationWithItems[]; rfciId: string }) {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const [expandedQuotation, setExpandedQuotation] = useState<string | null>(null);
@@ -310,7 +310,7 @@ export default function RfciDetailPage() {
         <FileText className="h-12 w-12 text-muted-foreground mb-4" />
         <h2 className="text-lg font-medium">RFCI não encontrada</h2>
         <Link href="/rfcis">
-          <Button variant="link">Voltar para lista</Button>
+          <Button variant="ghost">Voltar para lista</Button>
         </Link>
       </div>
     );
