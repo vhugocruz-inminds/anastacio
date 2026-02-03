@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -16,7 +18,9 @@ import {
   Clock,
   CheckCircle2,
   XCircle,
-  AlertCircle
+  AlertCircle,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -34,6 +38,12 @@ export default function SupplierMyQuotationsPage() {
   const { data: quotations, isLoading } = useQuery<QuotationWithItems[]>({
     queryKey: ["/api/supplier/quotations"],
   });
+
+  const [expandedQuotation, setExpandedQuotation] = useState<string | null>(null);
+
+  const toggleExpand = (quotationId: string) => {
+    setExpandedQuotation(expandedQuotation === quotationId ? null : quotationId);
+  };
 
   return (
     <div className="space-y-6">
@@ -135,36 +145,121 @@ export default function SupplierMyQuotationsPage() {
                   const status = statusConfig[quotation.status] || statusConfig.PENDING;
                   const StatusIcon = status.icon;
                   const totalValue = quotation.totalValue ? Number(quotation.totalValue) : 0;
+                  const isExpanded = expandedQuotation === quotation.id;
 
                   return (
-                    <TableRow key={quotation.id} data-testid={`row-quotation-${quotation.id}`}>
-                      <TableCell>
-                        <div>
-                          <p className="font-medium">{quotation.rfci?.title || "RFCI"}</p>
-                          <p className="text-sm text-muted-foreground font-mono">
-                            {quotation.rfci?.code || quotation.rfciId.slice(0, 8)}
-                          </p>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {quotation.submittedAt 
-                          ? format(new Date(quotation.submittedAt), "dd/MM/yyyy", { locale: ptBR })
-                          : "-"
-                        }
-                      </TableCell>
-                      <TableCell className="font-medium">
-                        R$ {totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                      </TableCell>
-                      <TableCell>
-                        {quotation.deliveryDays ? `${quotation.deliveryDays} dias` : "-"}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={status.variant} className="gap-1">
-                          <StatusIcon className="h-3 w-3" />
-                          {status.label}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
+                    <>
+                      <TableRow key={quotation.id} data-testid={`row-quotation-${quotation.id}`}>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => toggleExpand(quotation.id)}
+                              className="h-8 w-8 p-0"
+                            >
+                              {isExpanded ? (
+                                <ChevronUp className="h-4 w-4" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4" />
+                              )}
+                            </Button>
+                            <div>
+                              <p className="font-medium">{quotation.rfci?.title || "RFCI"}</p>
+                              <p className="text-sm text-muted-foreground font-mono">
+                                {quotation.rfci?.code || quotation.rfciId.slice(0, 8)}
+                              </p>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {quotation.submittedAt 
+                            ? format(new Date(quotation.submittedAt), "dd/MM/yyyy", { locale: ptBR })
+                            : "-"
+                          }
+                        </TableCell>
+                        <TableCell className="font-medium">
+                          R$ {totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        </TableCell>
+                        <TableCell>
+                          {quotation.deliveryDays ? `${quotation.deliveryDays} dias` : "-"}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={status.variant} className="gap-1">
+                            <StatusIcon className="h-3 w-3" />
+                            {status.label}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                      {isExpanded && quotation.items && quotation.items.length > 0 && (
+                        <TableRow>
+                          <TableCell colSpan={5} className="bg-muted/50 p-4">
+                            <div className="space-y-4">
+                              <h4 className="font-semibold text-sm">Itens da Cotação</h4>
+                              <Table className="bg-background">
+                                <TableHeader>
+                                  <TableRow>
+                                    <TableHead>Produto</TableHead>
+                                    <TableHead className="w-20">Quantidade</TableHead>
+                                    <TableHead className="w-24">Estoque Atual</TableHead>
+                                    <TableHead className="w-28">Preço Unitário</TableHead>
+                                    <TableHead className="w-24">Prazo Atual</TableHead>
+                                    <TableHead className="w-28">Prazo Qtd Restante</TableHead>
+                                    <TableHead className="w-28 text-right">Total (Atual)</TableHead>
+                                    <TableHead className="w-32 text-right">Total (Restante)</TableHead>
+                                  </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                  {quotation.items.map((item) => {
+                                    const qty = parseFloat(item.quantity.toString()) || 0;
+                                    const price = parseFloat(item.unitPrice.toString()) || 0;
+                                    const currentStock = parseFloat(item.currentStock?.toString() || "0") || 0;
+                                    const totalCurrent = currentStock * price;
+                                    const remainingQty = Math.max(0, qty - currentStock);
+                                    const totalRemaining = remainingQty * price;
+
+                                    return (
+                                      <TableRow key={item.id}>
+                                        <TableCell>
+                                          <p className="font-medium">{item.productName}</p>
+                                        </TableCell>
+                                        <TableCell>
+                                          <span className="font-mono">
+                                            {Number(qty).toLocaleString('pt-BR')}
+                                          </span>
+                                        </TableCell>
+                                        <TableCell>
+                                          <span className="font-mono">
+                                            {Number(currentStock).toLocaleString('pt-BR')}
+                                          </span>
+                                        </TableCell>
+                                        <TableCell>
+                                          <span className="font-mono">
+                                            R$ {price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                          </span>
+                                        </TableCell>
+                                        <TableCell>
+                                          {item.currentDeliveryDays ? `${item.currentDeliveryDays} d` : "-"}
+                                        </TableCell>
+                                        <TableCell>
+                                          {item.deliveryDays ? `${item.deliveryDays} d` : "-"}
+                                        </TableCell>
+                                        <TableCell className="text-right font-medium">
+                                          R$ {totalCurrent.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                        </TableCell>
+                                        <TableCell className="text-right font-medium">
+                                          R$ {totalRemaining.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                        </TableCell>
+                                      </TableRow>
+                                    );
+                                  })}
+                                </TableBody>
+                              </Table>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </>
                   );
                 })
               ) : (

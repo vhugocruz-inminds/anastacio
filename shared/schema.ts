@@ -152,8 +152,10 @@ export const quotationItems = pgTable("quotation_items", {
   rfciItemId: varchar("rfci_item_id").notNull(),
   productName: text("product_name").notNull(),
   quantity: decimal("quantity", { precision: 15, scale: 4 }).notNull(),
+  currentStock: decimal("current_stock", { precision: 15, scale: 4 }),
   unitPrice: decimal("unit_price", { precision: 15, scale: 4 }).notNull(),
   totalPrice: decimal("total_price", { precision: 15, scale: 2 }).notNull(),
+  currentDeliveryDays: integer("current_delivery_days"),
   deliveryDays: integer("delivery_days"),
 });
 
