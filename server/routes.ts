@@ -101,6 +101,16 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/debug/quotation-items", async (_req, res) => {
+    try {
+      // Debug endpoint to check if quotation items exist
+      const quotationItems = await storage.getQuotationItems();
+      res.json(quotationItems);
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   app.post("/api/rfcis", async (req, res) => {
     try {
       const { title, description, priority, deadline, requestDate, requestedBy, items, selectedProviders } = req.body;
@@ -204,12 +214,17 @@ export async function registerRoutes(
           maxDeliveryDays = itemDeliveryDays;
         }
         
+        const currentStock = item.currentStock ? parseFloat(item.currentStock) : 0;
+        const currentDeliveryDays = item.currentDeliveryDays ? parseInt(item.currentDeliveryDays) : null;
+        
         return {
           rfciItemId: item.rfciItemId,
           productName: item.productName,
           quantity: String(qty),
           unitPrice: String(price),
           totalPrice: String(total.toFixed(2)),
+          currentStock: currentStock || null,
+          currentDeliveryDays: currentDeliveryDays,
           deliveryDays: itemDeliveryDays || null,
           quotationId: "temp", // Temporary ID, will be replaced by storage
         };

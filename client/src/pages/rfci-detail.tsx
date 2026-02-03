@@ -1,5 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useRoute, Link, useLocation } from "wouter";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -26,7 +27,9 @@ import {
   Trophy,
   TrendingDown,
   AlertCircle,
-  Building2
+  Building2,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -54,6 +57,7 @@ const quotationStatusConfig: Record<string, { label: string; variant: "default" 
 function ComparativeMap({ quotations, rfciId }: { quotations: Quotation[]; rfciId: string }) {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
+  const [expandedQuotation, setExpandedQuotation] = useState<string | null>(null);
   
   const awardMutation = useMutation({
     mutationFn: async (quotationId: string) => {
@@ -74,6 +78,10 @@ function ComparativeMap({ quotations, rfciId }: { quotations: Quotation[]; rfciI
       });
     },
   });
+
+  const toggleExpand = (quotationId: string) => {
+    setExpandedQuotation(expandedQuotation === quotationId ? null : quotationId);
+  };
 
   const submittedQuotations = quotations.filter(q => q.status === "SUBMITTED" || q.status === "ACCEPTED");
   
@@ -115,17 +123,18 @@ function ComparativeMap({ quotations, rfciId }: { quotations: Quotation[]; rfciI
         )}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid items-start gap-4 md:grid-cols-2 lg:grid-cols-3">
         {sortedQuotations.map((quotation, idx) => {
           const totalValue = quotation.totalValue ? Number(quotation.totalValue) : 0;
           const isBest = idx === 0;
           const isWinner = quotation.status === "ACCEPTED";
           const savings = lowestPrice > 0 ? ((totalValue - lowestPrice) / lowestPrice) * 100 : 0;
+          const quotationKey = `${quotation.id ?? quotation.supplierId ?? quotation.supplierName ?? "quotation"}-${idx}`;
 
           return (
             <Card 
-              key={quotation.id} 
-              className={`relative ${isWinner ? "ring-2 ring-green-500" : isBest ? "ring-2 ring-primary" : ""}`}
+              key={quotationKey} 
+              className={`relative flex flex-col ${isWinner ? "ring-2 ring-green-500" : isBest ? "ring-2 ring-primary" : ""}`}
             >
               {isWinner && (
                 <div className="absolute -top-3 left-4">
@@ -151,9 +160,21 @@ function ComparativeMap({ quotations, rfciId }: { quotations: Quotation[]; rfciI
                       Enviada em {quotation.submittedAt ? format(new Date(quotation.submittedAt), "dd/MM/yyyy", { locale: ptBR }) : "-"}
                     </p>
                   </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => toggleExpand(quotationKey)}
+                    className="h-8 w-8 p-0"
+                  >
+                    {expandedQuotation === quotationKey ? (
+                      <ChevronUp className="h-4 w-4" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4" />
+                    )}
+                  </Button>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="flex flex-1 flex-col gap-4">
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">Valor Total</span>
@@ -161,11 +182,13 @@ function ComparativeMap({ quotations, rfciId }: { quotations: Quotation[]; rfciI
                       R$ {totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </span>
                   </div>
-                  {savings > 0 && (
-                    <div className="flex items-center justify-end gap-1 text-xs text-red-500">
-                      +{savings.toFixed(1)}% vs. menor
-                    </div>
-                  )}
+                  <div className="flex items-center justify-end gap-1 text-xs text-red-500 min-h-[16px]">
+                    {savings > 0 ? (
+                      <span>+{savings.toFixed(1)}% vs. menor</span>
+                    ) : (
+                      <span className="opacity-0">+0.0% vs. menor</span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 pt-2 border-t">
@@ -186,12 +209,63 @@ function ComparativeMap({ quotations, rfciId }: { quotations: Quotation[]; rfciI
                   </div>
                 )}
 
+                {expandedQuotation === quotationKey && quotation.items && (
+                  <div className="pt-4 border-t space-y-3">
+                    <h4 className="font-semibold text-sm">Detalhes dos Itens</h4>
+                    <div className="overflow-x-auto -mx-4 px-4">
+                      <Table className="text-xs">
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Produto</TableHead>
+                            <TableHead className="w-16">Qtd</TableHead>
+                            <TableHead className="w-20">Est. Atual</TableHead>
+                            <TableHead className="w-20">Preço Unit</TableHead>
+                            <TableHead className="w-16">Prazo Atu</TableHead>
+                            <TableHead className="w-20">Prazo Rest</TableHead>
+                            <TableHead className="w-20 text-right">Total Atu</TableHead>
+                            <TableHead className="w-20 text-right">Total Rest</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {quotation.items.map((item) => {
+                            const qty = parseFloat(item.quantity.toString()) || 0;
+                            const price = parseFloat(item.unitPrice.toString()) || 0;
+                            const currentStock = parseFloat(item.currentStock?.toString() || "0") || 0;
+                            const totalCurrent = currentStock * price;
+                            const remainingQty = Math.max(0, qty - currentStock);
+                            const totalRemaining = remainingQty * price;
+
+                            return (
+                              <TableRow key={item.id}>
+                                <TableCell>
+                                  <span className="font-medium">{item.productName}</span>
+                                </TableCell>
+                                <TableCell>{Number(qty).toLocaleString('pt-BR')}</TableCell>
+                                <TableCell>{Number(currentStock).toLocaleString('pt-BR')}</TableCell>
+                                <TableCell>R$ {price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</TableCell>
+                                <TableCell>{item.currentDeliveryDays || "-"}</TableCell>
+                                <TableCell>{item.deliveryDays || "-"}</TableCell>
+                                <TableCell className="text-right">
+                                  R$ {totalCurrent.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  R$ {totalRemaining.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </div>
+                )}
+
                 {!hasWinner && (
                   <Button 
-                    className="w-full gap-2" 
+                    className="mt-auto w-full gap-2" 
                     onClick={() => awardMutation.mutate(quotation.id)}
                     disabled={awardMutation.isPending}
-                    data-testid={`button-award-${quotation.id}`}
+                    data-testid={`button-award-${quotationKey}`}
                   >
                     <Trophy className="h-4 w-4" />
                     Adjudicar

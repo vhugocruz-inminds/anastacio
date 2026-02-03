@@ -44,6 +44,8 @@ interface QuotationFormItem {
   productName: string;
   quantity: string;
   unitPrice: string;
+  currentStock: string;
+  currentDeliveryDays: string;
   deliveryDays: string;
 }
 
@@ -81,6 +83,8 @@ export default function SupplierQuotationRespondPage() {
           productName: item.productName,
           quantity: String(item.quantity),
           unitPrice: "",
+          currentStock: "",
+          currentDeliveryDays: "",
           deliveryDays: "",
         })),
       }));
@@ -154,7 +158,7 @@ export default function SupplierQuotationRespondPage() {
         <FileText className="h-12 w-12 text-muted-foreground mb-4" />
         <h2 className="text-lg font-medium">RFCI não encontrada</h2>
         <Link href="/supplier/quotations">
-          <Button variant="link">Voltar para lista</Button>
+          <Button variant="ghost">Voltar para lista</Button>
         </Link>
       </div>
     );
@@ -238,17 +242,24 @@ export default function SupplierQuotationRespondPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Produto</TableHead>
-                <TableHead className="w-28">Quantidade</TableHead>
-                <TableHead className="w-36">Preço Unitário (R$)</TableHead>
-                <TableHead className="w-28">Prazo (dias)</TableHead>
-                <TableHead className="w-32 text-right">Total</TableHead>
+                <TableHead className="w-20">Quantidade</TableHead>
+                <TableHead className="w-24">Estoque Atual</TableHead>
+                <TableHead className="w-20">Preço Unitário (R$)</TableHead>
+                <TableHead className="w-20">Prazo Atual (Dias)</TableHead>
+                <TableHead className="w-20">Prazo Qtd Restante (Dias)</TableHead>
+                <TableHead className="w-28 text-right">Total (Atual)</TableHead>
+                <TableHead className="w-32 text-right">Total (Restante)</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {formData.items.map((item, idx) => {
                 const qty = parseFloat(item.quantity) || 0;
                 const price = parseFloat(item.unitPrice) || 0;
-                const total = qty * price;
+                const currentStock = parseFloat(item.currentStock) || 0;
+                
+                const totalCurrent = currentStock * price;
+                const remainingQty = Math.max(0, qty - currentStock);
+                const totalRemaining = remainingQty * price;
 
                 return (
                   <TableRow key={item.rfciItemId}>
@@ -268,12 +279,32 @@ export default function SupplierQuotationRespondPage() {
                     <TableCell>
                       <Input
                         type="number"
+                        placeholder="0"
+                        value={item.currentStock}
+                        onChange={(e) => updateItemPrice(idx, "currentStock", e.target.value)}
+                        className="w-20"
+                        data-testid={`input-stock-${idx}`}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="number"
                         step="0.01"
                         placeholder="0,00"
                         value={item.unitPrice}
                         onChange={(e) => updateItemPrice(idx, "unitPrice", e.target.value)}
-                        className="w-full"
+                        className="w-20"
                         data-testid={`input-price-${idx}`}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="number"
+                        placeholder="0"
+                        value={item.currentDeliveryDays}
+                        onChange={(e) => updateItemPrice(idx, "currentDeliveryDays", e.target.value)}
+                        className="w-20"
+                        data-testid={`input-delivery-current-${idx}`}
                       />
                     </TableCell>
                     <TableCell>
@@ -282,12 +313,15 @@ export default function SupplierQuotationRespondPage() {
                         placeholder="0"
                         value={item.deliveryDays}
                         onChange={(e) => updateItemPrice(idx, "deliveryDays", e.target.value)}
-                        className="w-full"
+                        className="w-20"
                         data-testid={`input-delivery-${idx}`}
                       />
                     </TableCell>
                     <TableCell className="text-right font-medium">
-                      R$ {total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      R$ {totalCurrent.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    </TableCell>
+                    <TableCell className="text-right font-medium">
+                      R$ {totalRemaining.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </TableCell>
                   </TableRow>
                 );

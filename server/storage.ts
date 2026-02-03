@@ -36,6 +36,9 @@ export interface IStorage {
   getProducts(): Promise<Product[]>;
   getProduct(id: string): Promise<Product | undefined>;
   
+  // Quotations
+  getQuotationItems(): Promise<QuotationItem[]>;
+  
   // RFCIs
   getRfcis(): Promise<Rfci[]>;
   getRfci(id: string): Promise<Rfci | undefined>;
@@ -431,7 +434,7 @@ export class MemStorage implements IStorage {
     // Seed Quotations (with localization)
     const quotations: LocalizedQuotation[] = [
       {
-        id: "quot-1",
+        id: "quot-rfci-1-supplier-1",
         rfciId: "rfci-1",
         supplierId: "supplier-1",
         supplierName: "Química Brasil",
@@ -447,7 +450,7 @@ export class MemStorage implements IStorage {
         createdAt: new Date(),
       },
       {
-        id: "quot-2",
+        id: "quot-rfci-1-supplier-2",
         rfciId: "rfci-1",
         supplierId: "supplier-2",
         supplierName: "InsuQuim",
@@ -463,7 +466,7 @@ export class MemStorage implements IStorage {
         createdAt: new Date(),
       },
       {
-        id: "quot-3",
+        id: "quot-rfci-1-supplier-3",
         rfciId: "rfci-1",
         supplierId: "supplier-3",
         supplierName: "SolventTech",
@@ -479,7 +482,7 @@ export class MemStorage implements IStorage {
         createdAt: new Date(),
       },
       {
-        id: "quot-4",
+        id: "quot-rfci-3-supplier-1",
         rfciId: "rfci-3",
         supplierId: "supplier-1",
         supplierName: "Química Brasil",
@@ -494,7 +497,7 @@ export class MemStorage implements IStorage {
         createdAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000),
       },
       {
-        id: "quot-5",
+        id: "quot-rfci-3-supplier-4",
         rfciId: "rfci-3",
         supplierId: "supplier-4",
         supplierName: "PigSul",
@@ -513,15 +516,15 @@ export class MemStorage implements IStorage {
 
     // Seed Quotation Items
     const quotationItems: QuotationItem[] = [
-      { id: "qi-1", quotationId: "quot-1", rfciItemId: "rfci-item-1", productName: "Acetona Industrial", quantity: "5000", unitPrice: "8.50", totalPrice: "42500.00", deliveryDays: 15 },
-      { id: "qi-2", quotationId: "quot-1", rfciItemId: "rfci-item-2", productName: "Tolueno P.A.", quantity: "2000", unitPrice: "12.00", totalPrice: "24000.00", deliveryDays: 15 },
-      { id: "qi-3", quotationId: "quot-1", rfciItemId: "rfci-item-3", productName: "Xileno Misto", quantity: "3000", unitPrice: "6.17", totalPrice: "18500.00", deliveryDays: 15 },
-      { id: "qi-4", quotationId: "quot-2", rfciItemId: "rfci-item-1", productName: "Acetona Industrial", quantity: "5000", unitPrice: "9.20", totalPrice: "46000.00", deliveryDays: 12 },
-      { id: "qi-5", quotationId: "quot-2", rfciItemId: "rfci-item-2", productName: "Tolueno P.A.", quantity: "2000", unitPrice: "13.50", totalPrice: "27000.00", deliveryDays: 12 },
-      { id: "qi-6", quotationId: "quot-2", rfciItemId: "rfci-item-3", productName: "Xileno Misto", quantity: "3000", unitPrice: "6.33", totalPrice: "19000.00", deliveryDays: 12 },
-      { id: "qi-7", quotationId: "quot-3", rfciItemId: "rfci-item-1", productName: "Acetona Industrial", quantity: "5000", unitPrice: "7.90", totalPrice: "39500.00", deliveryDays: 18 },
-      { id: "qi-8", quotationId: "quot-3", rfciItemId: "rfci-item-2", productName: "Tolueno P.A.", quantity: "2000", unitPrice: "11.25", totalPrice: "22500.00", deliveryDays: 18 },
-      { id: "qi-9", quotationId: "quot-3", rfciItemId: "rfci-item-3", productName: "Xileno Misto", quantity: "3000", unitPrice: "5.50", totalPrice: "16500.00", deliveryDays: 18 },
+      { id: "qi-1", quotationId: "quot-rfci-1-supplier-1", rfciItemId: "rfci-item-1", productName: "Acetona Industrial", quantity: "5000", currentStock: "3000", unitPrice: "8.50", totalPrice: "42500.00", currentDeliveryDays: 7, deliveryDays: 15 },
+      { id: "qi-2", quotationId: "quot-rfci-1-supplier-1", rfciItemId: "rfci-item-2", productName: "Tolueno P.A.", quantity: "2000", currentStock: "1500", unitPrice: "12.00", totalPrice: "24000.00", currentDeliveryDays: 7, deliveryDays: 15 },
+      { id: "qi-3", quotationId: "quot-rfci-1-supplier-1", rfciItemId: "rfci-item-3", productName: "Xileno Misto", quantity: "3000", currentStock: "2000", unitPrice: "6.17", totalPrice: "18500.00", currentDeliveryDays: 7, deliveryDays: 15 },
+      { id: "qi-4", quotationId: "quot-rfci-1-supplier-2", rfciItemId: "rfci-item-1", productName: "Acetona Industrial", quantity: "5000", currentStock: "5000", unitPrice: "9.20", totalPrice: "46000.00", currentDeliveryDays: 0, deliveryDays: 12 },
+      { id: "qi-5", quotationId: "quot-rfci-1-supplier-2", rfciItemId: "rfci-item-2", productName: "Tolueno P.A.", quantity: "2000", currentStock: "1800", unitPrice: "13.50", totalPrice: "27000.00", currentDeliveryDays: 5, deliveryDays: 12 },
+      { id: "qi-6", quotationId: "quot-rfci-1-supplier-2", rfciItemId: "rfci-item-3", productName: "Xileno Misto", quantity: "3000", currentStock: "2500", unitPrice: "6.33", totalPrice: "19000.00", currentDeliveryDays: 5, deliveryDays: 12 },
+      { id: "qi-7", quotationId: "quot-rfci-1-supplier-3", rfciItemId: "rfci-item-1", productName: "Acetona Industrial", quantity: "5000", currentStock: "2500", unitPrice: "7.90", totalPrice: "39500.00", currentDeliveryDays: 10, deliveryDays: 18 },
+      { id: "qi-8", quotationId: "quot-rfci-1-supplier-3", rfciItemId: "rfci-item-2", productName: "Tolueno P.A.", quantity: "2000", currentStock: "1200", unitPrice: "11.25", totalPrice: "22500.00", currentDeliveryDays: 10, deliveryDays: 18 },
+      { id: "qi-9", quotationId: "quot-rfci-1-supplier-3", rfciItemId: "rfci-item-3", productName: "Xileno Misto", quantity: "3000", currentStock: "1800", unitPrice: "5.50", totalPrice: "16500.00", currentDeliveryDays: 10, deliveryDays: 18 },
     ];
     quotationItems.forEach(qi => this.quotationItems.set(qi.id, qi));
 
@@ -949,6 +952,11 @@ export class MemStorage implements IStorage {
     return this.products.get(id);
   }
 
+  // Quotations
+  async getQuotationItems(): Promise<QuotationItem[]> {
+    return Array.from(this.quotationItems.values());
+  }
+
   // RFCIs
   async getRfcis(): Promise<Rfci[]> {
     return Array.from(this.rfcis.values()).sort((a, b) => 
@@ -971,7 +979,12 @@ export class MemStorage implements IStorage {
         ...rs,
         supplier: this.suppliers.get(rs.supplierId),
       }));
-    const quotations = Array.from(this.quotations.values()).filter(q => q.rfciId === id);
+    const quotations: QuotationWithItems[] = Array.from(this.quotations.values())
+      .filter(q => q.rfciId === id)
+      .map(q => ({
+        ...q,
+        items: Array.from(this.quotationItems.values()).filter(qi => qi.quotationId === q.id),
+      } as QuotationWithItems));
     const createdBy = this.users.get(rfci.createdById);
 
     return {
@@ -1131,8 +1144,10 @@ export class MemStorage implements IStorage {
         rfciItemId: item.rfciItemId,
         productName: item.productName,
         quantity: item.quantity,
+        currentStock: item.currentStock || null,
         unitPrice: item.unitPrice,
         totalPrice: item.totalPrice,
+        currentDeliveryDays: item.currentDeliveryDays || null,
         deliveryDays: item.deliveryDays || null,
       };
       this.quotationItems.set(itemId, quotationItem);
