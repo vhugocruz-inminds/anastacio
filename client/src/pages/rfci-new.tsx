@@ -57,7 +57,19 @@ interface RfciFormData {
 
 // Mapeamento de Agrupadores e seus produtos
 const agrupadorMapping = {
-  "99561BR1A": { label: "99561BR1A", produtos: [] },
+  "99561BR1A": { 
+    label: "99561BR1A", 
+    produtos: [
+      {
+        id: "prod-4",
+        name: "Agente Dispersante AD-50",
+        itemId: "52",
+        qualidade: "1",
+        valorTributario: "2",
+        origem: "3",
+      },
+    ] 
+  },
   "99561CK1A": { 
     label: "99561CK1A", 
     produtos: [
@@ -87,7 +99,27 @@ const agrupadorMapping = {
       },
     ] 
   },
-  "99561CK1J": { label: "99561CK1J", produtos: [] },
+  "99561CK1J": { 
+    label: "99561CK1J", 
+    produtos: [
+      {
+        id: "prod-5",
+        name: "Dióxido de Titânio TiO2",
+        itemId: "67",
+        qualidade: "G",
+        valorTributario: "1",
+        origem: "0",
+      },
+      {
+        id: "prod-6",
+        name: "Xileno Misto",
+        itemId: "74",
+        qualidade: "H",
+        valorTributario: "2",
+        origem: "8",
+      },
+    ] 
+  },
 };
 
 const steps = [
