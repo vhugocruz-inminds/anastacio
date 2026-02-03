@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Progress } from "@/components/ui/progress";
 import { 
   FileText, 
   Send, 
@@ -152,8 +151,6 @@ export default function SupplierDashboardPage() {
     queryKey: ["/api/supplier/quotations/recent"],
   });
 
-  const supplierScore = 4.5;
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -164,43 +161,6 @@ export default function SupplierDashboardPage() {
           </p>
         </div>
       </div>
-
-      <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
-        <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div className="flex items-center gap-4">
-              <div className="h-16 w-16 rounded-full bg-primary/20 flex items-center justify-center">
-                <Star className="h-8 w-8 text-primary fill-primary" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Seu Score de Performance</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-bold">{supplierScore.toFixed(1)}</span>
-                  <span className="text-muted-foreground">/ 5.0</span>
-                </div>
-              </div>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-4 w-full md:w-auto">
-              <div className="text-center">
-                <p className="text-2xl font-semibold">4.6</p>
-                <p className="text-xs text-muted-foreground">Qualidade</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-semibold">4.4</p>
-                <p className="text-xs text-muted-foreground">Entrega</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-semibold">4.3</p>
-                <p className="text-xs text-muted-foreground">Preço</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-semibold">4.7</p>
-                <p className="text-xs text-muted-foreground">Atendimento</p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
@@ -361,3 +321,4 @@ export default function SupplierDashboardPage() {
     </div>
   );
 }
+
