@@ -488,7 +488,7 @@ export default function RfciNewPage() {
                 
                 return (
                   <div key={idx} className="space-y-3 p-4 bg-muted/50 rounded-lg">
-                    {/* Primeira linha: Agrupador e Produto */}
+                    {/* Primeira linha: Agrupador, Produto e Lixeira (na linha das labels) */}
                     <div className="grid gap-3 sm:grid-cols-6">
                       <div className="space-y-2 sm:col-span-2">
                         <Label className="text-xs">Agrupador</Label>
@@ -507,7 +507,7 @@ export default function RfciNewPage() {
                         </Select>
                       </div>
 
-                      <div className="space-y-2 sm:col-span-4">
+                      <div className="space-y-2 sm:col-span-3">
                         <Label className="text-xs">Produto</Label>
                         <Select
                           value={item.productId}
@@ -526,10 +526,22 @@ export default function RfciNewPage() {
                           </SelectContent>
                         </Select>
                       </div>
+
+                      <div className="flex items-start justify-end pt-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeItem(idx)}
+                          className="text-destructive h-9"
+                          data-testid={`button-remove-item-${idx}`}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
 
-                    {/* Segunda linha: ID, Var. Trib, Origem e Lixeira */}
-                    <div className="grid gap-3 sm:grid-cols-6 items-end relative">
+                    {/* Segunda linha: ID, Var. Trib e Origem */}
+                    <div className="grid gap-3 sm:grid-cols-6 items-end">
                       <div className="space-y-2">
                         <Label className="text-xs">ID</Label>
                         <Input
@@ -564,18 +576,6 @@ export default function RfciNewPage() {
                       </div>
 
                       <div className="col-span-3"></div>
-
-                      <div className="absolute top-0 right-0">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeItem(idx)}
-                          className="text-destructive"
-                          data-testid={`button-remove-item-${idx}`}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
                     </div>
 
                     {/* Terceira linha: Qtd, Unidade, Preço Base e Proposta */}
