@@ -110,6 +110,8 @@ export const rfcis = pgTable("rfcis", {
   priority: text("priority").notNull().$type<RequisitionPriorityType>(),
   createdById: varchar("created_by_id").notNull(),
   deadline: timestamp("deadline").notNull(),
+  requestDate: timestamp("request_date").notNull(),
+  requestedBy: text("requested_by").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

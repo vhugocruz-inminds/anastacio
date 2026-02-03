@@ -41,14 +41,54 @@ interface RfciFormData {
   requestDate: string;
   requestedBy: string;
   items: {
+    agrupador: string;
     productId: string;
     productName: string;
+    itemId: string;
+    qualidade: string;
+    valorTributario: string;
+    origem: string;
     quantity: string;
     unitOfMeasure: string;
     specifications: string;
   }[];
   supplierIds: string[];
 }
+
+// Mapeamento de Agrupadores e seus produtos
+const agrupadorMapping = {
+  "99561BR1A": { label: "99561BR1A", produtos: [] },
+  "99561CK1A": { 
+    label: "99561CK1A", 
+    produtos: [
+      {
+        id: "prod-1",
+        name: "Acetona Industrial",
+        itemId: "45",
+        qualidade: "1",
+        valorTributario: "1",
+        origem: "0",
+      },
+      {
+        id: "prod-2",
+        name: "Tolueno P.A.",
+        itemId: "48",
+        qualidade: "1",
+        valorTributario: "2",
+        origem: "1",
+      },
+      {
+        id: "prod-3",
+        name: "Resina Epóxi ER-100",
+        itemId: "83",
+        qualidade: "G",
+        valorTributario: "2",
+        origem: "1",
+      },
+    ] 
+  },
+  "99561CK1J": { label: "99561CK1J", produtos: [] },
+};
 
 const steps = [
   { id: 1, title: "Informações", icon: FileText },
@@ -116,7 +156,18 @@ export default function RfciNewPage() {
       ...formData,
       items: [
         ...formData.items,
-        { productId: "", productName: "", quantity: "", unitOfMeasure: "KG", specifications: "" },
+        { 
+          agrupador: "", 
+          productId: "", 
+          productName: "", 
+          itemId: "",
+          qualidade: "",
+          valorTributario: "",
+          origem: "",
+          quantity: "", 
+          unitOfMeasure: "KG", 
+          specifications: "" 
+        },
       ],
     });
   };
@@ -132,15 +183,38 @@ export default function RfciNewPage() {
     const newItems = [...formData.items];
     newItems[index] = { ...newItems[index], [field]: value };
     
+    // Quando agrupador é alterado, limpar produto e itens
+    if (field === "agrupador") {
+      newItems[index].productId = "";
+      newItems[index].productName = "";
+      newItems[index].itemId = "";
+      newItems[index].qualidade = "";
+      newItems[index].valorTributario = "";
+      newItems[index].origem = "";
+    }
+    
+    // Quando produto é selecionado, preencher automaticamente ID e outros campos
     if (field === "productId") {
-      const product = products?.find(p => p.id === value);
+      const agrupador = newItems[index].agrupador;
+      const agrupadorData = agrupadorMapping[agrupador as keyof typeof agrupadorMapping];
+      const product = agrupadorData?.produtos?.find(p => p.id === value);
+      
       if (product) {
         newItems[index].productName = product.name;
-        newItems[index].unitOfMeasure = product.unitOfMeasure;
+        newItems[index].unitOfMeasure = "KG";
+        newItems[index].itemId = product.itemId;
+        newItems[index].qualidade = product.qualidade;
+        newItems[index].valorTributario = product.valorTributario;
+        newItems[index].origem = product.origem;
       }
     }
     
     setFormData({ ...formData, items: newItems });
+  };
+
+  const getAvailableProdutos = (agrupador: string) => {
+    const agrupadorData = agrupadorMapping[agrupador as keyof typeof agrupadorMapping];
+    return agrupadorData?.produtos || [];
   };
 
   const toggleSupplier = (supplierId: string) => {
@@ -155,7 +229,9 @@ export default function RfciNewPage() {
       case 1:
         return formData.title.trim() !== "" && formData.deadline !== "";
       case 2:
-        return formData.items.length > 0 && formData.items.every(i => i.productName && i.quantity);
+        return formData.items.length > 0 && formData.items.every(i => 
+          i.agrupador && i.productId && i.quantity
+        );
       case 3:
         return formData.supplierIds.length > 0;
       default:
@@ -337,74 +413,117 @@ export default function RfciNewPage() {
                 </Button>
               </div>
             ) : (
-              formData.items.map((item, idx) => (
-                <div key={idx} className="grid gap-4 sm:grid-cols-12 items-end p-4 bg-muted/50 rounded-lg">
-                  <div className="space-y-2 sm:col-span-4">
-                    <Label>Produto</Label>
-                    <Select
-                      value={item.productId}
-                      onValueChange={(value) => updateItem(idx, "productId", value)}
-                    >
-                      <SelectTrigger data-testid={`select-product-${idx}`}>
-                        <SelectValue placeholder="Selecione um produto" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {products?.map((product) => (
-                          <SelectItem key={product.id} value={product.id}>
-                            {product.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+              formData.items.map((item, idx) => {
+                const availableProdutos = getAvailableProdutos(item.agrupador);
+                
+                return (
+                  <div key={idx} className="grid gap-4 sm:grid-cols-12 items-end p-4 bg-muted/50 rounded-lg">
+                    <div className="space-y-2 sm:col-span-2">
+                      <Label>Agrupador</Label>
+                      <Select
+                        value={item.agrupador}
+                        onValueChange={(value) => updateItem(idx, "agrupador", value)}
+                      >
+                        <SelectTrigger data-testid={`select-agrupador-${idx}`}>
+                          <SelectValue placeholder="Selecione" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="99561BR1A">99561BR1A</SelectItem>
+                          <SelectItem value="99561CK1A">99561CK1A</SelectItem>
+                          <SelectItem value="99561CK1J">99561CK1J</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2 sm:col-span-3">
+                      <Label>Produto</Label>
+                      <Select
+                        value={item.productId}
+                        onValueChange={(value) => updateItem(idx, "productId", value)}
+                        disabled={!item.agrupador || availableProdutos.length === 0}
+                      >
+                        <SelectTrigger data-testid={`select-product-${idx}`}>
+                          <SelectValue placeholder={availableProdutos.length === 0 ? "Sem produtos" : "Selecione"} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availableProdutos.map((produto) => (
+                            <SelectItem key={produto.id} value={produto.id}>
+                              {produto.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2 sm:col-span-1">
+                      <Label>ID</Label>
+                      <Input
+                        type="text"
+                        placeholder="-"
+                        value={item.itemId}
+                        readOnly
+                        className="bg-gray-100"
+                      />
+                    </div>
+
+                    <div className="space-y-2 sm:col-span-1">
+                      <Label>Qualidade</Label>
+                      <Input
+                        type="text"
+                        placeholder="-"
+                        value={item.qualidade}
+                        readOnly
+                        className="bg-gray-100"
+                      />
+                    </div>
+
+                    <div className="space-y-2 sm:col-span-1">
+                      <Label>Var. Trib.</Label>
+                      <Input
+                        type="text"
+                        placeholder="-"
+                        value={item.valorTributario}
+                        readOnly
+                        className="bg-gray-100"
+                      />
+                    </div>
+
+                    <div className="space-y-2 sm:col-span-1">
+                      <Label>Origem</Label>
+                      <Input
+                        type="text"
+                        placeholder="-"
+                        value={item.origem}
+                        readOnly
+                        className="bg-gray-100"
+                      />
+                    </div>
+
+                    <div className="space-y-2 sm:col-span-1">
+                      <Label>Qtd.</Label>
+                      <Input
+                        type="number"
+                        placeholder="0"
+                        value={item.quantity}
+                        onChange={(e) => updateItem(idx, "quantity", e.target.value)}
+                        data-testid={`input-quantity-${idx}`}
+                      />
+                    </div>
+
+                    <div className="sm:col-span-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => removeItem(idx)}
+                        className="text-destructive"
+                        data-testid={`button-remove-item-${idx}`}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
-                  <div className="space-y-2 sm:col-span-2">
-                    <Label>Quantidade</Label>
-                    <Input
-                      type="number"
-                      placeholder="0"
-                      value={item.quantity}
-                      onChange={(e) => updateItem(idx, "quantity", e.target.value)}
-                      data-testid={`input-quantity-${idx}`}
-                    />
-                  </div>
-                  <div className="space-y-2 sm:col-span-2">
-                    <Label>Unidade</Label>
-                    <Select
-                      value={item.unitOfMeasure}
-                      onValueChange={(value) => updateItem(idx, "unitOfMeasure", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="KG">KG</SelectItem>
-                        <SelectItem value="L">Litro</SelectItem>
-                        <SelectItem value="UN">Unidade</SelectItem>
-                        <SelectItem value="TON">Tonelada</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2 sm:col-span-3">
-                    <Label>Especificações</Label>
-                    <Input
-                      placeholder="Opcional"
-                      value={item.specifications}
-                      onChange={(e) => updateItem(idx, "specifications", e.target.value)}
-                    />
-                  </div>
-                  <div className="sm:col-span-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => removeItem(idx)}
-                      className="text-destructive"
-                      data-testid={`button-remove-item-${idx}`}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))
+                );
+              })
             )}
           </CardContent>
         </Card>
@@ -498,9 +617,17 @@ export default function RfciNewPage() {
               <p className="text-sm text-muted-foreground mb-2">Itens ({formData.items.length})</p>
               <div className="space-y-2">
                 {formData.items.map((item, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                    <span className="font-medium">{item.productName}</span>
-                    <span className="text-muted-foreground">{item.quantity} {item.unitOfMeasure}</span>
+                  <div key={idx} className="p-3 bg-muted/50 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-medium">{item.productName} - ID: {item.itemId}</span>
+                      <span className="text-muted-foreground">{item.quantity}</span>
+                    </div>
+                    <div className="grid grid-cols-4 gap-2 text-xs text-muted-foreground">
+                      <div>Agrupador: {item.agrupador}</div>
+                      <div>Qualidade: {item.qualidade}</div>
+                      <div>Var. Trib: {item.valorTributario}</div>
+                      <div>Origem: {item.origem}</div>
+                    </div>
                   </div>
                 ))}
               </div>

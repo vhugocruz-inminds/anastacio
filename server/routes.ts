@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import type { InsertRfci } from "@shared/schema";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -102,7 +103,7 @@ export async function registerRoutes(
 
   app.post("/api/rfcis", async (req, res) => {
     try {
-      const { title, description, priority, deadline, items, supplierIds } = req.body;
+      const { title, description, priority, deadline, requestDate, requestedBy, items, supplierIds } = req.body;
       
       // Validate required fields
       if (!title || typeof title !== "string" || title.trim().length === 0) {
@@ -111,6 +112,12 @@ export async function registerRoutes(
       if (!deadline) {
         return res.status(400).json({ error: "Deadline is required" });
       }
+      if (!requestDate) {
+        return res.status(400).json({ error: "Request date is required" });
+      }
+      if (!requestedBy || typeof requestedBy !== "string" || requestedBy.trim().length === 0) {
+        return res.status(400).json({ error: "Requested by is required" });
+      }
       if (!items || !Array.isArray(items) || items.length === 0) {
         return res.status(400).json({ error: "At least one item is required" });
       }
@@ -118,14 +125,16 @@ export async function registerRoutes(
         return res.status(400).json({ error: "At least one supplier must be selected" });
       }
 
-      const rfciData = {
+      const rfciData: InsertRfci = {
         title: title.trim(),
         description: description?.trim() || null,
         priority: priority || "NORMAL",
         deadline: new Date(deadline),
-        status: "SENT" as const,
-        createdById: "user-1",
+        requestDate: new Date(requestDate),
+        requestedBy: requestedBy.trim(),
       };
+
+      // Note: 'code' and 'status' are generated during storage.createRfci()
 
       const rfci = await storage.createRfci(rfciData, items || [], supplierIds || []);
       res.status(201).json(rfci);
@@ -201,6 +210,7 @@ export async function registerRoutes(
           unitPrice: String(price),
           totalPrice: String(total.toFixed(2)),
           deliveryDays: itemDeliveryDays || null,
+          quotationId: "temp", // Temporary ID, will be replaced by storage
         };
       });
 

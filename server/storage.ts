@@ -313,6 +313,8 @@ export class MemStorage implements IStorage {
         priority: "HIGH",
         createdById: "user-1",
         deadline: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+        requestDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+        requestedBy: "Maria Silva",
         createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
         updatedAt: new Date(),
       },
@@ -327,6 +329,8 @@ export class MemStorage implements IStorage {
         priority: "NORMAL",
         createdById: "user-1",
         deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        requestDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+        requestedBy: "João Silva",
         createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
         updatedAt: new Date(),
       },
@@ -341,6 +345,8 @@ export class MemStorage implements IStorage {
         priority: "URGENT",
         createdById: "user-1",
         deadline: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+        requestDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
+        requestedBy: "Carlos Lima",
         createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
         updatedAt: new Date(),
       },
@@ -355,6 +361,8 @@ export class MemStorage implements IStorage {
         priority: "NORMAL",
         createdById: "user-1",
         deadline: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
+        requestDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+        requestedBy: "Maria Silva",
         createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
         updatedAt: new Date(),
       },
@@ -369,6 +377,8 @@ export class MemStorage implements IStorage {
         priority: "LOW",
         createdById: "user-1",
         deadline: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
+        requestDate: new Date(Date.now() - 0.5 * 24 * 60 * 60 * 1000),
+        requestedBy: "João Silva",
         createdAt: new Date(Date.now() - 0.5 * 24 * 60 * 60 * 1000),
         updatedAt: new Date(),
       },
@@ -858,7 +868,13 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = randomUUID();
-    const user: User = { ...insertUser, id, createdAt: new Date() };
+    const user: User = { 
+      ...insertUser, 
+      id, 
+      createdAt: new Date(), 
+      role: insertUser.role as any,
+      phone: insertUser.phone || null,
+    };
     this.users.set(id, user);
     return user;
   }
@@ -878,7 +894,13 @@ export class MemStorage implements IStorage {
 
   async createSupplier(insertSupplier: InsertSupplier): Promise<Supplier> {
     const id = randomUUID();
-    const supplier: Supplier = { ...insertSupplier, id, createdAt: new Date() };
+    const supplier: Supplier = { 
+      ...insertSupplier, 
+      id, 
+      createdAt: new Date(), 
+      status: insertSupplier.status as any,
+      mainActivity: insertSupplier.mainActivity || null,
+    };
     this.suppliers.set(id, supplier);
     return supplier;
   }
@@ -937,6 +959,8 @@ export class MemStorage implements IStorage {
       status: "SENT",
       createdAt: new Date(),
       updatedAt: new Date(),
+      description: rfciData.description || null,
+      priority: rfciData.priority as any,
     };
     this.rfcis.set(id, rfci);
 
@@ -1051,9 +1075,14 @@ export class MemStorage implements IStorage {
       quotation = {
         ...quotationData,
         id,
-        status: "SUBMITTED",
+        status: "SUBMITTED" as const,
         submittedAt: new Date(),
         createdAt: new Date(),
+        totalValue: quotationData.totalValue || null,
+        deliveryDays: quotationData.deliveryDays || null,
+        paymentTerms: quotationData.paymentTerms || null,
+        validUntil: quotationData.validUntil || null,
+        notes: quotationData.notes || null,
       };
       this.quotations.set(id, quotation);
     }
@@ -1077,11 +1106,11 @@ export class MemStorage implements IStorage {
     // Update RFCI status if needed
     const rfci = this.rfcis.get(quotationData.rfciId);
     if (rfci && rfci.status === "SENT") {
-      rfci.status = "IN_QUOTATION";
+      rfci.status = "IN_QUOTATION" as const;
       this.rfcis.set(rfci.id, rfci);
     }
 
-    return quotation;
+    return quotation!;
   }
 
   // Supplier Portal
