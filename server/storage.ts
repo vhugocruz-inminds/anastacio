@@ -1165,14 +1165,17 @@ export class MemStorage implements IStorage {
 
   // Supplier Portal
   async getPendingRfcisForSupplier(supplierId: string): Promise<Rfci[]> {
+    const matchesSupplierId = (value: string) =>
+      value === supplierId || value.startsWith(`${supplierId}:`);
+
     // Get all RFCI IDs where this supplier was invited
     const supplierRfciIds = Array.from(this.rfciSuppliers.values())
-      .filter(rs => rs.supplierId === supplierId)
+      .filter(rs => matchesSupplierId(rs.supplierId))
       .map(rs => rs.rfciId);
 
     // Get RFCI IDs where this supplier already submitted a quotation
     const submittedQuotationRfciIds = Array.from(this.quotations.values())
-      .filter(q => q.supplierId === supplierId && q.status !== "PENDING")
+      .filter(q => matchesSupplierId(q.supplierId) && q.status !== "PENDING")
       .map(q => q.rfciId);
 
     // Return RFCIs where supplier was invited but hasn't submitted yet
