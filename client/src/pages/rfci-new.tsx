@@ -817,7 +817,7 @@ export default function RfciNewPage() {
                       <div>Var. Trib: {item.valorTributario}</div>
                       <div>Origem: {item.origem}</div>
                     </div>
-                    <div className="grid grid-cols-3 gap-2 text-xs border-t pt-2">
+                    <div className="grid grid-cols-4 gap-2 text-xs border-t pt-2">
                       <div>
                         <span className="text-muted-foreground">Preço Base:</span>
                         <span className="ml-1 font-medium">R$ {parseFloat(item.precoBase || "0").toFixed(2)}</span>
@@ -825,6 +825,10 @@ export default function RfciNewPage() {
                       <div>
                         <span className="text-muted-foreground">Proposta:</span>
                         <span className="ml-1 font-medium">R$ {parseFloat(item.proposta || "0").toFixed(2)}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Quantidade:</span>
+                        <span className="ml-1 font-medium">{item.quantity}</span>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Unidade:</span>
