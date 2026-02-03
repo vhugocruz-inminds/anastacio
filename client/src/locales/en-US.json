@@ -42,8 +42,8 @@
   "nav": {
     "dashboard": "Dashboard",
     "suppliers": "Suppliers",
-    "rfcis": "RFCIs",
-    "newRfci": "New RFCI",
+    "rfcis": "POs",
+    "newRfci": "New PO",
     "quotations": "Quotations",
     "pendingQuotations": "Pending Quotations",
     "myQuotations": "My Quotations",
@@ -69,16 +69,16 @@
   "dashboard": {
     "title": "Procurement Dashboard",
     "subtitle": "Overview of your procurement activities",
-    "activeRfcis": "Active RFCIs",
+    "activeRfcis": "Active POs",
     "pendingQuotations": "Pending Quotations",
     "monthlySavings": "Monthly Savings",
     "activeSuppliers": "Active Suppliers",
-    "recentRfcis": "Recent RFCIs",
+    "recentRfcis": "Recent POs",
     "topSuppliers": "Top Suppliers",
     "monthlySavingsChart": "Monthly Savings",
     "spendByCategory": "Spend by Category",
     "viewAll": "View All",
-    "noRecentRfcis": "No recent RFCIs",
+    "noRecentRfcis": "No recent POs",
     "noSuppliers": "No suppliers registered"
   },
   "supplierDashboard": {
@@ -90,8 +90,8 @@
     "winRate": "Win Rate",
     "respondNow": "Respond Now",
     "recentQuotations": "Recent Quotations",
-    "pendingRfcis": "Pending RFCIs",
-    "noPendingRfcis": "No pending RFCIs",
+    "pendingRfcis": "Pending POs",
+    "noPendingRfcis": "No pending POs",
     "upToDate": "You're up to date!",
     "newRequestsWillAppear": "When new requests arrive, they will appear here"
   },
@@ -102,7 +102,7 @@
     "newSupplier": "New Supplier",
     "noSuppliersFound": "No suppliers found",
     "viewDetails": "View Details",
-    "inviteToRfci": "Invite to RFCI",
+    "inviteToRfci": "Invite to PO",
     "notProvided": "Not provided",
     "cnpj": "CNPJ",
     "email": "Email",
@@ -138,9 +138,9 @@
     }
   },
   "rfci": {
-    "title": "RFCIs",
+    "title": "POs",
     "subtitle": "Request for Commercial Information",
-    "newRfci": "New RFCI",
+    "newRfci": "New PO",
     "code": "Code",
     "status": "Status",
     "priority": "Priority",
@@ -153,8 +153,8 @@
     "award": "Award",
     "awarded": "Awarded",
     "viewQuotation": "View Quotation",
-    "noRfcis": "No RFCIs found",
-    "createFirst": "Create your first RFCI",
+    "noPOs": "No POs found",
+    "createFirst": "Create your first PO",
     "statusLabels": {
       "DRAFT": "Draft",
       "SENT": "Sent",
@@ -170,7 +170,7 @@
     }
   },
   "rfciNew": {
-    "title": "New RFCI",
+    "title": "New PO",
     "subtitle": "Request quotations from your suppliers",
     "step1": "Information",
     "step2": "Items",
@@ -191,17 +191,17 @@
     "addItem": "Add Item",
     "removeItem": "Remove Item",
     "selectSuppliers": "Select Suppliers",
-    "selectSuppliersDescription": "Choose the suppliers who will receive this RFCI",
+    "selectSuppliersDescription": "Choose the suppliers who will receive this PO",
     "selectedSuppliers": "suppliers selected",
     "review": "Review and Send",
     "reviewDescription": "Confirm the information before sending",
-    "sendRfci": "Send RFCI",
+    "sendRfci": "Send PO",
     "sending": "Sending..."
   },
   "quotation": {
     "title": "Quotations",
     "pendingTitle": "Pending Quotations",
-    "pendingSubtitle": "RFCIs awaiting your response",
+    "pendingSubtitle": "POs awaiting your response",
     "myQuotationsTitle": "My Quotations",
     "myQuotationsSubtitle": "History of your submitted quotations",
     "respond": "Respond to Quotation",
@@ -277,3 +277,4 @@
     "en-US": "English (US)"
   }
 }
+

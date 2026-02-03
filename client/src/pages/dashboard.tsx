@@ -197,7 +197,7 @@ export default function DashboardPage() {
         <Link href="/rfcis/new">
           <Button className="gap-2" data-testid="button-new-rfci">
             <Plus className="h-4 w-4" />
-            Nova RFCI
+            Nova PO
           </Button>
         </Link>
       </div>
@@ -212,7 +212,7 @@ export default function DashboardPage() {
           isLoading={statsLoading}
         />
         <StatCard
-          title="RFCIs Ativas"
+          title="POs Ativas"
           value={stats?.activeRfcis ?? 0}
           change="3 aguardando resposta"
           changeType="neutral"
@@ -332,7 +332,7 @@ export default function DashboardPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between gap-4 space-y-0 pb-2">
-            <CardTitle className="text-lg font-semibold">RFCIs Recentes</CardTitle>
+            <CardTitle className="text-lg font-semibold">POs Recentes</CardTitle>
             <Link href="/rfcis">
               <Button variant="ghost" size="sm" className="gap-1">
                 Ver todas
@@ -363,10 +363,10 @@ export default function DashboardPage() {
             ) : (
               <div className="flex flex-col items-center justify-center py-8 text-center">
                 <FileText className="h-10 w-10 text-muted-foreground mb-2" />
-                <p className="text-sm text-muted-foreground">Nenhuma RFCI encontrada</p>
+                <p className="text-sm text-muted-foreground">Nenhuma PO encontrada</p>
                 <Link href="/rfcis/new">
                   <Button variant="link" size="sm" className="mt-2">
-                    Criar primeira RFCI
+                    Criar primeira PO
                   </Button>
                 </Link>
               </div>
@@ -425,7 +425,7 @@ export default function DashboardPage() {
                 <AlertCircle className="h-5 w-5 text-orange-600 dark:text-orange-400" />
               </div>
               <div>
-                <p className="font-medium">3 RFCIs</p>
+                <p className="font-medium">3 POs</p>
                 <p className="text-sm text-muted-foreground">Aguardando cotação</p>
               </div>
             </div>
@@ -453,3 +453,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+

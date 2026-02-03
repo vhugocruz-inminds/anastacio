@@ -89,11 +89,20 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/rfcis/suppliers-count", async (_req, res) => {
+    try {
+      const counts = await storage.getRfciSuppliersCountMap();
+      res.json(counts);
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   app.get("/api/rfcis/:id", async (req, res) => {
     try {
       const rfci = await storage.getRfciWithDetails(req.params.id);
       if (!rfci) {
-        return res.status(404).json({ error: "RFCI not found" });
+        return res.status(404).json({ error: "PO not found" });
       }
       res.json(rfci);
     } catch (error) {
@@ -150,7 +159,7 @@ export async function registerRoutes(
       const rfci = await storage.createRfci(rfciData as any, items || [], selectedProviders || []);
       res.status(201).json(rfci);
     } catch (error) {
-      console.error("Error creating RFCI:", error);
+      console.error("Error creating PO:", error);
       res.status(500).json({ error: "Internal server error" });
     }
   });

@@ -43,6 +43,7 @@ export interface IStorage {
   getRfcis(): Promise<Rfci[]>;
   getRfci(id: string): Promise<Rfci | undefined>;
   getRfciWithDetails(id: string): Promise<RfciWithDetails | undefined>;
+  getRfciSuppliersCountMap(): Promise<Record<string, number>>;
   createRfci(rfci: InsertRfci, items: InsertRfciItem[], supplierIds: string[]): Promise<Rfci>;
   awardRfci(rfciId: string, quotationId: string): Promise<void>;
   
@@ -188,14 +189,14 @@ export class MemStorage implements IStorage {
       },
       {
         id: "supplier-4",
-        legalName: "Pigmentos do Sul S.A.",
-        tradeName: "PigSul",
+        legalName: "SINOCHEM INTERNATIONAL CORPORATION",
+        tradeName: "SINOCHEM INTERNATIONAL CORPORATION",
         cnpj: "45.678.901/0001-56",
-        email: "comercial@pigsul.com.br",
+        email: "comercial@sinochem.com",
         phone: "(51) 3210-9876",
         status: "APPROVED",
-        addressCity: "Porto Alegre",
-        addressState: "RS",
+        addressCity: "Xengai",
+        addressState: "China",
         mainActivity: "Pigmentos e Corantes",
         mainActivityLocalized: { ptBR: "Pigmentos e Corantes", enUS: "Pigments and Dyes" },
         performanceScore: "3.9",
@@ -327,7 +328,7 @@ export class MemStorage implements IStorage {
     const rfcis: LocalizedRfci[] = [
       {
         id: "rfci-1",
-        code: "RFCI-2024-001",
+        code: "PO-2024-001",
         title: "Cotação de Solventes Industriais",
         titleLocalized: { ptBR: "Cotação de Solventes Industriais", enUS: "Industrial Solvents Quotation" },
         description: "Solicitação de cotação para solventes utilizados na linha de produção principal",
@@ -343,7 +344,7 @@ export class MemStorage implements IStorage {
       },
       {
         id: "rfci-2",
-        code: "RFCI-2024-002",
+        code: "PO-2024-002",
         title: "Resinas para Revestimentos",
         titleLocalized: { ptBR: "Resinas para Revestimentos", enUS: "Resins for Coatings" },
         description: "Cotação para resinas epóxi para nova linha de revestimentos industriais",
@@ -359,7 +360,7 @@ export class MemStorage implements IStorage {
       },
       {
         id: "rfci-3",
-        code: "RFCI-2024-003",
+        code: "PO-2024-003",
         title: "Pigmentos e Aditivos",
         titleLocalized: { ptBR: "Pigmentos e Aditivos", enUS: "Pigments and Additives" },
         description: "Cotação urgente para pigmentos e aditivos dispersantes",
@@ -375,7 +376,7 @@ export class MemStorage implements IStorage {
       },
       {
         id: "rfci-4",
-        code: "RFCI-2024-004",
+        code: "PO-2024-004",
         title: "Catalisadores para Polimerização",
         titleLocalized: { ptBR: "Catalisadores para Polimerização", enUS: "Polymerization Catalysts" },
         description: "Solicitação de cotação para catalisadores utilizados no processo de polimerização",
@@ -391,7 +392,7 @@ export class MemStorage implements IStorage {
       },
       {
         id: "rfci-5",
-        code: "RFCI-2024-005",
+        code: "PO-2024-005",
         title: "Aditivos para Tintas Automotivas",
         titleLocalized: { ptBR: "Aditivos para Tintas Automotivas", enUS: "Automotive Paint Additives" },
         description: "Cotação para linha premium de aditivos para tintas automotivas",
@@ -500,7 +501,7 @@ export class MemStorage implements IStorage {
         id: "quot-rfci-3-supplier-4",
         rfciId: "rfci-3",
         supplierId: "supplier-4",
-        supplierName: "PigSul",
+        supplierName: "SINOCHEM INTERNATIONAL CORPORATION",
         status: "REJECTED",
         totalValue: "138000.00",
         deliveryDays: 14,
@@ -768,14 +769,14 @@ export class MemStorage implements IStorage {
         isRequired: true,
       },
 
-      // PigSul - some issues
+      // SINOCHEM - some issues
       {
         id: "doc-14",
         supplierId: "supplier-4",
         documentType: "CNPJ_CARD",
         documentTypeName: "Cartão CNPJ",
         documentTypeNameLocalized: { ptBR: "Cartão CNPJ", enUS: "CNPJ Card" },
-        fileName: "cnpj_pigsul.pdf",
+        fileName: "cnpj_sinochem.pdf",
         fileSize: 195000,
         mimeType: "application/pdf",
         uploadedAt: new Date(now.getTime() - 300 * 24 * 60 * 60 * 1000),
@@ -792,7 +793,7 @@ export class MemStorage implements IStorage {
         documentType: "TAX_CLEARANCE_STATE",
         documentTypeName: "CND Estadual",
         documentTypeNameLocalized: { ptBR: "CND Estadual", enUS: "State Tax Clearance" },
-        fileName: "cnd_estadual_pigsul.pdf",
+        fileName: "cnd_estadual_sinochem.pdf",
         fileSize: 167000,
         mimeType: "application/pdf",
         uploadedAt: new Date(now.getTime() - 200 * 24 * 60 * 60 * 1000),
@@ -810,7 +811,7 @@ export class MemStorage implements IStorage {
         documentType: "LABOR_CLEARANCE",
         documentTypeName: "CNDT - Trabalhista",
         documentTypeNameLocalized: { ptBR: "CNDT - Trabalhista", enUS: "Labor Clearance Certificate" },
-        fileName: "cndt_pigsul.pdf",
+        fileName: "cndt_sinochem.pdf",
         fileSize: 145000,
         mimeType: "application/pdf",
         uploadedAt: new Date(now.getTime() - 8 * 24 * 60 * 60 * 1000),
@@ -996,9 +997,17 @@ export class MemStorage implements IStorage {
     };
   }
 
+  async getRfciSuppliersCountMap(): Promise<Record<string, number>> {
+    const counts: Record<string, number> = {};
+    Array.from(this.rfciSuppliers.values()).forEach((rs) => {
+      counts[rs.rfciId] = (counts[rs.rfciId] || 0) + 1;
+    });
+    return counts;
+  }
+
   async createRfci(rfciData: InsertRfci, items: InsertRfciItem[], supplierIds: string[]): Promise<Rfci> {
     const id = randomUUID();
-    const code = `RFCI-2024-${String(this.rfcis.size + 1).padStart(3, '0')}`;
+    const code = `PO-2024-${String(this.rfcis.size + 1).padStart(3, '0')}`;
     
     const rfci: Rfci = {
       ...rfciData,

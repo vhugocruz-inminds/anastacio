@@ -47,7 +47,7 @@ const buyerMenuItems = [
     badge: "2",
   },
   {
-    title: "RFCIs",
+    title: "POs",
     url: "/rfcis",
     icon: FileText,
     badge: "3",

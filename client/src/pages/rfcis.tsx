@@ -57,7 +57,7 @@ export default function RfcisPage() {
     queryKey: ["/api/rfcis"],
   });
 
-  // Query para obter contagem de fornecedores por RFCI
+  // Query para obter contagem de fornecedores por PO
   const { data: rfciSuppliersMap } = useQuery<Record<string, number>>({
     queryKey: ["/api/rfcis/suppliers-count"],
   });
@@ -165,7 +165,7 @@ export default function RfcisPage() {
                 const createdDate = rfci.createdAt ? new Date(rfci.createdAt) : null;
                 const isOverdue = deadline && deadline < new Date() && rfci.status !== "AWARDED" && rfci.status !== "CANCELLED";
                 
-                // Obter número de fornecedores da RFCI
+                // Obter número de fornecedores da PO
                 const suppliersCount = rfciSuppliersMap?.[rfci.id] || 0;
                 const offerCount = generateOfferCount(rfci.id);
                 const totalValue = calculateTotalValue(rfci);
@@ -288,3 +288,6 @@ export default function RfcisPage() {
     </div>
   );
 }
+
+
+

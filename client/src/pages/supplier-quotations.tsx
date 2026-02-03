@@ -100,7 +100,7 @@ export default function SupplierQuotationsPage() {
       <div>
         <h1 className="text-2xl font-semibold">Cotações Pendentes</h1>
         <p className="text-muted-foreground">
-          RFCIs aguardando sua resposta
+          POs aguardando sua resposta
         </p>
       </div>
 
@@ -141,3 +141,5 @@ export default function SupplierQuotationsPage() {
     </div>
   );
 }
+
+

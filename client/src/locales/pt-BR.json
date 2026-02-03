@@ -42,8 +42,8 @@
   "nav": {
     "dashboard": "Painel",
     "suppliers": "Fornecedores",
-    "rfcis": "RFCIs",
-    "newRfci": "Nova RFCI",
+    "rfcis": "POs",
+    "newRfci": "Nova PO",
     "quotations": "Cotações",
     "pendingQuotations": "Cotações Pendentes",
     "myQuotations": "Minhas Propostas",
@@ -69,16 +69,16 @@
   "dashboard": {
     "title": "Painel de Compras",
     "subtitle": "Visão geral das suas atividades de procurement",
-    "activeRfcis": "RFCIs Ativas",
+    "activeRfcis": "POs Ativas",
     "pendingQuotations": "Cotações Pendentes",
     "monthlySavings": "Economia Mensal",
     "activeSuppliers": "Fornecedores Ativos",
-    "recentRfcis": "RFCIs Recentes",
+    "recentRfcis": "POs Recentes",
     "topSuppliers": "Top Fornecedores",
     "monthlySavingsChart": "Economia Mensal",
     "spendByCategory": "Gastos por Categoria",
     "viewAll": "Ver Todos",
-    "noRecentRfcis": "Nenhuma RFCI recente",
+    "noRecentRfcis": "Nenhuma PO recente",
     "noSuppliers": "Nenhum fornecedor cadastrado"
   },
   "supplierDashboard": {
@@ -90,8 +90,8 @@
     "winRate": "Taxa de Aprovação",
     "respondNow": "Responder Agora",
     "recentQuotations": "Cotações Recentes",
-    "pendingRfcis": "RFCIs Pendentes",
-    "noPendingRfcis": "Nenhuma RFCI pendente",
+    "pendingRfcis": "POs Pendentes",
+    "noPendingRfcis": "Nenhuma PO pendente",
     "upToDate": "Você está em dia!",
     "newRequestsWillAppear": "Quando novos pedidos chegarem, aparecerão aqui"
   },
@@ -102,7 +102,7 @@
     "newSupplier": "Novo Fornecedor",
     "noSuppliersFound": "Nenhum fornecedor encontrado",
     "viewDetails": "Ver Detalhes",
-    "inviteToRfci": "Convidar para RFCI",
+    "inviteToRfci": "Convidar para PO",
     "notProvided": "Não informado",
     "cnpj": "CNPJ",
     "email": "Email",
@@ -138,9 +138,9 @@
     }
   },
   "rfci": {
-    "title": "RFCIs",
+    "title": "POs",
     "subtitle": "Solicitações de Informação Comercial",
-    "newRfci": "Nova RFCI",
+    "newRfci": "Nova PO",
     "code": "Código",
     "status": "Status",
     "priority": "Prioridade",
@@ -153,8 +153,8 @@
     "award": "Adjudicar",
     "awarded": "Adjudicado",
     "viewQuotation": "Ver Cotação",
-    "noRfcis": "Nenhuma RFCI encontrada",
-    "createFirst": "Crie sua primeira RFCI",
+    "noPOs": "Nenhuma PO encontrada",
+    "createFirst": "Crie sua primeira PO",
     "statusLabels": {
       "DRAFT": "Rascunho",
       "SENT": "Enviada",
@@ -170,7 +170,7 @@
     }
   },
   "rfciNew": {
-    "title": "Nova RFCI",
+    "title": "Nova PO",
     "subtitle": "Solicite cotações dos seus fornecedores",
     "step1": "Informações",
     "step2": "Itens",
@@ -191,17 +191,17 @@
     "addItem": "Adicionar Item",
     "removeItem": "Remover Item",
     "selectSuppliers": "Selecionar Fornecedores",
-    "selectSuppliersDescription": "Escolha os fornecedores que receberão esta RFCI",
+    "selectSuppliersDescription": "Escolha os fornecedores que receberão esta PO",
     "selectedSuppliers": "fornecedores selecionados",
     "review": "Revisar e Enviar",
     "reviewDescription": "Confirme as informações antes de enviar",
-    "sendRfci": "Enviar RFCI",
+    "sendRfci": "Enviar PO",
     "sending": "Enviando..."
   },
   "quotation": {
     "title": "Cotações",
     "pendingTitle": "Cotações Pendentes",
-    "pendingSubtitle": "RFCIs aguardando sua resposta",
+    "pendingSubtitle": "POs aguardando sua resposta",
     "myQuotationsTitle": "Minhas Propostas",
     "myQuotationsSubtitle": "Histórico das suas cotações enviadas",
     "respond": "Responder Cotação",
@@ -277,3 +277,4 @@
     "en-US": "English (US)"
   }
 }
+
