@@ -86,6 +86,7 @@ export const suppliers = pgTable("suppliers", {
   qualityScore: decimal("quality_score", { precision: 5, scale: 2 }),
   deliveryScore: decimal("delivery_score", { precision: 5, scale: 2 }),
   priceScore: decimal("price_score", { precision: 5, scale: 2 }),
+  providers: text("providers").default("[]"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

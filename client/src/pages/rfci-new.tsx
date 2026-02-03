@@ -28,7 +28,7 @@ import {
   Calendar,
   Star
 } from "lucide-react";
-import type { Supplier, Product } from "@shared/schema";
+import type { Supplier, Product, LocalizedSupplier } from "@shared/schema";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/auth-context";
@@ -51,8 +51,11 @@ interface RfciFormData {
     quantity: string;
     unitOfMeasure: string;
     specifications: string;
+    precoBase: string;
+    preco: number; // preço unitário do produto
+    proposta: string; // valor editável da proposta
   }[];
-  supplierIds: string[];
+  providerIds: string[];
 }
 
 // Mapeamento de Agrupadores e seus produtos
@@ -67,6 +70,7 @@ const agrupadorMapping = {
         qualidade: "1",
         valorTributario: "2",
         origem: "3",
+        preco: 152.75,
       },
     ] 
   },
@@ -80,6 +84,7 @@ const agrupadorMapping = {
         qualidade: "1",
         valorTributario: "1",
         origem: "0",
+        preco: 34.50,
       },
       {
         id: "prod-2",
@@ -88,6 +93,7 @@ const agrupadorMapping = {
         qualidade: "1",
         valorTributario: "2",
         origem: "1",
+        preco: 47.99,
       },
       {
         id: "prod-3",
@@ -96,6 +102,7 @@ const agrupadorMapping = {
         qualidade: "G",
         valorTributario: "2",
         origem: "1",
+        preco: 289.50,
       },
     ] 
   },
@@ -109,6 +116,7 @@ const agrupadorMapping = {
         qualidade: "G",
         valorTributario: "1",
         origem: "0",
+        preco: 156.80,
       },
       {
         id: "prod-6",
@@ -117,6 +125,7 @@ const agrupadorMapping = {
         qualidade: "H",
         valorTributario: "2",
         origem: "8",
+        preco: 68.25,
       },
     ] 
   },
@@ -149,14 +158,14 @@ export default function RfciNewPage() {
     requestDate: getCurrentDate(),
     requestedBy: user?.name || "Maria Silva",
     items: [],
-    supplierIds: [],
+    providerIds: [],
   });
 
   const { data: products } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
 
-  const { data: suppliers } = useQuery<Supplier[]>({
+  const { data: suppliers } = useQuery<LocalizedSupplier[]>({
     queryKey: ["/api/suppliers"],
   });
 
@@ -196,9 +205,12 @@ export default function RfciNewPage() {
           qualidade: "",
           valorTributario: "",
           origem: "",
-          quantity: "", 
+          quantity: "1", 
           unitOfMeasure: "KG", 
-          specifications: "" 
+          specifications: "",
+          precoBase: "",
+          preco: 0,
+          proposta: ""
         },
       ],
     });
@@ -223,6 +235,9 @@ export default function RfciNewPage() {
       newItems[index].qualidade = "";
       newItems[index].valorTributario = "";
       newItems[index].origem = "";
+      newItems[index].preco = 0;
+      newItems[index].precoBase = "";
+      newItems[index].proposta = "";
     }
     
     // Quando produto é selecionado, preencher automaticamente ID e outros campos
@@ -238,7 +253,22 @@ export default function RfciNewPage() {
         newItems[index].qualidade = product.qualidade;
         newItems[index].valorTributario = product.valorTributario;
         newItems[index].origem = product.origem;
+        newItems[index].preco = product.preco;
+        
+        // Calcular precoBase e proposta baseado na quantidade
+        if (newItems[index].quantity) {
+          const precoBaseCalc = (product.preco * parseFloat(newItems[index].quantity)).toFixed(2);
+          newItems[index].precoBase = precoBaseCalc;
+          newItems[index].proposta = precoBaseCalc;
+        }
       }
+    }
+    
+    // Quando quantidade é alterada, recalcular precoBase e proposta
+    if (field === "quantity" && newItems[index].preco > 0) {
+      const precoBaseCalc = (newItems[index].preco * parseFloat(value || "0")).toFixed(2);
+      newItems[index].precoBase = precoBaseCalc;
+      newItems[index].proposta = precoBaseCalc;
     }
     
     setFormData({ ...formData, items: newItems });
@@ -249,11 +279,11 @@ export default function RfciNewPage() {
     return agrupadorData?.produtos || [];
   };
 
-  const toggleSupplier = (supplierId: string) => {
-    const newIds = formData.supplierIds.includes(supplierId)
-      ? formData.supplierIds.filter(id => id !== supplierId)
-      : [...formData.supplierIds, supplierId];
-    setFormData({ ...formData, supplierIds: newIds });
+  const toggleProvider = (provider: string) => {
+    const newIds = formData.providerIds.includes(provider)
+      ? formData.providerIds.filter(id => id !== provider)
+      : [...formData.providerIds, provider];
+    setFormData({ ...formData, providerIds: newIds });
   };
 
   const canProceed = () => {
@@ -265,7 +295,7 @@ export default function RfciNewPage() {
           i.agrupador && i.productId && i.quantity
         );
       case 3:
-        return formData.supplierIds.length > 0;
+        return formData.providerIds.length > 0;
       default:
         return true;
     }
@@ -591,9 +621,48 @@ export default function RfciNewPage() {
                         />
                       </div>
                     </div>
+
+                    {/* Quarta linha: Preço Base e Proposta */}
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label className="text-xs">Preço Base (R$)</Label>
+                        <Input
+                          type="number"
+                          placeholder="0.00"
+                          value={item.precoBase}
+                          readOnly
+                          className="bg-gray-100 h-9"
+                          step="0.01"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label className="text-xs">Proposta (R$)</Label>
+                        <Input
+                          type="number"
+                          placeholder="0.00"
+                          value={item.proposta}
+                          onChange={(e) => updateItem(idx, "proposta", e.target.value)}
+                          className="h-9"
+                          step="0.01"
+                        />
+                      </div>
+                    </div>
                   </div>
                 );
               })
+            )}
+
+            {/* Total Summary */}
+            {formData.items.length > 0 && (
+              <div className="mt-6 p-4 bg-primary/5 rounded-lg border border-primary/20">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold">Total:</span>
+                  <span className="text-lg font-bold text-primary">
+                    R$ {(formData.items.reduce((sum, item) => sum + (parseFloat(item.proposta) || 0), 0)).toFixed(2)}
+                  </span>
+                </div>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -604,42 +673,57 @@ export default function RfciNewPage() {
           <CardHeader>
             <CardTitle>Selecionar Fornecedores</CardTitle>
             <CardDescription>
-              Escolha os fornecedores que receberão esta RFCI ({formData.supplierIds.length} selecionados)
+              Escolha os fornecedores que receberão esta RFCI ({formData.providerIds.length} selecionados)
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 sm:grid-cols-2">
               {approvedSuppliers.map((supplier) => {
-                const isSelected = formData.supplierIds.includes(supplier.id);
-                const score = supplier.performanceScore ? Number(supplier.performanceScore) : 0;
+                const providers = typeof supplier.providers === 'string' 
+                  ? JSON.parse(supplier.providers) 
+                  : supplier.providers || [];
+                
+                if (providers.length === 0) return null;
 
                 return (
-                  <div
-                    key={supplier.id}
-                    className={`flex items-start gap-4 p-4 rounded-lg border-2 cursor-pointer transition-colors ${
-                      isSelected ? "border-primary bg-primary/5" : "border-transparent bg-muted/50 hover:bg-muted"
-                    }`}
-                    onClick={() => toggleSupplier(supplier.id)}
-                    data-testid={`supplier-card-${supplier.id}`}
-                  >
-                    <Checkbox
-                      checked={isSelected}
-                      onCheckedChange={() => toggleSupplier(supplier.id)}
-                    />
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between gap-2">
-                        <div>
-                          <p className="font-medium">{supplier.tradeName}</p>
-                          <p className="text-sm text-muted-foreground">{supplier.mainActivity}</p>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                          <span className="text-sm font-medium">{score.toFixed(1)}</span>
-                        </div>
+                  <div key={supplier.id} className="space-y-2 p-4 rounded-lg border-2 border-muted bg-muted/30">
+                    <div className="flex items-start justify-between gap-2 mb-3">
+                      <div>
+                        <p className="font-medium">{supplier.tradeName}</p>
+                        <p className="text-sm text-muted-foreground">{supplier.mainActivity}</p>
                       </div>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {supplier.addressCity}, {supplier.addressState}
-                      </p>
+                      <div className="flex items-center gap-1">
+                        <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                        <span className="text-sm font-medium">
+                          {supplier.performanceScore ? Number(supplier.performanceScore).toFixed(1) : "0.0"}
+                        </span>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      {supplier.addressCity}, {supplier.addressState}
+                    </p>
+                    
+                    <div className="space-y-2 pt-2 border-t">
+                      <p className="text-xs font-semibold text-muted-foreground">Fornecedores:</p>
+                      {providers.map((provider: string) => {
+                        const isSelected = formData.providerIds.includes(provider);
+                        
+                        return (
+                          <div
+                            key={provider}
+                            className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
+                              isSelected ? "bg-primary/10 border border-primary" : "bg-white hover:bg-muted/50 border border-transparent"
+                            }`}
+                            onClick={() => toggleProvider(provider)}
+                          >
+                            <Checkbox
+                              checked={isSelected}
+                              onCheckedChange={() => toggleProvider(provider)}
+                            />
+                            <span className="text-sm font-medium">{provider}</span>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 );
@@ -690,32 +774,52 @@ export default function RfciNewPage() {
                   <div key={idx} className="p-3 bg-muted/50 rounded-lg">
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-medium">{item.productName} - ID: {item.itemId}</span>
-                      <span className="text-muted-foreground">{item.quantity}</span>
+                      <span className="text-muted-foreground">{item.quantity} {item.unitOfMeasure}</span>
                     </div>
-                    <div className="grid grid-cols-4 gap-2 text-xs text-muted-foreground">
+                    <div className="grid grid-cols-4 gap-2 text-xs text-muted-foreground mb-2">
                       <div>Agrupador: {item.agrupador}</div>
                       <div>Qualidade: {item.qualidade}</div>
                       <div>Var. Trib: {item.valorTributario}</div>
                       <div>Origem: {item.origem}</div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 text-xs border-t pt-2">
+                      <div>
+                        <span className="text-muted-foreground">Preço Base:</span>
+                        <span className="ml-1 font-medium">R$ {parseFloat(item.precoBase || "0").toFixed(2)}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Proposta:</span>
+                        <span className="ml-1 font-medium">R$ {parseFloat(item.proposta || "0").toFixed(2)}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Unidade:</span>
+                        <span className="ml-1 font-medium">{item.unitOfMeasure}</span>
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
+            <div className="border-t pt-4 bg-primary/5 rounded-lg p-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold">Total de Propostas:</span>
+                <span className="text-2xl font-bold text-primary">
+                  R$ {(formData.items.reduce((sum, item) => sum + (parseFloat(item.proposta) || 0), 0)).toFixed(2)}
+                </span>
+              </div>
+            </div>
+
             <div className="border-t pt-4">
               <p className="text-sm text-muted-foreground mb-2">
-                Fornecedores ({formData.supplierIds.length})
+                Fornecedores ({formData.providerIds.length})
               </p>
               <div className="flex flex-wrap gap-2">
-                {formData.supplierIds.map((id) => {
-                  const supplier = suppliers?.find(s => s.id === id);
-                  return (
-                    <Badge key={id} variant="secondary">
-                      {supplier?.tradeName || id}
-                    </Badge>
-                  );
-                })}
+                {formData.providerIds.map((provider) => (
+                  <Badge key={provider} variant="secondary">
+                    {provider}
+                  </Badge>
+                ))}
               </div>
             </div>
           </CardContent>

@@ -135,6 +135,7 @@ export class MemStorage implements IStorage {
         deliveryScore: "4.4",
         priceScore: "4.3",
         createdAt: new Date(),
+        providers: JSON.stringify(["Fornecedor A", "Fornecedor B"]),
       },
       {
         id: "supplier-2",
@@ -153,6 +154,7 @@ export class MemStorage implements IStorage {
         deliveryScore: "4.0",
         priceScore: "4.4",
         createdAt: new Date(),
+        providers: JSON.stringify(["Fornecedor B", "Fornecedor C"]),
       },
       {
         id: "supplier-3",
@@ -171,6 +173,7 @@ export class MemStorage implements IStorage {
         deliveryScore: "4.7",
         priceScore: "4.6",
         createdAt: new Date(),
+        providers: JSON.stringify(["Fornecedor D"]),
       },
       {
         id: "supplier-4",
@@ -189,6 +192,7 @@ export class MemStorage implements IStorage {
         deliveryScore: "3.7",
         priceScore: "4.0",
         createdAt: new Date(),
+        providers: JSON.stringify(["Fornecedor C"]),
       },
       {
         id: "supplier-5",
@@ -207,9 +211,12 @@ export class MemStorage implements IStorage {
         deliveryScore: null,
         priceScore: null,
         createdAt: new Date(),
+        providers: JSON.stringify(["Fornecedor A", "Fornecedor D"]),
       },
     ];
-    suppliers.forEach(s => this.suppliers.set(s.id, s));
+    suppliers.forEach(s => {
+      this.suppliers.set(s.id, s);
+    });
 
     // Seed Products (with localization)
     const products: LocalizedProduct[] = [
@@ -883,7 +890,10 @@ export class MemStorage implements IStorage {
 
   // Suppliers
   async getSuppliers(): Promise<Supplier[]> {
-    return Array.from(this.suppliers.values()).sort((a, b) => {
+    return Array.from(this.suppliers.values()).map(supplier => ({
+      ...supplier,
+      providers: typeof supplier.providers === 'string' ? JSON.parse(supplier.providers) : supplier.providers || []
+    })).sort((a, b) => {
       const scoreA = a.performanceScore ? parseFloat(a.performanceScore) : 0;
       const scoreB = b.performanceScore ? parseFloat(b.performanceScore) : 0;
       return scoreB - scoreA;
@@ -891,7 +901,12 @@ export class MemStorage implements IStorage {
   }
 
   async getSupplier(id: string): Promise<Supplier | undefined> {
-    return this.suppliers.get(id);
+    const supplier = this.suppliers.get(id);
+    if (!supplier) return undefined;
+    return {
+      ...supplier,
+      providers: typeof supplier.providers === 'string' ? JSON.parse(supplier.providers) : supplier.providers || []
+    };
   }
 
   async createSupplier(insertSupplier: InsertSupplier): Promise<Supplier> {
@@ -906,6 +921,7 @@ export class MemStorage implements IStorage {
       qualityScore: insertSupplier.qualityScore || null,
       deliveryScore: insertSupplier.deliveryScore || null,
       priceScore: insertSupplier.priceScore || null,
+      providers: "[]",
     };
     this.suppliers.set(id, supplier);
     return supplier;
