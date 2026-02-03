@@ -31,23 +31,23 @@
   --card-foreground: 220 60% 10%;
   --card-border: 220 15% 90%;
 
-  /* Sidebar - Anastacio Blue theme */
-  --sidebar: 210 96% 25%;
+  /* Sidebar - Dark Navy Blue */
+  --sidebar: 219 85% 8%;
   --sidebar-foreground: 0 0% 100%;
-  --sidebar-border: 210 80% 20%;
-  --sidebar-primary: 210 96% 40%;
+  --sidebar-border: 219 70% 12%;
+  --sidebar-primary: 219 80% 50%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 210 80% 35%;
+  --sidebar-accent: 219 70% 15%;
   --sidebar-accent-foreground: 0 0% 100%;
-  --sidebar-ring: 210 96% 30%;
+  --sidebar-ring: 219 80% 40%;
 
   /* Popovers */
   --popover: 0 0% 100%;
   --popover-foreground: 220 60% 10%;
   --popover-border: 220 15% 85%;
 
-  /* Primary - Anastacio Blue (#034d96 = hsl(210, 96%, 30%)) */
-  --primary: 210 96% 30%;
+  /* Primary - Anastacio Blue (hsl(220, 70%, 25%)) */
+  --primary: 220 70% 25%;
   --primary-foreground: 0 0% 100%;
 
   /* Secondary */
@@ -58,8 +58,8 @@
   --muted: 220 10% 88%;
   --muted-foreground: 220 15% 40%;
 
-  /* Accent - Anastacio Blue (#034d96 = hsl(210, 96%, 30%)) */
-  --accent: 210 96% 30%;
+  /* Accent - Anastacio Blue (hsl(220, 70%, 25%)) */
+  --accent: 220 70% 25%;
   --accent-foreground: 0 0% 100%;
 
   /* Destructive */
@@ -68,12 +68,12 @@
 
   /* Form inputs */
   --input: 220 15% 80%;
-  --ring: 210 96% 30%;
+  --ring: 220 70% 25%;
 
   /* Charts - Anastacio Blue palette */
-  --chart-1: 210 96% 30%;
-  --chart-2: 210 80% 45%;
-  --chart-3: 200 60% 50%;
+  --chart-1: 220 70% 25%;
+  --chart-2: 220 60% 45%;
+  --chart-3: 210 50% 50%;
   --chart-4: 30 75% 48%;
   --chart-5: 150 50% 40%;
 
@@ -137,15 +137,15 @@
   --card-foreground: 0 0% 96%;
   --card-border: 220 40% 16%;
 
-  /* Sidebar - Anastacio Blue theme for dark mode */
-  --sidebar: 210 90% 18%;
+  /* Sidebar - Dark Navy Blue for dark mode */
+  --sidebar: 219 85% 8%;
   --sidebar-foreground: 0 0% 100%;
-  --sidebar-border: 210 70% 25%;
-  --sidebar-primary: 210 90% 50%;
+  --sidebar-border: 219 70% 12%;
+  --sidebar-primary: 219 80% 50%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 210 75% 28%;
+  --sidebar-accent: 219 70% 15%;
   --sidebar-accent-foreground: 0 0% 100%;
-  --sidebar-ring: 210 90% 45%;
+  --sidebar-ring: 219 80% 40%;
 
   /* Popovers */
   --popover: 220 55% 12%;
@@ -153,7 +153,7 @@
   --popover-border: 220 40% 20%;
 
   /* Primary - Anastacio Blue */
-  --primary: 210 90% 45%;
+  --primary: 220 70% 45%;
   --primary-foreground: 0 0% 100%;
 
   /* Secondary */
