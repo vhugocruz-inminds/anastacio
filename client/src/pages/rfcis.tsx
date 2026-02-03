@@ -254,7 +254,6 @@ export default function RfcisPage() {
                     {/* Valor Total e Botão */}
                     <div className="flex items-center justify-between gap-3 pt-2 border-t">
                       <div className="flex items-center gap-2">
-                        <DollarSign className="h-4 w-4 text-primary" />
                         <div>
                           <p className="text-xs text-muted-foreground">Valor Total</p>
                           <p className="text-lg font-bold text-primary">
