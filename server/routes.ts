@@ -93,6 +93,15 @@ export async function registerRoutes(
     try {
       const counts = await storage.getRfciSuppliersCountMap();
       res.json(counts);
+    } catch (erros) {
+      res.status(500).json({ errpr: "Internal server erros" });
+    }
+  });
+  
+  app.get("/api/rfcis/total-values", async (_req, res) => {
+    try {
+      const totals = await storage.getRfciTotalValues();
+      res.json(totals);
     } catch (error) {
       res.status(500).json({ error: "Internal server error" });
     }
@@ -144,6 +153,18 @@ export async function registerRoutes(
         return res.status(400).json({ error: "At least one provider must be selected" });
       }
 
+      const supplierIds = Array.from(
+        new Set(
+          selectedProviders
+            .map((provider: string) => (typeof provider === "string" ? provider.split(":")[0] : ""))
+            .filter((supplierId: string) => supplierId)
+        )
+      );
+
+      if (supplierIds.length === 0) {
+        return res.status(400).json({ error: "At least one supplier must be selected" });
+      }
+
       const rfciData = {
         title: title.trim(),
         description: description?.trim() || null,
@@ -156,7 +177,7 @@ export async function registerRoutes(
         createdById: "user-1",
       };
 
-      const rfci = await storage.createRfci(rfciData as any, items || [], selectedProviders || []);
+      const rfci = await storage.createRfci(rfciData as any, items || [], supplierIds);
       res.status(201).json(rfci);
     } catch (error) {
       console.error("Error creating PO:", error);
@@ -232,7 +253,7 @@ export async function registerRoutes(
           quantity: String(qty),
           unitPrice: String(price),
           totalPrice: String(total.toFixed(2)),
-          currentStock: currentStock || null,
+          currentStock: currentStock ? String(currentStock) : null,
           currentDeliveryDays: currentDeliveryDays,
           deliveryDays: itemDeliveryDays || null,
           quotationId: "temp", // Temporary ID, will be replaced by storage

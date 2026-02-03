@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
-import type { 
-  User, InsertUser, 
+import type {
+  User, InsertUser,
   Supplier, InsertSupplier,
   Product, InsertProduct,
   Rfci, InsertRfci,
@@ -26,40 +26,52 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  
+
   // Suppliers
   getSuppliers(): Promise<Supplier[]>;
   getSupplier(id: string): Promise<Supplier | undefined>;
   createSupplier(supplier: InsertSupplier): Promise<Supplier>;
-  
+
   // Products
   getProducts(): Promise<Product[]>;
   getProduct(id: string): Promise<Product | undefined>;
-  
+
   // Quotations
   getQuotationItems(): Promise<QuotationItem[]>;
-  
+
   // RFCIs
   getRfcis(): Promise<Rfci[]>;
   getRfci(id: string): Promise<Rfci | undefined>;
   getRfciWithDetails(id: string): Promise<RfciWithDetails | undefined>;
   getRfciSuppliersCountMap(): Promise<Record<string, number>>;
-  createRfci(rfci: InsertRfci, items: InsertRfciItem[], supplierIds: string[]): Promise<Rfci>;
+  createRfci(
+    rfci: InsertRfci,
+    items: Array<
+      InsertRfciItem & {
+        preco?: number | string;
+        proposta?: number | string;
+        unitPrice?: number | string;
+        totalPrice?: number | string;
+      }
+    >,
+    supplierIds: string[]
+  ): Promise<Rfci>;
   awardRfci(rfciId: string, quotationId: string): Promise<void>;
-  
+
   // Quotations
   getQuotations(): Promise<Quotation[]>;
   getQuotationsByRfci(rfciId: string): Promise<Quotation[]>;
   getQuotationsBySupplierId(supplierId: string): Promise<QuotationWithItems[]>;
   createQuotation(quotation: InsertQuotation, items: InsertQuotationItem[]): Promise<Quotation>;
-  
+
   // Supplier Portal
   getPendingRfcisForSupplier(supplierId: string): Promise<Rfci[]>;
-  
+  getRfciTotalValues(): Promise<Record<string, number>>;
+
   // Dashboard
   getDashboardStats(): Promise<DashboardStats>;
   getSupplierDashboardStats(supplierId: string): Promise<SupplierDashboardStats>;
-  
+
   // Supplier Documents
   getSupplierDocuments(supplierId: string): Promise<SupplierDocument[]>;
   getAllSupplierDocuments(): Promise<SupplierDocument[]>;
@@ -88,7 +100,7 @@ export class MemStorage implements IStorage {
     this.quotations = new Map();
     this.quotationItems = new Map();
     this.supplierDocuments = new Map();
-    
+
     this.seedData();
   }
 
@@ -411,12 +423,12 @@ export class MemStorage implements IStorage {
 
     // Seed RFCI Items (with localization)
     const rfciItems: LocalizedRfciItem[] = [
-      { id: "rfci-item-1", rfciId: "rfci-1", productId: "prod-1", productName: "Acetona Industrial", productNameLocalized: { ptBR: "Acetona Industrial", enUS: "Industrial Acetone" }, quantity: "5000", unitOfMeasure: "KG", specifications: "Pureza mínima 99.5%", specificationsLocalized: { ptBR: "Pureza mínima 99.5%", enUS: "Minimum purity 99.5%" } },
-      { id: "rfci-item-2", rfciId: "rfci-1", productId: "prod-2", productName: "Tolueno P.A.", productNameLocalized: { ptBR: "Tolueno P.A.", enUS: "Analytical Grade Toluene" }, quantity: "2000", unitOfMeasure: "L", specifications: "Grau analítico", specificationsLocalized: { ptBR: "Grau analítico", enUS: "Analytical grade" } },
-      { id: "rfci-item-3", rfciId: "rfci-1", productId: "prod-6", productName: "Xileno Misto", productNameLocalized: { ptBR: "Xileno Misto", enUS: "Mixed Xylene" }, quantity: "3000", unitOfMeasure: "L", specifications: null },
-      { id: "rfci-item-4", rfciId: "rfci-2", productId: "prod-3", productName: "Resina Epóxi ER-100", productNameLocalized: { ptBR: "Resina Epóxi ER-100", enUS: "Epoxy Resin ER-100" }, quantity: "1000", unitOfMeasure: "KG", specifications: "Viscosidade 500-700 cP", specificationsLocalized: { ptBR: "Viscosidade 500-700 cP", enUS: "Viscosity 500-700 cP" } },
-      { id: "rfci-item-5", rfciId: "rfci-3", productId: "prod-5", productName: "Dióxido de Titânio TiO2", productNameLocalized: { ptBR: "Dióxido de Titânio TiO2", enUS: "Titanium Dioxide TiO2" }, quantity: "2000", unitOfMeasure: "KG", specifications: "Rutilo, 93% min", specificationsLocalized: { ptBR: "Rutilo, 93% min", enUS: "Rutile, 93% min" } },
-      { id: "rfci-item-6", rfciId: "rfci-3", productId: "prod-4", productName: "Agente Dispersante AD-50", productNameLocalized: { ptBR: "Agente Dispersante AD-50", enUS: "Dispersing Agent AD-50" }, quantity: "500", unitOfMeasure: "KG", specifications: null },
+      { id: "rfci-item-1", rfciId: "rfci-1", productId: "prod-1", productName: "Acetona Industrial", productNameLocalized: { ptBR: "Acetona Industrial", enUS: "Industrial Acetone" }, quantity: "5000", unitPrice: "8.50", totalPrice: "42500.00", unitOfMeasure: "KG", specifications: "Pureza mínima 99.5%", specificationsLocalized: { ptBR: "Pureza mínima 99.5%", enUS: "Minimum purity 99.5%" } },
+      { id: "rfci-item-2", rfciId: "rfci-1", productId: "prod-2", productName: "Tolueno P.A.", productNameLocalized: { ptBR: "Tolueno P.A.", enUS: "Analytical Grade Toluene" }, quantity: "2000", unitPrice: "12.00", totalPrice: "24000.00", unitOfMeasure: "L", specifications: "Grau analítico", specificationsLocalized: { ptBR: "Grau analítico", enUS: "Analytical grade" } },
+      { id: "rfci-item-3", rfciId: "rfci-1", productId: "prod-6", productName: "Xileno Misto", productNameLocalized: { ptBR: "Xileno Misto", enUS: "Mixed Xylene" }, quantity: "3000", unitPrice: "6.17", totalPrice: "18500.00", unitOfMeasure: "L", specifications: null },
+      { id: "rfci-item-4", rfciId: "rfci-2", productId: "prod-3", productName: "Resina Epóxi ER-100", productNameLocalized: { ptBR: "Resina Epóxi ER-100", enUS: "Epoxy Resin ER-100" }, quantity: "1000", unitPrice: "289.50", totalPrice: "289500.00", unitOfMeasure: "KG", specifications: "Viscosidade 500-700 cP", specificationsLocalized: { ptBR: "Viscosidade 500-700 cP", enUS: "Viscosity 500-700 cP" } },
+      { id: "rfci-item-5", rfciId: "rfci-3", productId: "prod-5", productName: "Dióxido de Titânio TiO2", productNameLocalized: { ptBR: "Dióxido de Titânio TiO2", enUS: "Titanium Dioxide TiO2" }, quantity: "2000", unitPrice: "156.80", totalPrice: "313600.00", unitOfMeasure: "KG", specifications: "Rutilo, 93% min", specificationsLocalized: { ptBR: "Rutilo, 93% min", enUS: "Rutile, 93% min" } },
+      { id: "rfci-item-6", rfciId: "rfci-3", productId: "prod-4", productName: "Agente Dispersante AD-50", productNameLocalized: { ptBR: "Agente Dispersante AD-50", enUS: "Dispersing Agent AD-50" }, quantity: "500", unitPrice: "152.75", totalPrice: "76375.00", unitOfMeasure: "KG", specifications: null },
     ];
     rfciItems.forEach(i => this.rfciItems.set(i.id, i));
 
@@ -892,10 +904,10 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = randomUUID();
-    const user: User = { 
-      ...insertUser, 
-      id, 
-      createdAt: new Date(), 
+    const user: User = {
+      ...insertUser,
+      id,
+      createdAt: new Date(),
       role: insertUser.role as any,
       phone: insertUser.phone || null,
       department: insertUser.department || null,
@@ -928,10 +940,10 @@ export class MemStorage implements IStorage {
 
   async createSupplier(insertSupplier: InsertSupplier): Promise<Supplier> {
     const id = randomUUID();
-    const supplier: Supplier = { 
-      ...insertSupplier, 
-      id, 
-      createdAt: new Date(), 
+    const supplier: Supplier = {
+      ...insertSupplier,
+      id,
+      createdAt: new Date(),
       status: insertSupplier.status as any,
       mainActivity: insertSupplier.mainActivity || null,
       performanceScore: insertSupplier.performanceScore || null,
@@ -960,7 +972,7 @@ export class MemStorage implements IStorage {
 
   // RFCIs
   async getRfcis(): Promise<Rfci[]> {
-    return Array.from(this.rfcis.values()).sort((a, b) => 
+    return Array.from(this.rfcis.values()).sort((a, b) =>
       new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
     );
   }
@@ -1005,10 +1017,21 @@ export class MemStorage implements IStorage {
     return counts;
   }
 
-  async createRfci(rfciData: InsertRfci, items: InsertRfciItem[], supplierIds: string[]): Promise<Rfci> {
+  async createRfci(
+    rfciData: InsertRfci,
+    items: Array<
+      InsertRfciItem & {
+        preco?: number | string;
+        proposta?: number | string;
+        unitPrice?: number | string;
+        totalPrice?: number | string;
+      }
+    >,
+    supplierIds: string[]
+  ): Promise<Rfci> {
     const id = randomUUID();
-    const code = `PO-2024-${String(this.rfcis.size + 1).padStart(3, '0')}`;
-    
+    const code = `PO-2024-${String(this.rfcis.size + 1).padStart(3, "0")}`;
+
     const rfci: Rfci = {
       ...rfciData,
       id,
@@ -1021,23 +1044,53 @@ export class MemStorage implements IStorage {
     };
     this.rfcis.set(id, rfci);
 
+    const normalizeNumber = (value?: number | string | null) => {
+      if (value === undefined || value === null || value === "") return null;
+      const parsed = Number(value);
+      return Number.isFinite(parsed) ? parsed : null;
+    };
+
     // Create items
     items.forEach((item, idx) => {
       const itemId = randomUUID();
+      const quantity = normalizeNumber(item.quantity) ?? 0;
+      const unitPrice =
+        normalizeNumber(item.preco) ??
+        normalizeNumber(item.unitPrice) ??
+        null;
+      let totalPrice =
+        normalizeNumber(item.proposta) ??
+        normalizeNumber(item.totalPrice) ??
+        null;
+
+      if ((totalPrice === null || totalPrice === 0) && unitPrice !== null) {
+        totalPrice = quantity * unitPrice;
+      }
+
       const rfciItem: RfciItem = {
         id: itemId,
         rfciId: id,
         productId: item.productId || `prod-${idx}`,
         productName: item.productName,
-        quantity: item.quantity,
+        quantity: String(quantity),
+        unitPrice: unitPrice !== null ? unitPrice.toString() : null,
+        totalPrice: totalPrice !== null ? totalPrice.toFixed(2) : null,
         unitOfMeasure: item.unitOfMeasure,
         specifications: item.specifications || null,
       };
       this.rfciItems.set(itemId, rfciItem);
     });
 
+    const normalizedSupplierIds = Array.from(
+      new Set(
+        supplierIds
+          .map((supplierId) => (typeof supplierId === "string" ? supplierId.split(":")[0] : ""))
+          .filter((supplierId) => supplierId)
+      )
+    );
+
     // Create supplier invitations
-    supplierIds.forEach(supplierId => {
+    normalizedSupplierIds.forEach((supplierId) => {
       const rsId = randomUUID();
       const rfciSupplier: RfciSupplier = {
         id: rsId,
@@ -1174,24 +1227,45 @@ export class MemStorage implements IStorage {
 
   // Supplier Portal
   async getPendingRfcisForSupplier(supplierId: string): Promise<Rfci[]> {
+    const matchesSupplierId = (value: string) =>
+      value === supplierId || value.startsWith(`${supplierId}:`);
+
     // Get all RFCI IDs where this supplier was invited
     const supplierRfciIds = Array.from(this.rfciSuppliers.values())
-      .filter(rs => rs.supplierId === supplierId)
+      .filter(rs => matchesSupplierId(rs.supplierId))
       .map(rs => rs.rfciId);
 
     // Get RFCI IDs where this supplier already submitted a quotation
     const submittedQuotationRfciIds = Array.from(this.quotations.values())
-      .filter(q => q.supplierId === supplierId && q.status !== "PENDING")
+      .filter(q => matchesSupplierId(q.supplierId) && q.status !== "PENDING")
       .map(q => q.rfciId);
 
     // Return RFCIs where supplier was invited but hasn't submitted yet
     return Array.from(this.rfcis.values())
-      .filter(r => 
-        supplierRfciIds.includes(r.id) && 
+      .filter(r =>
+        supplierRfciIds.includes(r.id) &&
         !submittedQuotationRfciIds.includes(r.id) &&
         (r.status === "SENT" || r.status === "IN_QUOTATION")
       )
       .sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime());
+  }
+
+  async getRfciTotalValues(): Promise<Record<string, number>> {
+    const totals: Record<string, number> = {};
+
+    Array.from(this.rfciItems.values()).forEach((item) => {
+      const qty = item.quantity ? parseFloat(String(item.quantity)) : 0;
+      const unitPrice = item.unitPrice ? parseFloat(String(item.unitPrice)) : 0;
+      const totalPrice = item.totalPrice ? parseFloat(String(item.totalPrice)) : 0;
+      const value = totalPrice > 0 ? totalPrice : qty * unitPrice;
+
+      if (!totals[item.rfciId]) {
+        totals[item.rfciId] = 0;
+      }
+      totals[item.rfciId] += value;
+    });
+
+    return totals;
   }
 
   // Dashboard
@@ -1261,7 +1335,7 @@ export class MemStorage implements IStorage {
   async getExpiringDocuments(days: number): Promise<SupplierDocument[]> {
     const now = new Date();
     const futureDate = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
-    
+
     return Array.from(this.supplierDocuments.values())
       .filter(d => {
         if (!d.expiresAt) return false;
@@ -1273,3 +1347,4 @@ export class MemStorage implements IStorage {
 }
 
 export const storage = new MemStorage();
+
