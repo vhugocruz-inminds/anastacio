@@ -417,109 +417,147 @@ export default function RfciNewPage() {
                 const availableProdutos = getAvailableProdutos(item.agrupador);
                 
                 return (
-                  <div key={idx} className="grid gap-4 sm:grid-cols-12 items-end p-4 bg-muted/50 rounded-lg">
-                    <div className="space-y-2 sm:col-span-2">
-                      <Label>Agrupador</Label>
-                      <Select
-                        value={item.agrupador}
-                        onValueChange={(value) => updateItem(idx, "agrupador", value)}
-                      >
-                        <SelectTrigger data-testid={`select-agrupador-${idx}`}>
-                          <SelectValue placeholder="Selecione" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="99561BR1A">99561BR1A</SelectItem>
-                          <SelectItem value="99561CK1A">99561CK1A</SelectItem>
-                          <SelectItem value="99561CK1J">99561CK1J</SelectItem>
-                        </SelectContent>
-                      </Select>
+                  <div key={idx} className="space-y-3 p-4 bg-muted/50 rounded-lg">
+                    {/* Primeira linha: Agrupador e Produto */}
+                    <div className="grid gap-3 sm:grid-cols-6">
+                      <div className="space-y-2 sm:col-span-2">
+                        <Label className="text-xs">Agrupador</Label>
+                        <Select
+                          value={item.agrupador}
+                          onValueChange={(value) => updateItem(idx, "agrupador", value)}
+                        >
+                          <SelectTrigger data-testid={`select-agrupador-${idx}`} className="h-9">
+                            <SelectValue placeholder="Selecione" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="99561BR1A">99561BR1A</SelectItem>
+                            <SelectItem value="99561CK1A">99561CK1A</SelectItem>
+                            <SelectItem value="99561CK1J">99561CK1J</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2 sm:col-span-4">
+                        <Label className="text-xs">Produto</Label>
+                        <Select
+                          value={item.productId}
+                          onValueChange={(value) => updateItem(idx, "productId", value)}
+                          disabled={!item.agrupador || availableProdutos.length === 0}
+                        >
+                          <SelectTrigger data-testid={`select-product-${idx}`} className="h-9">
+                            <SelectValue placeholder={availableProdutos.length === 0 ? "Sem produtos" : "Selecione"} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {availableProdutos.map((produto) => (
+                              <SelectItem key={produto.id} value={produto.id}>
+                                {produto.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
 
-                    <div className="space-y-2 sm:col-span-3">
-                      <Label>Produto</Label>
-                      <Select
-                        value={item.productId}
-                        onValueChange={(value) => updateItem(idx, "productId", value)}
-                        disabled={!item.agrupador || availableProdutos.length === 0}
-                      >
-                        <SelectTrigger data-testid={`select-product-${idx}`}>
-                          <SelectValue placeholder={availableProdutos.length === 0 ? "Sem produtos" : "Selecione"} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {availableProdutos.map((produto) => (
-                            <SelectItem key={produto.id} value={produto.id}>
-                              {produto.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                    {/* Segunda linha: ID, Qualidade, Var. Trib, Origem */}
+                    <div className="grid gap-3 sm:grid-cols-6">
+                      <div className="space-y-2">
+                        <Label className="text-xs">ID</Label>
+                        <Input
+                          type="text"
+                          placeholder="-"
+                          value={item.itemId}
+                          readOnly
+                          className="bg-gray-100 h-9"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label className="text-xs">Qualidade</Label>
+                        <Input
+                          type="text"
+                          placeholder="-"
+                          value={item.qualidade}
+                          readOnly
+                          className="bg-gray-100 h-9"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label className="text-xs">Var. Trib</Label>
+                        <Input
+                          type="text"
+                          placeholder="-"
+                          value={item.valorTributario}
+                          readOnly
+                          className="bg-gray-100 h-9"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label className="text-xs">Origem</Label>
+                        <Input
+                          type="text"
+                          placeholder="-"
+                          value={item.origem}
+                          readOnly
+                          className="bg-gray-100 h-9"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label className="text-xs">Qtd.</Label>
+                        <Input
+                          type="number"
+                          placeholder="0"
+                          value={item.quantity}
+                          onChange={(e) => updateItem(idx, "quantity", e.target.value)}
+                          data-testid={`input-quantity-${idx}`}
+                          className="h-9"
+                        />
+                      </div>
+
+                      <div className="flex items-end">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeItem(idx)}
+                          className="text-destructive w-full"
+                          data-testid={`button-remove-item-${idx}`}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
 
-                    <div className="space-y-2 sm:col-span-1">
-                      <Label>ID</Label>
-                      <Input
-                        type="text"
-                        placeholder="-"
-                        value={item.itemId}
-                        readOnly
-                        className="bg-gray-100"
-                      />
-                    </div>
+                    {/* Terceira linha: Unidade e Especificações */}
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label className="text-xs">Unidade</Label>
+                        <Select
+                          value={item.unitOfMeasure}
+                          onValueChange={(value) => updateItem(idx, "unitOfMeasure", value)}
+                        >
+                          <SelectTrigger className="h-9">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="KG">KG</SelectItem>
+                            <SelectItem value="L">Litro</SelectItem>
+                            <SelectItem value="UN">Unidade</SelectItem>
+                            <SelectItem value="TON">Tonelada</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-                    <div className="space-y-2 sm:col-span-1">
-                      <Label>Qualidade</Label>
-                      <Input
-                        type="text"
-                        placeholder="-"
-                        value={item.qualidade}
-                        readOnly
-                        className="bg-gray-100"
-                      />
-                    </div>
-
-                    <div className="space-y-2 sm:col-span-1">
-                      <Label>Var. Trib.</Label>
-                      <Input
-                        type="text"
-                        placeholder="-"
-                        value={item.valorTributario}
-                        readOnly
-                        className="bg-gray-100"
-                      />
-                    </div>
-
-                    <div className="space-y-2 sm:col-span-1">
-                      <Label>Origem</Label>
-                      <Input
-                        type="text"
-                        placeholder="-"
-                        value={item.origem}
-                        readOnly
-                        className="bg-gray-100"
-                      />
-                    </div>
-
-                    <div className="space-y-2 sm:col-span-1">
-                      <Label>Qtd.</Label>
-                      <Input
-                        type="number"
-                        placeholder="0"
-                        value={item.quantity}
-                        onChange={(e) => updateItem(idx, "quantity", e.target.value)}
-                        data-testid={`input-quantity-${idx}`}
-                      />
-                    </div>
-
-                    <div className="sm:col-span-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => removeItem(idx)}
-                        className="text-destructive"
-                        data-testid={`button-remove-item-${idx}`}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <div className="space-y-2">
+                        <Label className="text-xs">Especificações</Label>
+                        <Input
+                          placeholder="Opcional"
+                          value={item.specifications}
+                          onChange={(e) => updateItem(idx, "specifications", e.target.value)}
+                          className="h-9"
+                        />
+                      </div>
                     </div>
                   </div>
                 );

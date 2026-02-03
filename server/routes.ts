@@ -125,18 +125,19 @@ export async function registerRoutes(
         return res.status(400).json({ error: "At least one supplier must be selected" });
       }
 
-      const rfciData: InsertRfci = {
+      const rfciData = {
         title: title.trim(),
         description: description?.trim() || null,
         priority: priority || "NORMAL",
         deadline: new Date(deadline),
         requestDate: new Date(requestDate),
         requestedBy: requestedBy.trim(),
+        code: "", // Will be generated in storage
+        status: "SENT" as const,
+        createdById: "user-1",
       };
 
-      // Note: 'code' and 'status' are generated during storage.createRfci()
-
-      const rfci = await storage.createRfci(rfciData, items || [], supplierIds || []);
+      const rfci = await storage.createRfci(rfciData as any, items || [], supplierIds || []);
       res.status(201).json(rfci);
     } catch (error) {
       console.error("Error creating RFCI:", error);

@@ -874,6 +874,8 @@ export class MemStorage implements IStorage {
       createdAt: new Date(), 
       role: insertUser.role as any,
       phone: insertUser.phone || null,
+      department: insertUser.department || null,
+      supplierId: insertUser.supplierId || null,
     };
     this.users.set(id, user);
     return user;
@@ -900,6 +902,10 @@ export class MemStorage implements IStorage {
       createdAt: new Date(), 
       status: insertSupplier.status as any,
       mainActivity: insertSupplier.mainActivity || null,
+      performanceScore: insertSupplier.performanceScore || null,
+      qualityScore: insertSupplier.qualityScore || null,
+      deliveryScore: insertSupplier.deliveryScore || null,
+      priceScore: insertSupplier.priceScore || null,
     };
     this.suppliers.set(id, supplier);
     return supplier;
