@@ -657,7 +657,7 @@ export default function RfciNewPage() {
           <CardHeader>
             <CardTitle>Selecionar Fornecedores</CardTitle>
             <CardDescription>
-              Escolha os fornecedores que receberão esta RFCI ({formData.selectedProviders.length} selecionados)
+              Escolha os fornecedores que receberão este PO ({formData.selectedProviders.length} selecionados)
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -755,7 +755,7 @@ export default function RfciNewPage() {
         <Card>
           <CardHeader>
             <CardTitle>Revisar e Enviar</CardTitle>
-            <CardDescription>Confira os dados antes de enviar a RFCI</CardDescription>
+            <CardDescription>Confira os dados antes de enviar o PO</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid gap-4 sm:grid-cols-2">
@@ -879,7 +879,7 @@ export default function RfciNewPage() {
             data-testid="button-submit-rfci"
           >
             <Send className="h-4 w-4" />
-            Enviar RFCI
+            Enviar PO
           </Button>
         )}
       </div>
