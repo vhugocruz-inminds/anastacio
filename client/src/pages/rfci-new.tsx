@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -31,12 +31,15 @@ import {
 import type { Supplier, Product } from "@shared/schema";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/lib/auth-context";
 
 interface RfciFormData {
   title: string;
   description: string;
   priority: string;
   deadline: string;
+  requestDate: string;
+  requestedBy: string;
   items: {
     productId: string;
     productName: string;
@@ -57,12 +60,22 @@ const steps = [
 export default function RfciNewPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
+  
+  // Get current date in YYYY-MM-DD format
+  const getCurrentDate = () => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  };
+
   const [formData, setFormData] = useState<RfciFormData>({
     title: "",
     description: "",
     priority: "NORMAL",
     deadline: "",
+    requestDate: getCurrentDate(),
+    requestedBy: user?.name || "Maria Silva",
     items: [],
     supplierIds: [],
   });
@@ -251,6 +264,36 @@ export default function RfciNewPage() {
                 </Select>
               </div>
               <div className="space-y-2">
+                <Label htmlFor="requestedBy">Solicitante</Label>
+                <Select
+                  value={formData.requestedBy}
+                  onValueChange={(value) => setFormData({ ...formData, requestedBy: value })}
+                >
+                  <SelectTrigger data-testid="select-requested-by">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Maria Silva">Maria Silva</SelectItem>
+                    <SelectItem value="João Silva">João Silva</SelectItem>
+                    <SelectItem value="Carlos Lima">Carlos Lima</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="requestDate">Data de Solicitação</Label>
+                <div className="relative">
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="requestDate"
+                    type="date"
+                    className="pl-10"
+                    value={formData.requestDate}
+                    onChange={(e) => setFormData({ ...formData, requestDate: e.target.value })}
+                    data-testid="input-request-date"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="deadline">Prazo para Cotação *</Label>
                 <div className="relative">
                   <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -436,6 +479,14 @@ export default function RfciNewPage() {
               <div>
                 <p className="text-sm text-muted-foreground">Prazo</p>
                 <p className="font-medium">{formData.deadline}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Data de Solicitação</p>
+                <p className="font-medium">{formData.requestDate}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Solicitante</p>
+                <p className="font-medium">{formData.requestedBy}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Descrição</p>
