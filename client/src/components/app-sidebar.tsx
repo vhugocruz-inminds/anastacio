@@ -116,7 +116,7 @@ export function AppSidebar() {
   const [location] = useLocation();
   const { user } = useAuth();
   const { t } = useTranslation();
-  
+
   const isSupplier = user?.role === "SUPPLIER";
   const menuItems = isSupplier ? supplierMenuItems : buyerMenuItems;
   const secondaryItems = isSupplier ? [] : buyerSecondaryItems;
@@ -125,48 +125,59 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarHeader className="border-b border-sidebar-border px-6 py-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-lg">
-            eP
-          </div>
+          <img
+            src="/anastacio-logo.png"
+            alt="Anastacio"
+            className="h-10 w-auto"
+          />
           <div>
             <h1 className="font-semibold text-lg leading-tight">e-Proc</h1>
             <p className="text-xs text-muted-foreground">
-              {isSupplier ? t('sidebar.supplierPortal') : "Procurement B2B"}
+              {isSupplier ? t("sidebar.supplierPortal") : "Procurement B2B"}
             </p>
           </div>
         </div>
       </SidebarHeader>
-      
+
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>
-            {isSupplier ? t('sidebar.myPortal') : t('sidebar.procurement')}
+            {isSupplier ? t("sidebar.myPortal") : t("sidebar.procurement")}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => {
-                const isActive = location === item.url || 
+                const isActive =
+                  location === item.url ||
                   (item.url !== "/" && location.startsWith(item.url));
-                
+
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton
                       asChild
                       isActive={isActive}
                       disabled={item.comingSoon}
-                      className={item.comingSoon ? "opacity-50 cursor-not-allowed" : ""}
+                      className={
+                        item.comingSoon ? "opacity-50 cursor-not-allowed" : ""
+                      }
                     >
-                      <Link href={item.comingSoon ? "#" : item.url} data-testid={`nav-${item.url.replace(/\//g, "-")}`}>
+                      <Link
+                        href={item.comingSoon ? "#" : item.url}
+                        data-testid={`nav-${item.url.replace(/\//g, "-")}`}
+                      >
                         <item.icon className="h-4 w-4" />
                         <span className="flex-1">{item.title}</span>
                         {item.badge && (
-                          <Badge variant="secondary" className="text-xs">
+                          <Badge
+                            variant="secondary"
+                            className="text-xs bg-white text-primary"
+                          >
                             {item.badge}
                           </Badge>
                         )}
                         {item.comingSoon && (
                           <Badge variant="outline" className="text-xs">
-                            {t('nav.comingSoon')}
+                            {t("nav.comingSoon")}
                           </Badge>
                         )}
                       </Link>
@@ -185,21 +196,23 @@ export function AppSidebar() {
               <SidebarMenu>
                 {secondaryItems.map((item) => {
                   const isActive = location === item.url;
-                  
+
                   return (
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton
                         asChild
                         isActive={isActive}
                         disabled={item.comingSoon}
-                        className={item.comingSoon ? "opacity-50 cursor-not-allowed" : ""}
+                        className={
+                          item.comingSoon ? "opacity-50 cursor-not-allowed" : ""
+                        }
                       >
                         <Link href={item.comingSoon ? "#" : item.url}>
                           <item.icon className="h-4 w-4" />
                           <span className="flex-1">{item.title}</span>
                           {item.comingSoon && (
                             <Badge variant="outline" className="text-xs">
-                              {t('nav.comingSoon')}
+                              {t("nav.comingSoon")}
                             </Badge>
                           )}
                         </Link>
@@ -216,11 +229,16 @@ export function AppSidebar() {
       <SidebarFooter className="border-t border-sidebar-border p-4">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild className="opacity-50 cursor-not-allowed">
+            <SidebarMenuButton
+              asChild
+              className="opacity-50 cursor-not-allowed"
+            >
               <span>
                 <Settings className="h-4 w-4" />
-                <span>{t('nav.settings')}</span>
-                <Badge variant="outline" className="text-xs">{t('nav.comingSoon')}</Badge>
+                <span>{t("nav.settings")}</span>
+                <Badge variant="outline" className="text-xs">
+                  {t("nav.comingSoon")}
+                </Badge>
               </span>
             </SidebarMenuButton>
           </SidebarMenuItem>

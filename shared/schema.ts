@@ -242,7 +242,7 @@ export interface LocalizedQuotation extends Quotation {
 export interface RfciWithDetails extends LocalizedRfci {
   items: LocalizedRfciItem[];
   suppliers: (RfciSupplier & { supplier?: LocalizedSupplier })[];
-  quotations: LocalizedQuotation[];
+  quotations: QuotationWithItems[];
   createdBy?: User;
 }
 
