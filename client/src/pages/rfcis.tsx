@@ -89,15 +89,15 @@ export default function RfcisPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-semibold">RFCIs</h1>
+          <h1 className="text-2xl font-semibold">POs</h1>
           <p className="text-muted-foreground">
-            Solicitações de Informação Comercial
+            Solicitação de Informação Comercial
           </p>
         </div>
         <Link href="/rfcis/new">
           <Button className="gap-2" data-testid="button-new-rfci-page">
             <Plus className="h-4 w-4" />
-            Nova RFCI
+            Nova PO
           </Button>
         </Link>
       </div>
@@ -275,10 +275,10 @@ export default function RfcisPage() {
           ) : (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <FileText className="h-10 w-10 text-muted-foreground mb-2" />
-              <p className="text-muted-foreground mb-4">Nenhuma RFCI encontrada</p>
+              <p className="text-muted-foreground mb-4">Nenhuma PO encontrada</p>
               <Link href="/rfcis/new">
                 <Button variant="ghost" size="sm" className="mt-2">
-                  Criar primeira RFCI
+                  Criar primeira PO
                 </Button>
               </Link>
             </div>

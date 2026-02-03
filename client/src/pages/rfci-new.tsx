@@ -178,14 +178,14 @@ export default function RfciNewPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/rfcis"] });
       toast({
-        title: "RFCI criada com sucesso!",
+        title: "PO criada com sucesso!",
         description: "Os fornecedores foram notificados.",
       });
       setLocation("/rfcis");
     },
     onError: () => {
       toast({
-        title: "Erro ao criar RFCI",
+        title: "Erro ao criar PO",
         description: "Tente novamente.",
         variant: "destructive",
       });
@@ -271,6 +271,11 @@ export default function RfciNewPage() {
       newItems[index].proposta = precoBaseCalc;
     }
     
+    // Quando proposta é alterada, sincronizar com precoBase
+    if (field === "proposta") {
+      newItems[index].precoBase = value;
+    }
+    
     setFormData({ ...formData, items: newItems });
   };
 
@@ -315,7 +320,7 @@ export default function RfciNewPage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-semibold">Nova RFCI</h1>
+          <h1 className="text-2xl font-semibold">Nova PO</h1>
           <p className="text-muted-foreground">
             Solicitação de Informação Comercial
           </p>
@@ -360,12 +365,12 @@ export default function RfciNewPage() {
         <Card>
           <CardHeader>
             <CardTitle>Informações Básicas</CardTitle>
-            <CardDescription>Defina o título, descrição e prazo da RFCI</CardDescription>
+            <CardDescription>Defina o título, descrição e prazo da PO</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2 sm:col-span-2">
-                <Label htmlFor="title">Título da RFCI *</Label>
+                <Label htmlFor="title">Título da PO *</Label>
                 <Input
                   id="title"
                   placeholder="Ex: Cotação de Solventes Industriais"
@@ -521,25 +526,14 @@ export default function RfciNewPage() {
                       </div>
                     </div>
 
-                    {/* Segunda linha: ID, Qualidade, Var. Trib, Origem */}
-                    <div className="grid gap-3 sm:grid-cols-6">
+                    {/* Segunda linha: ID, Var. Trib, Origem e Lixeira */}
+                    <div className="grid gap-3 sm:grid-cols-6 items-end relative">
                       <div className="space-y-2">
                         <Label className="text-xs">ID</Label>
                         <Input
                           type="text"
                           placeholder="-"
                           value={item.itemId}
-                          readOnly
-                          className="bg-gray-100 h-9"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label className="text-xs">Qualidade</Label>
-                        <Input
-                          type="text"
-                          placeholder="-"
-                          value={item.qualidade}
                           readOnly
                           className="bg-gray-100 h-9"
                         />
@@ -567,6 +561,23 @@ export default function RfciNewPage() {
                         />
                       </div>
 
+                      <div className="col-span-3"></div>
+
+                      <div className="absolute top-0 right-0">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeItem(idx)}
+                          className="text-destructive"
+                          data-testid={`button-remove-item-${idx}`}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Terceira linha: Qtd, Unidade, Preço Base e Proposta */}
+                    <div className="grid gap-3 sm:grid-cols-4">
                       <div className="space-y-2">
                         <Label className="text-xs">Qtd.</Label>
                         <Input
@@ -579,21 +590,6 @@ export default function RfciNewPage() {
                         />
                       </div>
 
-                      <div className="flex items-end">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeItem(idx)}
-                          className="text-destructive w-full"
-                          data-testid={`button-remove-item-${idx}`}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-
-                    {/* Terceira linha: Unidade e Especificações */}
-                    <div className="grid gap-3 sm:grid-cols-2">
                       <div className="space-y-2">
                         <Label className="text-xs">Unidade</Label>
                         <Select
@@ -612,19 +608,6 @@ export default function RfciNewPage() {
                         </Select>
                       </div>
 
-                      <div className="space-y-2">
-                        <Label className="text-xs">Especificações</Label>
-                        <Input
-                          placeholder="Opcional"
-                          value={item.specifications}
-                          onChange={(e) => updateItem(idx, "specifications", e.target.value)}
-                          className="h-9"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Quarta linha: Preço Base e Proposta */}
-                    <div className="grid gap-3 sm:grid-cols-2">
                       <div className="space-y-2">
                         <Label className="text-xs">Preço Base (R$)</Label>
                         <Input
