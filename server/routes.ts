@@ -111,7 +111,7 @@ export async function registerRoutes(
     try {
       const rfci = await storage.getRfciWithDetails(req.params.id);
       if (!rfci) {
-        return res.status(404).json({ error: "PO not found" });
+        return res.status(404).json({ error: "RFQ not found" });
       }
       res.json(rfci);
     } catch (error) {
@@ -180,7 +180,7 @@ export async function registerRoutes(
       const rfci = await storage.createRfci(rfciData as any, items || [], supplierIds);
       res.status(201).json(rfci);
     } catch (error) {
-      console.error("Error creating PO:", error);
+      console.error("Error creating RFQ:", error);
       res.status(500).json({ error: "Internal server error" });
     }
   });

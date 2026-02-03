@@ -880,7 +880,7 @@ model NegotiationMessage {
 }
 
 // ============================================
-// PURCHASE ORDER MODULE
+// Request for Quotation MODULE
 // ============================================
 
 model PurchaseOrder {
@@ -1267,7 +1267,7 @@ model Approval {
   id              String          @id @default(uuid())
   
   // Entity
-  entityType      String          // REQUISITION, RFCI, PO, INVOICE, PAYMENT
+  entityType      String          // REQUISITION, RFCI, RFQ, INVOICE, PAYMENT
   entityId        String
   
   // Approver

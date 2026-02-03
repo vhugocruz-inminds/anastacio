@@ -67,7 +67,7 @@ O **e-Proc** é uma plataforma completa de procurement B2B desenvolvida para aut
 
 **Qualidade:**
 - NPS de compradores e fornecedores
-- Taxa de erro em POs
+- Taxa de erro em RFQs
 - Conformidade regulatória (%)
 - Performance de fornecedores (score médio)
 
@@ -140,7 +140,7 @@ O **e-Proc** é uma plataforma completa de procurement B2B desenvolvida para aut
 **Nome:** Ana Rodrigues  
 **Cargo:** Coordenadora de Importação  
 **Objetivos:**
-- Acompanhar status de POs internacionais
+- Acompanhar status de RFQs internacionais
 - Gerenciar processos de importação
 - Ter visibilidade de prazos e custos
 
@@ -291,21 +291,21 @@ O **e-Proc** é uma plataforma completa de procurement B2B desenvolvida para aut
 4. Registro de todas as interações
 5. Aceite final gera Award
 
-#### 4.2.5 Award e Geração de PO
+#### 4.2.5 Award e Geração de RFQ
 
 **Funcionalidades:**
 - Award da cotação vencedora
 - Seleção de SKU (produto já catalogado)
 - Cadastro expresso de produto (novo)
 - Envio automático para Protheus
-- Geração de PO (Purchase Order)
+- Geração de RFQ (Request for Quotation)
 - Para importações: integração com Protheus-EIC (SI)
 - Notificação ao fornecedor
 
 **Workflow:**
 ```
 Award → Seleciona SKU (Sim/Não) → Cadastra produto (se necessário) 
-→ Envia para sistema → Protheus gera PO → Fornecedor recebe
+→ Envia para sistema → Protheus gera RFQ → Fornecedor recebe
 ```
 
 ---
@@ -315,7 +315,7 @@ Award → Seleciona SKU (Sim/Não) → Cadastra produto (se necessário)
 #### 4.3.1 Acompanhamento de Pedidos
 
 **Funcionalidades:**
-- Dashboard de POs ativas
+- Dashboard de RFQs ativas
 - Tracking em tempo real
 - Timeline visual do pedido
 - Alertas de atraso
@@ -367,14 +367,14 @@ Award → Seleciona SKU (Sim/Não) → Cadastra produto (se necessário)
 
 **Funcionalidades:**
 - Entrada automática de NF-e (via XML)
-- Conferência automática NF vs PO
+- Conferência automática NF vs RFQ
 - Validação de impostos
 - Divergências (three-way match)
 - Workflow de aprovação de divergências
 - Integração contábil (Protheus)
 
 **Three-Way Match:**
-- PO (Purchase Order)
+- RFQ (Request for Quotation)
 - RN (Receipt Note)
 - NF (Nota Fiscal)
 
@@ -496,7 +496,7 @@ Award → Seleciona SKU (Sim/Não) → Cadastra produto (se necessário)
 **Endpoints:**
 - Cadastro de fornecedores
 - Geração de SC (Solicitação de Compra)
-- Geração de PO (Purchase Order)
+- Geração de RFQ (Request for Quotation)
 - Atualização de status de pedidos
 - Integração de produtos/SKUs
 - Integração financeira
@@ -508,7 +508,7 @@ Award → Seleciona SKU (Sim/Não) → Cadastra produto (se necessário)
 
 **Endpoints:**
 - Geração de SI (Solicitação de Importação)
-- Recebimento de PO de importação
+- Recebimento de RFQ de importação
 - Tracking de processos de importação
 - Documentos de comércio exterior
 
@@ -601,9 +601,9 @@ Award → Seleciona SKU (Sim/Não) → Cadastra produto (se necessário)
 15. **Award:** Comprador seleciona fornecedor vencedor
 16. Verifica se produto tem SKU
 17. Cadastra produto (se necessário)
-18. **PO:** Sistema envia para Protheus
-19. Protheus gera PO
-20. Fornecedor recebe PO e confirma
+18. **RFQ:** Sistema envia para Protheus
+19. Protheus gera RFQ
+20. Fornecedor recebe RFQ e confirma
 
 **Tempo estimado:** 5-10 dias úteis
 
@@ -687,7 +687,7 @@ Award → Seleciona SKU (Sim/Não) → Cadastra produto (se necessário)
 **MVP:**
 - [ ] 100% dos fornecedores cadastrados migrados
 - [ ] 50 cotações realizadas com sucesso
-- [ ] Integração Protheus funcionando (SC e PO)
+- [ ] Integração Protheus funcionando (SC e RFQ)
 - [ ] Workflow Fluig operacional
 - [ ] 90% de aprovação em testes de usuário
 
@@ -760,10 +760,10 @@ Award → Seleciona SKU (Sim/Não) → Cadastra produto (se necessário)
 - **RFCI:** Request for Commercial Information (Solicitação de Cotação)
 - **SC:** Solicitação de Compra
 - **SI:** Solicitação de Importação
-- **PO:** Purchase Order (Pedido de Compra)
+- **RFQ:** Request for Quotation (Pedido de Compra)
 - **SKU:** Stock Keeping Unit (Código de produto)
 - **Award:** Aprovação/aceitação de uma cotação
-- **Three-Way Match:** Conferência entre PO, Recebimento e NF
+- **Three-Way Match:** Conferência entre RFQ, Recebimento e NF
 - **Savings:** Economia obtida em negociações
 - **Lead Time:** Tempo entre requisição e entrega
 - **Maverick Spend:** Gastos fora do processo controlado
@@ -784,7 +784,7 @@ Award → Seleciona SKU (Sim/Não) → Cadastra produto (se necessário)
 ### 12.2 Matriz de Integrações
 | Sistema | Protocolo | Frequência | Dados |
 |---------|-----------|------------|-------|
-| Protheus | REST API | Real-time | SC, PO, Produtos, Fornecedores |
+| Protheus | REST API | Real-time | SC, RFQ, Produtos, Fornecedores |
 | Protheus-EIC | Web Service | Real-time | SI, Importações |
 | Fluig | REST API | Real-time | Workflows, Aprovações |
 | Receita Federal | API Gov | On-demand | Validação CNPJ |
@@ -797,7 +797,7 @@ Award → Seleciona SKU (Sim/Não) → Cadastra produto (se necessário)
 - Requisições
 - RFCIs
 - Cotações
-- Pedidos (POs)
+- Pedidos (RFQs)
 - Notas Fiscais
 - Pagamentos
 

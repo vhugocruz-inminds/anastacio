@@ -87,7 +87,7 @@ export default function RfcisPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-semibold">POs</h1>
+          <h1 className="text-2xl font-semibold">RFQs</h1>
           <p className="text-muted-foreground">
             Solicitação de Informação Comercial
           </p>
@@ -95,7 +95,7 @@ export default function RfcisPage() {
         <Link href="/rfcis/new">
           <Button className="gap-2" data-testid="button-new-rfci-page">
             <Plus className="h-4 w-4" />
-            Nova PO
+            Nova RFQ
           </Button>
         </Link>
       </div>
@@ -167,7 +167,7 @@ export default function RfcisPage() {
                   rfci.status !== "AWARDED" &&
                   rfci.status !== "CANCELLED";
                 
-                // Obter número de fornecedores da PO
+                // Obter número de fornecedores da RFQ
                 const suppliersCount = rfciSuppliersMap?.[rfci.id] || 0;
                 const offerCount = generateOfferCount(rfci.id);
                 const totalValue = rfciTotalsMap?.[rfci.id] || 0;
@@ -276,10 +276,10 @@ export default function RfcisPage() {
           ) : (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <FileText className="h-10 w-10 text-muted-foreground mb-2" />
-              <p className="text-muted-foreground mb-4">Nenhuma PO encontrada</p>
+              <p className="text-muted-foreground mb-4">Nenhuma RFQ encontrada</p>
               <Link href="/rfcis/new">
                 <Button variant="ghost" size="sm" className="mt-2">
-                  Criar primeira PO
+                  Criar primeira RFQ
                 </Button>
               </Link>
             </div>

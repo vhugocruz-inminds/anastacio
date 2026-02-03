@@ -180,14 +180,14 @@ export default function RfciNewPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/rfcis/total-values"] });
       queryClient.invalidateQueries({ queryKey: ["/api/rfcis/suppliers-count"] });
       toast({
-        title: "PO criada com sucesso!",
+        title: "RFQ criada com sucesso!",
         description: "Os fornecedores foram notificados.",
       });
       setLocation("/rfcis");
     },
     onError: () => {
       toast({
-        title: "Erro ao criar PO",
+        title: "Erro ao criar RFQ",
         description: "Tente novamente.",
         variant: "destructive",
       });
@@ -322,7 +322,7 @@ export default function RfciNewPage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-semibold">Nova PO</h1>
+          <h1 className="text-2xl font-semibold">Nova RFQ</h1>
           <p className="text-muted-foreground">
             Solicitação de Informação Comercial
           </p>
@@ -367,12 +367,12 @@ export default function RfciNewPage() {
         <Card>
           <CardHeader>
             <CardTitle>Informações Básicas</CardTitle>
-            <CardDescription>Defina o título, descrição e prazo da PO</CardDescription>
+            <CardDescription>Defina o título, descrição e prazo da RFQ</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2 sm:col-span-2">
-                <Label htmlFor="title">Título da PO *</Label>
+                <Label htmlFor="title">Título da RFQ *</Label>
                 <Input
                   id="title"
                   placeholder="Ex: Cotação de Solventes Industriais"
@@ -659,7 +659,7 @@ export default function RfciNewPage() {
           <CardHeader>
             <CardTitle>Selecionar Fornecedores</CardTitle>
             <CardDescription>
-              Escolha os fornecedores que receberão este PO ({formData.selectedProviders.length} selecionados)
+              Escolha os fornecedores que receberão este RFQ ({formData.selectedProviders.length} selecionados)
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -757,7 +757,7 @@ export default function RfciNewPage() {
         <Card>
           <CardHeader>
             <CardTitle>Revisar e Enviar</CardTitle>
-            <CardDescription>Confira os dados antes de enviar o PO</CardDescription>
+            <CardDescription>Confira os dados antes de enviar o RFQ</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid gap-4 sm:grid-cols-2">
@@ -881,7 +881,7 @@ export default function RfciNewPage() {
             data-testid="button-submit-rfci"
           >
             <Send className="h-4 w-4" />
-            Enviar PO
+            Enviar RFQ
           </Button>
         )}
       </div>

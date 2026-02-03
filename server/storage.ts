@@ -340,7 +340,7 @@ export class MemStorage implements IStorage {
     const rfcis: LocalizedRfci[] = [
       {
         id: "rfci-1",
-        code: "PO-2024-001",
+        code: "RFQ-2024-001",
         title: "Cotação de Solventes Industriais",
         titleLocalized: { ptBR: "Cotação de Solventes Industriais", enUS: "Industrial Solvents Quotation" },
         description: "Solicitação de cotação para solventes utilizados na linha de produção principal",
@@ -356,7 +356,7 @@ export class MemStorage implements IStorage {
       },
       {
         id: "rfci-2",
-        code: "PO-2024-002",
+        code: "RFQ-2024-002",
         title: "Resinas para Revestimentos",
         titleLocalized: { ptBR: "Resinas para Revestimentos", enUS: "Resins for Coatings" },
         description: "Cotação para resinas epóxi para nova linha de revestimentos industriais",
@@ -372,7 +372,7 @@ export class MemStorage implements IStorage {
       },
       {
         id: "rfci-3",
-        code: "PO-2024-003",
+        code: "RFQ-2024-003",
         title: "Pigmentos e Aditivos",
         titleLocalized: { ptBR: "Pigmentos e Aditivos", enUS: "Pigments and Additives" },
         description: "Cotação urgente para pigmentos e aditivos dispersantes",
@@ -388,7 +388,7 @@ export class MemStorage implements IStorage {
       },
       {
         id: "rfci-4",
-        code: "PO-2024-004",
+        code: "RFQ-2024-004",
         title: "Catalisadores para Polimerização",
         titleLocalized: { ptBR: "Catalisadores para Polimerização", enUS: "Polymerization Catalysts" },
         description: "Solicitação de cotação para catalisadores utilizados no processo de polimerização",
@@ -404,7 +404,7 @@ export class MemStorage implements IStorage {
       },
       {
         id: "rfci-5",
-        code: "PO-2024-005",
+        code: "RFQ-2024-005",
         title: "Aditivos para Tintas Automotivas",
         titleLocalized: { ptBR: "Aditivos para Tintas Automotivas", enUS: "Automotive Paint Additives" },
         description: "Cotação para linha premium de aditivos para tintas automotivas",
@@ -1030,7 +1030,7 @@ export class MemStorage implements IStorage {
     supplierIds: string[]
   ): Promise<Rfci> {
     const id = randomUUID();
-    const code = `PO-2024-${String(this.rfcis.size + 1).padStart(3, "0")}`;
+    const code = `RFQ-2024-${String(this.rfcis.size + 1).padStart(3, "0")}`;
 
     const rfci: Rfci = {
       ...rfciData,

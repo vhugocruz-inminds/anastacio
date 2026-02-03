@@ -124,7 +124,7 @@ function RecentQuotationItem({ quotation }: { quotation: Quotation }) {
         <StatusIcon className="h-5 w-5 text-muted-foreground" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-medium truncate">PO #{quotation.rfciId.slice(0, 8)}</p>
+        <p className="font-medium truncate">RFQ #{quotation.rfciId.slice(0, 8)}</p>
         <p className="text-sm text-muted-foreground">
           R$ {totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
         </p>

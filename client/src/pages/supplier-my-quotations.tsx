@@ -117,7 +117,7 @@ export default function SupplierMyQuotationsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>PO</TableHead>
+                <TableHead>RFQ</TableHead>
                 <TableHead>Data Envio</TableHead>
                 <TableHead>Valor Total</TableHead>
                 <TableHead>Prazo Entrega</TableHead>
@@ -165,7 +165,7 @@ export default function SupplierMyQuotationsPage() {
                               )}
                             </Button>
                             <div>
-                              <p className="font-medium">{quotation.rfci?.title || "PO"}</p>
+                              <p className="font-medium">{quotation.rfci?.title || "RFQ"}</p>
                               <p className="text-sm text-muted-foreground font-mono">
                                 {quotation.rfci?.code || quotation.rfciId.slice(0, 8)}
                               </p>

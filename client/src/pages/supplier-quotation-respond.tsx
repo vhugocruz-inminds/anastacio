@@ -156,7 +156,7 @@ export default function SupplierQuotationRespondPage() {
     return (
       <div className="flex flex-col items-center justify-center py-12">
         <FileText className="h-12 w-12 text-muted-foreground mb-4" />
-        <h2 className="text-lg font-medium">PO não encontrada</h2>
+        <h2 className="text-lg font-medium">RFQ não encontrada</h2>
         <Link href="/supplier/quotations">
           <Button variant="ghost">Voltar para lista</Button>
         </Link>

@@ -261,15 +261,15 @@ POST   /api/negotiations/:id/accept
 POST   /api/negotiations/:id/reject
 ```
 
-#### **Module 8: Purchase Orders (PO)**
+#### **Module 8: Requests for Quotation (RFQ)**
 ```typescript
 // Priority: High
 // Complexity: High
 
 Features:
-- PO generation from awarded quotations
-- National vs Import PO types
-- Protheus integration (PO creation)
+- RFQ generation from awarded quotations
+- National vs Import RFQ types
+- Protheus integration (RFQ creation)
 - Supplier confirmation workflow
 - Tracking and status updates
 - Receipt management
@@ -293,7 +293,7 @@ GET    /api/purchase-orders/:id/tracking
 Features:
 - NF-e XML import
 - SEFAZ validation
-- Three-way match (PO x Receipt x Invoice)
+- Three-way match (RFQ x Receipt x Invoice)
 - Divergence handling
 - Approval workflow
 - Integration with Protheus (financial module)
@@ -390,7 +390,7 @@ GET    /api/payments/:id/receipt
 // Complexity: Medium
 
 Features:
-- Post-PO evaluation forms
+- Post-RFQ evaluation forms
 - Multi-criteria scoring (quality, delivery, price, service)
 - Automatic score calculation
 - Supplier ranking
@@ -516,7 +516,7 @@ const proteusConfig = {
 // Key endpoints to integrate:
 // - POST /api/suppliers (create supplier)
 // - POST /api/purchase-requests (create SC)
-// - POST /api/purchase-orders (create PO)
+// - POST /api/purchase-orders (create RFQ)
 // - POST /api/products (sync products)
 // - GET /api/suppliers/:code (get supplier)
 
@@ -822,11 +822,11 @@ pnpm run dev
 - [ ] Comparative map generation
 - [ ] Award functionality
 
-### **Week 9-10: Negotiation & PO**
+### **Week 9-10: Negotiation & RFQ**
 - [ ] Negotiation module
 - [ ] Counter-proposal flow
-- [ ] PO generation
-- [ ] Protheus PO integration
+- [ ] RFQ generation
+- [ ] Protheus RFQ integration
 - [ ] Supplier confirmation
 
 ### **Week 11-12: Invoice & Analytics**
@@ -994,7 +994,7 @@ healthCheck() {
 - [ ] RFCIs can be sent to suppliers
 - [ ] Suppliers can submit quotations
 - [ ] Comparative maps are generated
-- [ ] POs are created in Protheus
+- [ ] RFQs are created in Protheus
 
 ### **Final Delivery (Week 16)**
 - [ ] All modules functional
