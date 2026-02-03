@@ -177,6 +177,8 @@ export default function RfciNewPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/rfcis"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/rfcis/total-values"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/rfcis/suppliers-count"] });
       toast({
         title: "RFCI criada com sucesso!",
         description: "Os fornecedores foram notificados.",

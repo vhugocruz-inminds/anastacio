@@ -123,6 +123,8 @@ export const rfciItems = pgTable("rfci_items", {
   productId: varchar("product_id").notNull(),
   productName: text("product_name").notNull(),
   quantity: decimal("quantity", { precision: 15, scale: 4 }).notNull(),
+  unitPrice: decimal("unit_price", { precision: 15, scale: 4 }),
+  totalPrice: decimal("total_price", { precision: 15, scale: 2 }),
   unitOfMeasure: text("unit_of_measure").notNull(),
   specifications: text("specifications"),
 });

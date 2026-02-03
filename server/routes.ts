@@ -89,6 +89,15 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/rfcis/total-values", async (_req, res) => {
+    try {
+      const totals = await storage.getRfciTotalValues();
+      res.json(totals);
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   app.get("/api/rfcis/:id", async (req, res) => {
     try {
       const rfci = await storage.getRfciWithDetails(req.params.id);

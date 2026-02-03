@@ -43,7 +43,18 @@ export interface IStorage {
   getRfcis(): Promise<Rfci[]>;
   getRfci(id: string): Promise<Rfci | undefined>;
   getRfciWithDetails(id: string): Promise<RfciWithDetails | undefined>;
-  createRfci(rfci: InsertRfci, items: InsertRfciItem[], supplierIds: string[]): Promise<Rfci>;
+  createRfci(
+    rfci: InsertRfci,
+    items: Array<
+      InsertRfciItem & {
+        preco?: number | string;
+        proposta?: number | string;
+        unitPrice?: number | string;
+        totalPrice?: number | string;
+      }
+    >,
+    supplierIds: string[]
+  ): Promise<Rfci>;
   awardRfci(rfciId: string, quotationId: string): Promise<void>;
   
   // Quotations
@@ -54,6 +65,7 @@ export interface IStorage {
   
   // Supplier Portal
   getPendingRfcisForSupplier(supplierId: string): Promise<Rfci[]>;
+  getRfciTotalValues(): Promise<Record<string, number>>;
   
   // Dashboard
   getDashboardStats(): Promise<DashboardStats>;
@@ -410,12 +422,12 @@ export class MemStorage implements IStorage {
 
     // Seed RFCI Items (with localization)
     const rfciItems: LocalizedRfciItem[] = [
-      { id: "rfci-item-1", rfciId: "rfci-1", productId: "prod-1", productName: "Acetona Industrial", productNameLocalized: { ptBR: "Acetona Industrial", enUS: "Industrial Acetone" }, quantity: "5000", unitOfMeasure: "KG", specifications: "Pureza mínima 99.5%", specificationsLocalized: { ptBR: "Pureza mínima 99.5%", enUS: "Minimum purity 99.5%" } },
-      { id: "rfci-item-2", rfciId: "rfci-1", productId: "prod-2", productName: "Tolueno P.A.", productNameLocalized: { ptBR: "Tolueno P.A.", enUS: "Analytical Grade Toluene" }, quantity: "2000", unitOfMeasure: "L", specifications: "Grau analítico", specificationsLocalized: { ptBR: "Grau analítico", enUS: "Analytical grade" } },
-      { id: "rfci-item-3", rfciId: "rfci-1", productId: "prod-6", productName: "Xileno Misto", productNameLocalized: { ptBR: "Xileno Misto", enUS: "Mixed Xylene" }, quantity: "3000", unitOfMeasure: "L", specifications: null },
-      { id: "rfci-item-4", rfciId: "rfci-2", productId: "prod-3", productName: "Resina Epóxi ER-100", productNameLocalized: { ptBR: "Resina Epóxi ER-100", enUS: "Epoxy Resin ER-100" }, quantity: "1000", unitOfMeasure: "KG", specifications: "Viscosidade 500-700 cP", specificationsLocalized: { ptBR: "Viscosidade 500-700 cP", enUS: "Viscosity 500-700 cP" } },
-      { id: "rfci-item-5", rfciId: "rfci-3", productId: "prod-5", productName: "Dióxido de Titânio TiO2", productNameLocalized: { ptBR: "Dióxido de Titânio TiO2", enUS: "Titanium Dioxide TiO2" }, quantity: "2000", unitOfMeasure: "KG", specifications: "Rutilo, 93% min", specificationsLocalized: { ptBR: "Rutilo, 93% min", enUS: "Rutile, 93% min" } },
-      { id: "rfci-item-6", rfciId: "rfci-3", productId: "prod-4", productName: "Agente Dispersante AD-50", productNameLocalized: { ptBR: "Agente Dispersante AD-50", enUS: "Dispersing Agent AD-50" }, quantity: "500", unitOfMeasure: "KG", specifications: null },
+      { id: "rfci-item-1", rfciId: "rfci-1", productId: "prod-1", productName: "Acetona Industrial", productNameLocalized: { ptBR: "Acetona Industrial", enUS: "Industrial Acetone" }, quantity: "5000", unitPrice: null, totalPrice: null, unitOfMeasure: "KG", specifications: "Pureza mínima 99.5%", specificationsLocalized: { ptBR: "Pureza mínima 99.5%", enUS: "Minimum purity 99.5%" } },
+      { id: "rfci-item-2", rfciId: "rfci-1", productId: "prod-2", productName: "Tolueno P.A.", productNameLocalized: { ptBR: "Tolueno P.A.", enUS: "Analytical Grade Toluene" }, quantity: "2000", unitPrice: null, totalPrice: null, unitOfMeasure: "L", specifications: "Grau analítico", specificationsLocalized: { ptBR: "Grau analítico", enUS: "Analytical grade" } },
+      { id: "rfci-item-3", rfciId: "rfci-1", productId: "prod-6", productName: "Xileno Misto", productNameLocalized: { ptBR: "Xileno Misto", enUS: "Mixed Xylene" }, quantity: "3000", unitPrice: null, totalPrice: null, unitOfMeasure: "L", specifications: null },
+      { id: "rfci-item-4", rfciId: "rfci-2", productId: "prod-3", productName: "Resina Epóxi ER-100", productNameLocalized: { ptBR: "Resina Epóxi ER-100", enUS: "Epoxy Resin ER-100" }, quantity: "1000", unitPrice: null, totalPrice: null, unitOfMeasure: "KG", specifications: "Viscosidade 500-700 cP", specificationsLocalized: { ptBR: "Viscosidade 500-700 cP", enUS: "Viscosity 500-700 cP" } },
+      { id: "rfci-item-5", rfciId: "rfci-3", productId: "prod-5", productName: "Dióxido de Titânio TiO2", productNameLocalized: { ptBR: "Dióxido de Titânio TiO2", enUS: "Titanium Dioxide TiO2" }, quantity: "2000", unitPrice: null, totalPrice: null, unitOfMeasure: "KG", specifications: "Rutilo, 93% min", specificationsLocalized: { ptBR: "Rutilo, 93% min", enUS: "Rutile, 93% min" } },
+      { id: "rfci-item-6", rfciId: "rfci-3", productId: "prod-4", productName: "Agente Dispersante AD-50", productNameLocalized: { ptBR: "Agente Dispersante AD-50", enUS: "Dispersing Agent AD-50" }, quantity: "500", unitPrice: null, totalPrice: null, unitOfMeasure: "KG", specifications: null },
     ];
     rfciItems.forEach(i => this.rfciItems.set(i.id, i));
 
@@ -996,7 +1008,18 @@ export class MemStorage implements IStorage {
     };
   }
 
-  async createRfci(rfciData: InsertRfci, items: InsertRfciItem[], supplierIds: string[]): Promise<Rfci> {
+  async createRfci(
+    rfciData: InsertRfci,
+    items: Array<
+      InsertRfciItem & {
+        preco?: number | string;
+        proposta?: number | string;
+        unitPrice?: number | string;
+        totalPrice?: number | string;
+      }
+    >,
+    supplierIds: string[]
+  ): Promise<Rfci> {
     const id = randomUUID();
     const code = `RFCI-2024-${String(this.rfcis.size + 1).padStart(3, '0')}`;
     
@@ -1021,6 +1044,8 @@ export class MemStorage implements IStorage {
         productId: item.productId || `prod-${idx}`,
         productName: item.productName,
         quantity: item.quantity,
+        unitPrice: item.preco ? String(item.preco) : item.unitPrice ? String(item.unitPrice) : null,
+        totalPrice: item.proposta ? String(item.proposta) : item.totalPrice ? String(item.totalPrice) : null,
         unitOfMeasure: item.unitOfMeasure,
         specifications: item.specifications || null,
       };
@@ -1188,6 +1213,24 @@ export class MemStorage implements IStorage {
       .sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime());
   }
 
+  async getRfciTotalValues(): Promise<Record<string, number>> {
+    const totals: Record<string, number> = {};
+
+    Array.from(this.rfciItems.values()).forEach((item) => {
+      const qty = item.quantity ? parseFloat(String(item.quantity)) : 0;
+      const unitPrice = item.unitPrice ? parseFloat(String(item.unitPrice)) : 0;
+      const totalPrice = item.totalPrice ? parseFloat(String(item.totalPrice)) : 0;
+      const value = totalPrice > 0 ? totalPrice : qty * unitPrice;
+
+      if (!totals[item.rfciId]) {
+        totals[item.rfciId] = 0;
+      }
+      totals[item.rfciId] += value;
+    });
+
+    return totals;
+  }
+
   // Dashboard
   async getDashboardStats(): Promise<DashboardStats> {
     const suppliers = Array.from(this.suppliers.values());
@@ -1267,3 +1310,4 @@ export class MemStorage implements IStorage {
 }
 
 export const storage = new MemStorage();
+

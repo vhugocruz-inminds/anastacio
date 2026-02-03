@@ -57,6 +57,10 @@ export default function RfcisPage() {
     queryKey: ["/api/rfcis"],
   });
 
+  const { data: rfciTotalsMap } = useQuery<Record<string, number>>({
+    queryKey: ["/api/rfcis/total-values"],
+  });
+
   // Query para obter contagem de fornecedores por RFCI
   const { data: rfciSuppliersMap } = useQuery<Record<string, number>>({
     queryKey: ["/api/rfcis/suppliers-count"],
@@ -72,16 +76,10 @@ export default function RfcisPage() {
     return matchesSearch && matchesStatus;
   });
 
-  // Função para calcular valor total fictício baseado nos itens
-  const calculateTotalValue = (rfci: any) => {
-    // Este é um valor fictício. Na prática, viria do banco de dados
-    return Math.floor(Math.random() * 50000) + 5000;
-  };
-
   // Função para gerar número fictício de ofertas (entre 1 e 5)
   const generateOfferCount = (rfciId: string) => {
     // Usar o ID como seed para gerar um número consistente
-    const hash = rfciId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const hash = rfciId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
     return (hash % 5) + 1;
   };
 
@@ -163,12 +161,16 @@ export default function RfcisPage() {
                 const StatusIcon = status.icon;
                 const deadline = rfci.deadline ? new Date(rfci.deadline) : null;
                 const createdDate = rfci.createdAt ? new Date(rfci.createdAt) : null;
-                const isOverdue = deadline && deadline < new Date() && rfci.status !== "AWARDED" && rfci.status !== "CANCELLED";
+                const isOverdue =
+                  deadline &&
+                  deadline < new Date() &&
+                  rfci.status !== "AWARDED" &&
+                  rfci.status !== "CANCELLED";
                 
                 // Obter número de fornecedores da RFCI
                 const suppliersCount = rfciSuppliersMap?.[rfci.id] || 0;
                 const offerCount = generateOfferCount(rfci.id);
-                const totalValue = calculateTotalValue(rfci);
+                const totalValue = rfciTotalsMap?.[rfci.id] || 0;
 
                 return (
                   <div
