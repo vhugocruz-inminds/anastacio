@@ -244,9 +244,9 @@ export default function SupplierQuotationRespondPage() {
                 <TableHead>Produto</TableHead>
                 <TableHead className="w-20">Quantidade</TableHead>
                 <TableHead className="w-24">Estoque Atual</TableHead>
-                <TableHead className="w-28">Preço Unitário (R$)</TableHead>
-                <TableHead className="w-24">Prazo Atual (Dias)</TableHead>
-                <TableHead className="w-28">Prazo Qtd Restante (Dias)</TableHead>
+                <TableHead className="w-20">Preço Unitário (R$)</TableHead>
+                <TableHead className="w-20">Prazo Atual (Dias)</TableHead>
+                <TableHead className="w-20">Prazo Qtd Restante (Dias)</TableHead>
                 <TableHead className="w-28 text-right">Total (Atual)</TableHead>
                 <TableHead className="w-32 text-right">Total (Restante)</TableHead>
               </TableRow>
@@ -282,7 +282,7 @@ export default function SupplierQuotationRespondPage() {
                         placeholder="0"
                         value={item.currentStock}
                         onChange={(e) => updateItemPrice(idx, "currentStock", e.target.value)}
-                        className="w-full"
+                        className="w-20"
                         data-testid={`input-stock-${idx}`}
                       />
                     </TableCell>
@@ -293,7 +293,7 @@ export default function SupplierQuotationRespondPage() {
                         placeholder="0,00"
                         value={item.unitPrice}
                         onChange={(e) => updateItemPrice(idx, "unitPrice", e.target.value)}
-                        className="w-full"
+                        className="w-20"
                         data-testid={`input-price-${idx}`}
                       />
                     </TableCell>
@@ -303,7 +303,7 @@ export default function SupplierQuotationRespondPage() {
                         placeholder="0"
                         value={item.currentDeliveryDays}
                         onChange={(e) => updateItemPrice(idx, "currentDeliveryDays", e.target.value)}
-                        className="w-full"
+                        className="w-20"
                         data-testid={`input-delivery-current-${idx}`}
                       />
                     </TableCell>
@@ -313,7 +313,7 @@ export default function SupplierQuotationRespondPage() {
                         placeholder="0"
                         value={item.deliveryDays}
                         onChange={(e) => updateItemPrice(idx, "deliveryDays", e.target.value)}
-                        className="w-full"
+                        className="w-20"
                         data-testid={`input-delivery-${idx}`}
                       />
                     </TableCell>
