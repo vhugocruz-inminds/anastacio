@@ -287,6 +287,12 @@ export default function RfciDetailPage() {
   const { data: rfci, isLoading } = useQuery<RfciWithDetails>({
     queryKey: ["/api/rfcis", rfciId],
     enabled: !!rfciId,
+    staleTime: 0,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    refetchInterval: 10000,
+    refetchIntervalInBackground: true,
   });
 
   if (isLoading) {
